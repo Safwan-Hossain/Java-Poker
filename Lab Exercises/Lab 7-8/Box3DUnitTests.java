@@ -1,6 +1,5 @@
 import static org.junit.Assert .*;
 
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -8,7 +7,7 @@ public class Box3DUnitTests {
     private static Box3D box;
 
     @BeforeClass
-    public void setup() {
+    public static void setup() {
         int[] location = {1, 2, 3};
         int[] dimensions = {2, 2, 2};
         box = new Box3D(location, dimensions);
