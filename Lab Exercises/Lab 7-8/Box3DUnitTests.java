@@ -47,4 +47,10 @@ public class Box3DUnitTests {
         int expectedOutput = 24;
         assertEquals(output, expectedOutput);
     }
+
+    @Test(expected=RuntimeException.class)
+    public void negativeSizeTest() {
+        // THIS TEST SHOULD FAIL BECAUSE EXCEPTION IS NOT THROWN
+        box = new Box3D(new int[] {1, 2, 3}, new int[] {-1, 2, 3});
+    }
 }
