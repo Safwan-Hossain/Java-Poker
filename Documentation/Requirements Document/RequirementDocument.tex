@@ -18,9 +18,9 @@
 \title{SE 3XA3: Software Requirements Specification\\PokerProject}
 
 \author{Team \#12, Team Name
-		\\ Safwan Hossain, hossam18
-		\\ Eamon Earl, earle2
-		\\ Tyler Magarelli, magarelt
+        \\ Safwan Hossain, hossam18
+        \\ Eamon Earl, earle2
+        \\ Tyler Magarelli, magarelt
 }
 
 \date{\today}
@@ -175,78 +175,96 @@ We have decided on the Model-View-Controller (MVC) architecture, as it is well g
         \label{ssub:ease_of_use_requirements}
         % Begin SubSubSection
         \begin{enumerate}[label=UH\arabic*.]
-        	\item 
+            \item The user should be able to perform their desired action in no more than 3 clicks/menus.
         \end{enumerate}
-        % End SubSubSection
         
-        \subsubsection{Personalization and Internationalization Requirements}
-        \label{ssub:personalization_and_internationalization_requirements}
-        N/A.
-        
-        \subsubsection{Learning Requirements}
-        \label{ssub:learning_requirements}
-        % Begin SubSubSection
-        \begin{enumerate}[label=UH\arabic*.]
-        	\item 
-        \end{enumerate}
-        % End SubSubSection
-        
-        \subsubsection{Understandability and Politeness Requirements}
-        \label{ssub:understandability_and_politeness_requirements}
-        % Begin SubSubSection
-        \begin{enumerate}[label=UH\arabic*.]
-        	\item 
-        \end{enumerate}
-        % End SubSubSection
-        
-        \subsubsection{Accessibility Requirements}
-        \label{ssub:accessibility_requirements}
-        % Begin SubSubSection
-        \begin{enumerate}[label=UH\arabic*.]
-        	\item 
-        \end{enumerate}
-        % End SubSubSection
 
 \subsection{Performance Requirements}
     \subsubsection{Speed and Latency Requirements}
     \begin{enumerate}[label=PR\arabic*.]
         \item Any interface between a user and the system shall have a maximum response time of 500ms.
-    	\item The maximum time to boot the game on any system shall be less than 2 minutes.
+        \item The maximum time to boot the game on any system shall be less than 2 minutes.
     \end{enumerate}
     \subsubsection{Reliability and Availability Requirements}
     \begin{enumerate}[label=PR\arabic*.]
-    	\item The system shall run whenever the user desires to open the application.  
+        \item The system shall run whenever the user desires to open the application.  
     \end{enumerate}
     \subsubsection{Robustness or Fault-Tolerance Requirements}
     \begin{enumerate}[label=PR\arabic*.]
-    	\item The system shall be designed to operate on a highly robust level.
+        \item The system shall be designed to operate on a highly robust level.
     \end{enumerate}
     \subsubsection{Capacity Requirements}
     \begin{enumerate}[label=PR\arabic*.]
-    	\item The system will handle at most 10 users at a given time.
+        \item Each lobby / local game can have at most 6 individual players. 
     \end{enumerate}
     \subsubsection{Scalability or Extensibility Requirements}
     \begin{enumerate}[label=PR\arabic*.]
-    	\item The system shall be able to update through software updates that are issued by the developers.
+        \item The system shall be able to update through software updates that are issued by the developers.
     \end{enumerate}
+    \subsubsection{Longevity Requirements}
+    \label{ssub:longevity_requirements}
+     % Begin SubSubSection
+    \begin{enumerate}[label=PR\arabic*.]
+        \item The product will be developed under the heuristics of designing for change via generality.  
+    \end{enumerate}
+    % End SubSubSection
 \subsection{Operational and Environmental Requirements}
-
+    \subsubsection{Expected Physical Environment}
+    \label{ssub:expected_physical_environment}
+    % Begin SubSubSection
+    \begin{enumerate}[label=OE\arabic*.]
+        \item The system will be expected to be installed onto the user's local machine.
+    \end{enumerate}
+    % End SubSubSection
+    
 \subsection{Maintainability and Support Requirements}
+    
+    \subsubsection{Supportability Requirements}
+    \label{ssub:supportability_requirements}
+    % Begin SubSubSection
+    \begin{enumerate}[label=MS\arabic*.]
+        \item The system should be able to be update through software patches issued by the developers.
+    \end{enumerate}
+    % End SubSubSection
+    
+    \subsubsection{Adaptability Requirements}
+    \label{ssub:adaptability_requirements}
+    % Begin SubSubSection
+    \begin{enumerate}[label=MS\arabic*.]
+        \item The system should be able to be extended by adding more features by the developers.
+    \end{enumerate}
+    % End SubSubSection
+    
+    % End SubSection
 
 \subsection{Security Requirements}
-
+    \subsubsection{Access Requirements}
+    \label{ssub:access_requirements}
+    % Begin SubSubSection
+    \begin{enumerate}[label=SR\arabic*.]
+        \item The alphanumeric codes for lobby creation and access will be encrypted / generated by some means such that unwanted players cannot easily join.
+    \end{enumerate}
+    % End SubSubSection
+    
+    \subsubsection{Privacy Requirements}
+    \label{ssub:privacy_requirements}
+    % Begin SubSubSection
+    \begin{enumerate}[label=SR\arabic*.]
+        \item The lobby creators will have the option to kick players out of a lobby before the game commences.
+    \end{enumerate}
+    % End SubSubSection
 \subsection{Cultural Requirements}
-
+N/A.
 \subsection{Legal Requirements}
-
+N/A.
 \subsection{Health and Safety Requirements}
-
+N/A.
 \section{Project Issues}
-
+N/A.
 \subsection{Open Issues}
-
+N/A.
 \subsection{Off-the-Shelf Solutions}
-Some of these off the shelf solutions might include:
+Some of these off the shelf solutions for the risks may include:
 
 \begin{enumerate}
     \item Hostinger - a cheap cloud based virtual server with varying payment plans for different requirements
@@ -255,22 +273,22 @@ Some of these off the shelf solutions might include:
 \end{enumerate}
 
 \subsection{New Problems}
-
+N/A.
 \subsection{Tasks}
-
+N/A.
 \subsection{Migration to the New Product}
-
+N/A.
 \subsection{Risks}
 Some technical risks that need to be weighed out are the implications of running a low fidelity java server off of one of the developer's local machines. This will be something that needs to be tested during the proof of concept such that we can see if our intended number of concurrent online players is feasible under such conditions, else we may wish to consider some off-the-shelf solutions for our server. 
 
 \subsection{Costs}
-
+Costs will be considered at a later date once the server is implemented.
 \subsection{User Documentation and Training}
-
+N/A.
 \subsection{Waiting Room}
-
+N/A.
 \subsection{Ideas for Solutions}
-
+N/A.
 \bibliographystyle{plainnat}
 
 \bibliography{SRS}
@@ -279,13 +297,6 @@ Some technical risks that need to be weighed out are the implications of running
 
 \section{Appendix}
 
-This section has been added to the Volere template.  This is where you can place
-additional information.
-
 \subsection{Symbolic Parameters}
-
-The definition of the requirements will likely call for SYMBOLIC\_CONSTANTS.
-Their values are defined in this section for easy maintenance.
-
 
 \end{document}
