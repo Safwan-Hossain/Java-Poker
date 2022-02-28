@@ -21,7 +21,7 @@ public class Player
 		this.chips = chips;
 		this.hasTurn = false;
 	}
-	
+
 	public boolean hasTurn() {
 		return this.hasTurn;
 	}
