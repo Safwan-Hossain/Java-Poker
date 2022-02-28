@@ -5,6 +5,7 @@ import java.util.Scanner;
 
 public class Client {
     private Player thisPlayer;
+    private Game game;
     private String playerName;
     private Socket socket;
     private ObjectOutputStream outputStream;
@@ -49,8 +50,16 @@ public class Client {
         new Thread(() -> {
             while (socket.isConnected()) {
                 try {
-                    Object message = inputStream.readObject();
-                    System.out.println(message);
+                    GameInfo gameInfo = (GameInfo) inputStream.readObject();
+                    game = gameInfo.getGame();
+                    String message = gameInfo.getMessage();
+                    if (!message.isEmpty()) {
+                        System.out.println(message);
+                    }
+                    Player playerWithTurn = gameInfo.getPlayerWithTurn();
+                    if (playerWithTurn == thisPlayer) {
+                        thisPlayer.giveTurn();
+                    }
                 } catch (IOException | ClassNotFoundException e) {
                     closeEverything();
                     break;
