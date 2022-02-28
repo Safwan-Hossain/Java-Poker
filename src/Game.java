@@ -10,12 +10,18 @@ public class Game {
     private int nextPlayerIndex;
     private int minimumCallAmount;
 
-    public Game(ArrayList<Player> players) {
+    public Game(ArrayList<Player> players, int minimumCallAmount) {
         this.deck = new Deck();
         this.players = players;
         this.tableCards = new ArrayList<Card>();
+        this.minimumCallAmount = minimumCallAmount;
         this.currentPlayerIndex = 0;
         this.nextPlayerIndex = 0;
+    }
+
+    public startGame() {
+        dealCards();
+        giveNextTurn();
     }
 
     public void removePlayer(Player player) {
@@ -44,7 +50,7 @@ public class Game {
         currentPlayerIndex = nextPlayerIndex;
         nextPlayerIndex = (nextPlayerIndex + 1) % unfoldedPlayers.size();
 
-        return  nextPlayer;
+        return nextPlayer;
     }
 
     private Player getCurrentPlayer() {

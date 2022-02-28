@@ -1,5 +1,7 @@
 import java.io.*;
 import java.net.Socket;
+import java.util.Enumeration;
+import java.util.Scanner;
 
 public class Client {
     private Player thisPlayer;
@@ -16,11 +18,48 @@ public class Client {
             outputStream = new ObjectOutputStream(socket.getOutputStream());
             inputStream = new ObjectInputStream(socket.getInputStream());
         } catch (IOException e) {
-            closeEverything(socket, outputStream, inputStream);
+            closeEverything();
         }
     }
 
-    private void closeEverything(Socket socket, ObjectOutputStream outputStream, ObjectInputStream inputStream) {
+    private boolean actionIsValid(String action) {
+        return action.equals("bet") || action.equals("call") || action.equals("raise") || action.equals("fold");
+    }
+
+    private void performAction() {
+        if (socket == null || outputStream == null) { return;}
+
+        Scanner scanner =  new Scanner(System.in);
+        try {
+            while (socket.isConnected() && thisPlayer.hasTurn()) {
+                String action = scanner.nextLine().toLowerCase();
+                if (actionIsValid(action)) {
+                    outputStream.writeChars(action);
+                    outputStream.flush();
+                    break;
+                }
+                System.out.println("Invalid action");
+            }
+        } catch (IOException e) {
+            closeEverything();
+        }
+    }
+
+    private void listenForMessages() {
+        new Thread(() -> {
+            while (socket.isConnected()) {
+                try {
+                    Object message = inputStream.readObject();
+                    System.out.println(message);
+                } catch (IOException | ClassNotFoundException e) {
+                    closeEverything();
+                    break;
+                }
+            }
+        }).start();
+    }
+
+    private void closeEverything() {
         try {
             if (outputStream != null) {
                 outputStream.close();
