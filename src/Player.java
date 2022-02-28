@@ -12,16 +12,41 @@ public class Player
 	public String name;
 	protected int chips;
 	private ArrayList<Card> hand;
+	private boolean hasTurn;
 
 	// gets 5 cards from deck
 	public Player(String name, int chips)
 	{
 		this.name = name;
 		this.chips = chips;
+		this.hasTurn = false;
+	}
+	
+	public boolean hasTurn() {
+		return this.hasTurn;
+	}
+
+	public void giveTurn() {
+		this.hasTurn = true;
+	}
+
+	public void takeTurn() {
+		this.hasTurn = false;
 	}
 
 	public void set_chips(int c){ //for now just int - later normalized to standard 5, 10, 20 values
 		chips = c;
+	}
+
+	public int getChips() {
+		return this.chips;
+	}
+
+	public void takeChips(int amount) {
+		if (amount > chips) {
+			throw new IllegalArgumentException("Amount is higher than number of chips");
+		}
+		this.chips -= amount;
 	}
 
 	public void insert(Card new_c){ //ensures player hand remains sorted by rank from smallest to largest
@@ -48,6 +73,7 @@ public class Player
 	public ArrayList<Card> get_hand(){
 		return hand;
 	}
+
 
 	/*
 	// switches card for a new card
