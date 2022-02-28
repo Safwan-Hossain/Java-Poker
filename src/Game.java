@@ -3,9 +3,12 @@ import java.util.ArrayList;
 public class Game {
     private Deck deck;
     private ArrayList<Player> players;
+    // players who haven't folded
+    private ArrayList<Player> unfoldedPlayers;
     private ArrayList<Card> tableCards;
     private int currentPlayerIndex;
     private int nextPlayerIndex;
+    private int minimumCallAmount;
 
     public Game(ArrayList<Player> players) {
         this.deck = new Deck();
@@ -19,6 +22,10 @@ public class Game {
         players.remove(player);
     }
 
+    public void foldPlayer(Player player) {
+        unfoldedPlayers.remove(player);
+    }
+
     public void dealCards() {
         for (Player player : players) {
             Card[] playerHand = deck.draw(5);
@@ -28,15 +35,31 @@ public class Game {
         }
     }
 
-    public void giveNextPlayerTurn() {
-        players.get(nextPlayerIndex).giveTurn();
+    private Player getNextPlayer() {
+        if (nextPlayerIndex >= unfoldedPlayers.size()) {
+            throw new RuntimeException("Index out of bounds");
+        }
+
+        Player nextPlayer = unfoldedPlayers.get(nextPlayerIndex);
         currentPlayerIndex = nextPlayerIndex;
-        nextPlayerIndex++;
+        nextPlayerIndex = (nextPlayerIndex + 1) % unfoldedPlayers.size();
+
+        return  nextPlayer;
     }
 
-    public void takeCurrentPlayerTurn() {
-        players.get(currentPlayerIndex).takeTurn();
+    private Player getCurrentPlayer() {
+        if (currentPlayerIndex >= unfoldedPlayers.size()) {
+            throw new RuntimeException("Index out of bounds");
+        }
+
+        return unfoldedPlayers.get(currentPlayerIndex);
     }
+
+    public void giveNextTurn() {
+        getCurrentPlayer().takeTurn();
+        getNextPlayer().giveTurn();
+    }
+
 
 
 
