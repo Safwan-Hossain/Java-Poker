@@ -5,21 +5,18 @@
  *  Card class
  */
 
-public class Card implements Comparable<Card>
+public class Card
 {
   // I.V.s are suit and rank
 	public int suit;
 	public int rank;
 	
-	@Override
-	public int compareTo(Card o) 
+	public boolean greater_than(Card o) 
 	{
-	     if (this.rank == (o.rank))
-	            return 0;
-	     else if ((this.rank) > (o.rank))
-	            return 1;
+	     if (this.rank >= o.rank)
+	            return true;
 	     else
-	           return -1;
+	           return false;
 	}
 	
 
