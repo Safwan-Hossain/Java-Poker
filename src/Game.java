@@ -19,7 +19,7 @@ public class Game {
         this.nextPlayerIndex = 0;
     }
 
-    public startGame() {
+    public void startGame() {
         dealCards();
         giveNextTurn();
     }
@@ -62,7 +62,7 @@ public class Game {
     }
 
     public void giveNextTurn() {
-        getCurrentPlayer().takeTurn();
+        getCurrentPlayer();
         getNextPlayer().giveTurn();
     }
 
