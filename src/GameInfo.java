@@ -1,5 +1,6 @@
+import java.io.Serializable;
 
-public class GameInfo {
+public class GameInfo implements Serializable {
     public enum playerActions{FOLD, BET, RAISE, CALL};
 
     private Game game;
@@ -55,6 +56,6 @@ public class GameInfo {
 
     @Override
     public String toString() {
-        return playerName + " performs the action " + playerAction.name() + " for an amount of " + amount;
+        return playerName.toUpperCase() + " performs the action " + playerAction.name() + " for an amount of " + amount;
     }
 }
