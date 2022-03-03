@@ -21,12 +21,12 @@ public class Client {
             outputStream = new ObjectOutputStream(socket.getOutputStream());
             inputStream = new ObjectInputStream(socket.getInputStream());
         } catch (IOException e) {
-            System.out.println("HELLPPP");
             closeEverything();
         }
     }
 
     // ============== Temporary Functions ==============
+
     private boolean actionIsValid(String action) {
         return action.equals("bet") || action.equals("call") || action.equals("raise") || action.equals("fold");
     }
@@ -50,7 +50,10 @@ public class Client {
     private GameInfo createGameInfo (String action) {
         if (actionIsValid(action)) {
             if (action.equals("bet") || action.equals("raise")) {
-                return new GameInfo(playerName, getActionByString(action), 100);
+                Scanner scanner = new Scanner(System.in);
+                System.out.print("How much do you want to bet/raise?: ");
+                int amount = Integer.parseInt(scanner.nextLine());
+                return new GameInfo(playerName, getActionByString(action), amount);
             } else {
                 return new GameInfo(playerName, getActionByString(action), 0);
             }
@@ -67,7 +70,8 @@ public class Client {
         Scanner scanner =  new Scanner(System.in);
         try {
             while (socket.isConnected()) {
-                String action = scanner.nextLine().toLowerCase();
+                System.out.println("SELECT AN OPTION: BET, FOLD, RAISE, CALL");
+                String action = scanner.nextLine().toLowerCase().strip();
                 GameInfo gameInfo = createGameInfo(action);
 
                 if (gameInfo == null) {
@@ -76,9 +80,7 @@ public class Client {
                 }
 
                 outputStream.writeObject(gameInfo);
-
                 outputStream.flush();
-
             }
         } catch (IOException e) {
             closeEverything();
@@ -90,7 +92,6 @@ public class Client {
             while (socket.isConnected()) {
                 try {
                     GameInfo gameInfo = (GameInfo) inputStream.readObject();
-                    System.out.println("PROBLEM");
                     System.out.println(gameInfo.toString());
                 } catch (IOException | ClassNotFoundException e) {
                     closeEverything();
@@ -119,7 +120,7 @@ public class Client {
 
     public static void main(String[] args) throws IOException {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Please print your username: ");
+        System.out.print("Please print your username: ");
         String name = scanner.nextLine();
         Socket socket = new Socket(InetAddress.getLocalHost(), 100);
         Client client = new Client(socket, name);

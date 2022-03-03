@@ -28,6 +28,7 @@ public class ClientHandler implements Runnable {
             try {
                 gameInfo = (GameInfo) inputStream.readObject();
                 updateClients(gameInfo);
+                System.out.println(gameInfo);
             } catch (IOException | ClassNotFoundException e) {
                 closeEverything();
                 break;
