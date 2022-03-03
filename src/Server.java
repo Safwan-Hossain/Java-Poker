@@ -33,7 +33,7 @@ public class Server {
                 serverSocket.close();
             }
         } catch (IOException e) {
-
+            e.printStackTrace();
         }
     }
 

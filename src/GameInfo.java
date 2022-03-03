@@ -1,7 +1,7 @@
 import java.io.Serializable;
 
 public class GameInfo implements Serializable {
-    public enum playerActions{FOLD, BET, RAISE, CALL};
+    public enum playerActions{FOLD, BET, RAISE, CALL}
 
     private Game game;
     private String playerWithTurn; // Name of player who has the current turn

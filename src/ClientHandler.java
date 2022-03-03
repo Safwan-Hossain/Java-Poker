@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class ClientHandler implements Runnable {
 
-    public static ArrayList<ClientHandler> clientHandlers = new ArrayList<ClientHandler>();
+    public static ArrayList<ClientHandler> clientHandlers = new ArrayList<>();
     private Socket socket;
     private ObjectOutputStream outputStream;
     private ObjectInputStream inputStream;
