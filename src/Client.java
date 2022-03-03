@@ -56,8 +56,8 @@ public class Client {
                     if (!message.isEmpty()) {
                         System.out.println(message);
                     }
-                    Player playerWithTurn = gameInfo.getPlayerWithTurn();
-                    if (playerWithTurn == thisPlayer) {
+                    String playerWithTurn = gameInfo.getPlayerWithTurn();
+                    if (playerWithTurn.equals(thisPlayer.name)) {
                         thisPlayer.giveTurn();
                     }
                 } catch (IOException | ClassNotFoundException e) {
