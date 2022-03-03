@@ -70,7 +70,7 @@ public class Client {
         Scanner scanner =  new Scanner(System.in);
         try {
             while (socket.isConnected()) {
-                System.out.println("SELECT AN OPTION: BET, FOLD, RAISE, CALL");
+                System.out.println("SELECT AN ACTION: BET, FOLD, RAISE, CALL");
                 String action = scanner.nextLine().toLowerCase().strip();
                 GameInfo gameInfo = createGameInfo(action);
 

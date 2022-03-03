@@ -4,11 +4,11 @@ public class GameInfo implements Serializable {
     public enum playerActions{FOLD, BET, RAISE, CALL};
 
     private Game game;
-    private playerActions playerAction; // The type of action performed by a player
+    private String playerWithTurn; // Name of player who has the current turn
     private String message; // Any messages from the server
 
     private String playerName; // Name of player who performed an action
-    private String playerWithTurn; // Name of player who has the current turn
+    private playerActions playerAction; // The type of action performed by a player
     private int amount; // amount of chips a player puts in for a bet or raise (0 if fold/call/check)
 
 
@@ -56,6 +56,9 @@ public class GameInfo implements Serializable {
 
     @Override
     public String toString() {
+        if (amount == 0) {
+            return playerName.toUpperCase() + " performs the action " + playerAction.name();
+        }
         return playerName.toUpperCase() + " performs the action " + playerAction.name() + " for an amount of " + amount;
     }
 }
