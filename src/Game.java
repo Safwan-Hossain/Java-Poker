@@ -32,6 +32,7 @@ public class Game {
         unfoldedPlayers.remove(player);
     }
 
+
     public void dealCards() {
         for (Player player : players) {
             Card[] playerHand = deck.draw(5);
@@ -65,10 +66,5 @@ public class Game {
         getCurrentPlayer();
         getNextPlayer().giveTurn();
     }
-
-
-
-
-
 
 }
