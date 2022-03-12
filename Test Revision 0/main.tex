@@ -1,0 +1,93 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{pdfpages}
+\title{Test Revision 0}
+\author{
+  Safwan Hossain\\
+  \texttt{hossam18}\\
+  \and
+  Tyler Magarelli\\
+  \texttt{magarelt}\\
+  \and
+  Eamon Earl\\
+  \texttt{earle2}
+}
+
+\date{March 11th, 2022}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+
+Our methodology for testing will involve a few different approaches, tailored to the nature of our project and its use cases. The basis of our testing will also relate to the architecture of our program, where different methods will be used for the model, view, and controller respectively. Ultimately, our goal will be, as it should be with all software testing, to achieve full branch and condition coverage, and ensure our program is valid. 
+
+\section{Methodology}
+
+\subsection{FR Testing}
+
+For the model, we will start with unit testing, likely with a combination of boundary and partition tests, including system response to invalid inputs and error states. That way we can ensure that our controller is contrived in such a way that any risk of errors is avoided and designed around. This also allows us, once the data model classes and their methods are verified in their behaviour, to treat said classes as black boxes when analyzing our sequences and control flow graphs from the controller.
+
+As stated, the controller will be modelled via a control flow graph that includes relevant and auxiliary methods in the view and data. In this way we can visualize both the general and specific sub-routines of our program and ensure full coverage of statements and sequences. 
+
+\subsection{NFR Testing}
+
+The view, being purely aesthetic and the most important part of the program for the user, will be tested experimentally, where both the developers and eligible end users unrelated to the project will interface with the game and evaluate the presentation of information on the basis of both its clarity and its format. We will use this feedback to make any necessary changes.
+
+For the server, we intend to engage in exploratory and experiential testing, with an emphasis on stress testing. Once again, we can allow end users to try playing with each other online, and rate and describe the experience. Regarding the stress testing, we intend to explore the fidelity of the server both on LAN and over the internet, by seeing specifically how many players can connect and engage in the game without causing notable latency issues, within the bounds of some metric that will be determined by the development team in conjunction with opinions from eligible end users.
+
+\section{Test Tools}
+
+For unit testing we will be using JUnit which allows for automated testing. For stress testing the server we will generate large number of virtual clients and make them all connect to a single server to observe the effects on performance. For system testing we will execute the application at specific states of the game to ensure functionalities are working correctly.
+
+\section{Extent}
+
+The entirety of the project will be tested.
+
+\section{Data Recording}
+
+Each different testing method (e.g., system testing) will record its results in its own testing log which will contain information such as person running test, purpose of test, results of test, and a summary of what the results reflected.
+
+\section{Business Functions}
+
+\begin{itemize}
+\item At startup the program will display the main menu which will present the option to start or connect to a lan server
+\item When connecting to a server the user will input the server’s IP address and the program will try to establish a local network connection to that address
+\item The server host will be asked to set up the game rules (e.g., minimum number of chips, max players)
+\item Once a player gets to zero chips they will be given the option to leave or continue to watch the game
+\item The game states will change in orderly fashion according to the rules of poker (e.g, the river cards cannot be presented before the turn or flop cards)
+\item At the beginning of the game each player will start with the same amount of money and be given 2 cards each
+\item Only one player can have a turn at any given turn (no two players will have a turn at the same time)
+\item If the host leaves or closes the game then the server will shut down and all players will be kicked out
+\end{itemize}
+
+\section{System Tests}
+
+When testing the entirety of the system we must consider the varying states of the program. Luckily, due to the cyclic nature of card games, we truly only have a small handful of looping states, with an exit condition achieved in a finite number of rounds. As such, the main overarching system tests we need to fulfill are basic turn based choices, namely folding, raising, or calling the bet. They all start from the same state, and this process is initiated by the server when it is time for the player's turn. Calling and raising take separate transitions but lead to identical states, namely a stalling state until their next turn or until the round ends, while the folding option enters a similar state and only exits when the round ends. This represents the overarching behaviour of the system, and affects the individual state of the data for said player. In terms of the specific system tests on the data model, we have previously discussed the methodology we will use, but a specific example for the draw\verb|_|hand(int n) method will be shown:
+
+\begin{itemize}
+    \item Test 1: Starting state: a full deck of cards\\
+    Input : n = 52\\
+    Expected Output and End State: An array with all 52 unique cards present in some random order, and the stack pointer s is equal to 52
+    \item Test 2: Starting state: stack pointer at index 32\\
+    Input : \verb|n > 20|\\
+    Expected Output and End State: IndexOutOfRange Error reached, caught and the remaining cards are output
+    \item Test 3: Starting state: any stack\\
+    Input : n = 0\\
+    Expected Output and End State: Empty array returned and stack pointer unchanged
+\end{itemize}
+
+\section{Gantt Project}
+\includepdf[pages=-]{gantt_proj.pdf}
+
+
+\section{Revision History}
+
+\begin{itemize}
+    \item Feb 18th - View analysis and server viability test
+    \item Feb 20th - Requirements review and comparison, model unit testing (partial)
+    \item Feb 23rd - Demo controller tests
+\end{itemize}
+\end{document}
