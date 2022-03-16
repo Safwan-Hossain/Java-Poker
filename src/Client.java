@@ -99,6 +99,11 @@ public class Client {
         }).start();
     }
 
+    public void startClient() {
+        this.listenForMessages();
+        this.performAction();
+    }
+
     private void closeEverything() {
         try {
             if (outputStream != null) {
@@ -116,12 +121,22 @@ public class Client {
         }
     }
 
-    public static void main(String[] args) throws IOException {
+    // TODO TEMPORARY CODE
+    private static String GetValidUsername() {
         Scanner scanner = new Scanner(System.in);
-        System.out.print("Please print your username: ");
-        String name = scanner.nextLine();
+        String username = "";
+        while (username.strip().isBlank()) {
+            System.out.print("Please print your username: ");
+            username = scanner.nextLine();
+        }
+        scanner.close();
+        return username;
+    }
+
+    public static void main(String[] args) throws IOException {
+        String username = GetValidUsername();
         Socket socket = new Socket(InetAddress.getLocalHost(), 100);
-        Client client = new Client(socket, name);
+        Client client = new Client(socket, username);
         client.listenForMessages();
         client.performAction();
     }

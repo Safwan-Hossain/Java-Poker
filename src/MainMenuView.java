@@ -13,6 +13,11 @@ public class MainMenuView {
         System.out.println("=======================================");
     }
 
+    public static void askForUsername() {
+        System.out.println();
+        System.out.print("Please type in your username: ");
+    }
+
     public static void displayServerJoinMenu() {
         System.out.println();
         System.out.print("Please enter the host's server IP: ");
