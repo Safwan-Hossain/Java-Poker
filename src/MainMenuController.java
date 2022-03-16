@@ -74,7 +74,7 @@ public class MainMenuController {
         ServerSocket serverSocket = new ServerSocket(100);
         Server server = new Server(serverSocket);
         server.startServer();
-
+        MainMenuView.displayServerIPAddress(InetAddress.getLocalHost().toString());
         // Join server
         String username = getValidUsername();
         Socket socket = new Socket(InetAddress.getLocalHost(), 100);

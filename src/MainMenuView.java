@@ -18,6 +18,11 @@ public class MainMenuView {
         System.out.print("Please type in your username: ");
     }
 
+    public static void displayServerIPAddress(String serverIP) {
+        System.out.println();
+        System.out.println("The IP address for this server is: " + serverIP);
+    }
+
     public static void displayServerJoinMenu() {
         System.out.println();
         System.out.print("Please enter the host's server IP: ");
