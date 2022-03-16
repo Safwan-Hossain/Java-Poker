@@ -1,5 +1,6 @@
 dist
 cabal-dev
+3xa3poker_l02_grp12.iml
 *.o
 *.hi
 *.chi
