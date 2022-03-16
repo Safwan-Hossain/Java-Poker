@@ -1,7 +1,8 @@
 dist
 cabal-dev
-out
 3xa3poker_l02_grp12.iml
+out/
+.idea/
 *.o
 *.hi
 *.chi
