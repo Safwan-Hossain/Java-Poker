@@ -1,4 +1,4 @@
-public class ClientView {
+public class MainMenuView {
     public static void displayMainMenu() {
         System.out.println();
         System.out.println("=======================================");
