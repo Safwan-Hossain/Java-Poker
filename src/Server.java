@@ -12,11 +12,11 @@ public class Server {
 
     public void startServer() {
         try {
-            System.out.println("SERVER HAS STARTED");
-            System.out.println("SERVER IP: " + InetAddress.getLocalHost());
+            //System.out.println("SERVER HAS STARTED");
+            //System.out.println("SERVER IP: " + InetAddress.getLocalHost());
             while (!serverSocket.isClosed()) {
                 Socket socket = serverSocket.accept();
-                System.out.println("A new user has entered the room!");
+                //System.out.println("A new user has entered the room!");
                 ClientHandler clientHandler = new ClientHandler(socket);
                 Thread thread = new Thread(clientHandler);
                 thread.start();
