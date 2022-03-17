@@ -1,8 +1,6 @@
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Scanner;
 
 public class MainMenu {
     private static final int MAX_NUM_OPTIONS = 3;
@@ -20,7 +18,7 @@ public class MainMenu {
         // Host server
         ServerSocket serverSocket = new ServerSocket(100);
         Server server = new Server(serverSocket);
-        new Thread(() -> { server.startServer(); }).start();
+        new Thread(server::startServer).start();
 
     }
 
