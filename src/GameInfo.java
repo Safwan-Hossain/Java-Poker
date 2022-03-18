@@ -31,6 +31,16 @@ public class GameInfo implements Serializable {
         this.amount = amount;
     }
 
+
+    public GameInfo() {
+        this.game = null;
+        this.message = "";
+        this.playerWithTurn = null;
+        this.playerName = "";
+        this.playerAction = null;
+        this.amount = 0;
+    }
+
     public Game getGame() {
         return game;
     }
