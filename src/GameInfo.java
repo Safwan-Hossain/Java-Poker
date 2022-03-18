@@ -6,6 +6,7 @@ public class GameInfo implements Serializable {
     private String playerWithTurn; // Name of player who has the current turn
     private String message; // Any messages from the server
 
+    private String clientID; // ID of client (player) who performed action
     private String playerName; // Name of player who performed an action
     private PlayerAction playerAction; // The type of action performed by a player
     private int amount; // amount of chips a player puts in for a bet or raise (0 if fold/call/check)
@@ -24,6 +25,7 @@ public class GameInfo implements Serializable {
         this.game = null;
         this.message = null;
         this.playerWithTurn = null;
+        this.clientID = ClientID;
         this.playerName = playerName;
         this.playerAction = playerAction;
         this.amount = amount;
