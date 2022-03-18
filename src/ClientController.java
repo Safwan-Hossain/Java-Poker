@@ -1,5 +1,6 @@
 import java.io.IOException;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class ClientController {
@@ -7,15 +8,22 @@ public class ClientController {
     private Client client;
     private Game game;
 
-    public void startClient(String username, Socket socket) {
-        try {
-            client = new Client(socket, username);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public ClientController(Socket socket, String username) throws IOException {
+        client = new Client(socket, username);
+        player = new Player(username, 1000);
+
+        ArrayList<Player> players = new ArrayList<>();
+        players.add(player);
+        game = new Game(players, 100);
     }
 
-    public void listenForIncomingMessages() {
+    public void startController() throws IOException {
+        Scanner scanner = new Scanner(System.in);
+        listenForIncomingMessages();
+        performGameAction(scanner);
+    }
+
+    private void listenForIncomingMessages() {
         if (client == null) {
             throw new RuntimeException("Client is not setup");
         }
@@ -32,7 +40,7 @@ public class ClientController {
         }).start();
     }
 
-    public void performGameAction(Scanner scanner) throws IOException {
+    private void performGameAction(Scanner scanner) throws IOException {
         PlayerAction playerAction = getValidPlayerAction(scanner);
         int amount = 0;
         if (playerAction.isABet()) {

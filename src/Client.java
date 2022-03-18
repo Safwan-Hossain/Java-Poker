@@ -12,6 +12,7 @@ public class Client {
     private ObjectOutputStream outputStream;
     private ObjectInputStream inputStream;
 
+    //TODO - remove client name
     public Client(Socket socket, String name) throws IOException {
         this.socket = socket;
         this.playerName = name;

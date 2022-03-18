@@ -58,13 +58,7 @@ public class MainController {
         return socket;
     }
 
-    private static void startClient() {
-        if (client == null) {
-            throw new NullPointerException("CLIENT IS NULL");
-        }
-    }
-
-    private static void hostServer(Scanner scanner) throws IOException {
+    private static void hostServer() throws IOException {
         MainMenu.hostServer();
         InetAddress localIP = InetAddress.getLocalHost();
         MainMenuView.displaySuccessfullyStartedServer();
@@ -85,7 +79,7 @@ public class MainController {
 
     private static void performMainMenuOperation(Scanner scanner, int option) throws IOException {
         switch (option) {
-            case 1 -> hostServer(scanner);
+            case 1 -> hostServer();
             case 2 -> joinServer(scanner);
             case 3 -> exitProgram();
             default -> { }
