@@ -9,7 +9,7 @@ public class MainMenu {
         return MAX_NUM_OPTIONS;
     }
 
-    public static Client joinServer(Socket socket, String username)  {
+    public static Client joinServer(Socket socket, String username) throws IOException {
         Client client = new Client(socket, username);
         return client;
     }

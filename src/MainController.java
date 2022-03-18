@@ -1,5 +1,3 @@
-import com.sun.tools.javac.Main;
-
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -64,7 +62,6 @@ public class MainController {
         if (client == null) {
             throw new NullPointerException("CLIENT IS NULL");
         }
-        client.startClient();
     }
 
     private static void hostServer(Scanner scanner) throws IOException {
@@ -72,13 +69,6 @@ public class MainController {
         InetAddress localIP = InetAddress.getLocalHost();
         MainMenuView.displaySuccessfullyStartedServer();
         MainMenuView.displayServerIPAddress(localIP.toString());
-
-        //Join the server being hosted
-        username = getValidUsername(scanner);
-        socket = new Socket(localIP, 100);
-        MainMenuView.displaySuccessfulConnection();
-        client = MainMenu.joinServer(socket, username);
-        startClient();
     }
 
     private static void joinServer(Scanner scanner) throws IOException {
