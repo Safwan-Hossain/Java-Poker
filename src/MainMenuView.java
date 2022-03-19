@@ -38,8 +38,8 @@ public class MainMenuView {
         System.out.println("Please enter the host's server IP: ");
     }
 
-    public static void displayFailedToConnectToServer(String IP) {
-        System.out.println("Failed to connect to server IP: " + IP);
+    public static void displayFailedToConnectToServer(String serverIP) {
+        System.out.println("Failed to connect to server IP: " + serverIP);
         System.out.println("Please try again.");
     }
 

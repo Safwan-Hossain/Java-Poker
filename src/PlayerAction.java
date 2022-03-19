@@ -23,7 +23,7 @@ public enum PlayerAction {
                 return playerAction;
             }
         }
-        throw new IllegalStateException("Unexpected value: " + action);
+        throw new IllegalArgumentException("Unexpected value: " + action);
     }
 }
 
