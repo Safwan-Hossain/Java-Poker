@@ -1,9 +1,11 @@
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Scanner;
 
 public class MainController {
+    private static final int MAX_NUM_OPTIONS = 3;
     private static String username;
     private static Socket socket;
     private static Client client;
@@ -23,7 +25,7 @@ public class MainController {
 
     private static int getValidOption(Scanner scanner) {
         int option = 0;
-        int maxNumOptions = MainMenu.getMaxNumOptions();
+        int maxNumOptions = MAX_NUM_OPTIONS;
 
         while (option <= 0 || option > maxNumOptions) {
             MainMenuView.displayMainMenu();
@@ -59,7 +61,10 @@ public class MainController {
     }
 
     private static void hostServer() throws IOException {
-        MainMenu.hostServer();
+        ServerSocket serverSocket = new ServerSocket(100);
+        Server server = new Server(serverSocket);
+        new Thread(server::startServer).start();
+
         InetAddress localIP = InetAddress.getLocalHost();
         MainMenuView.displaySuccessfullyStartedServer();
         MainMenuView.displayServerIPAddress(localIP.toString());
@@ -68,13 +73,12 @@ public class MainController {
     private static void joinServer(Scanner scanner) throws IOException {
         socket = getValidSocketForServer(scanner);
         username = getValidUsername(scanner);
-        MainMenu.joinServer(socket, username);
+        Client client = new Client(socket, username);
         //TODO start client
     }
 
     private static void exitProgram() {
-        MainMenuView.displayExitingProgram();
-        MainMenu.exitProgram();
+        System.exit(0);
     }
 
     private static void performMainMenuOperation(Scanner scanner, int option) throws IOException {
