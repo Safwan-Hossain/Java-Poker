@@ -34,9 +34,9 @@
 \title{SE 3XA3: Software Requirements Specification\\Poker Project}
 
 \author{Team 12
-		\\ Safwan Hossain and hossam18
-		\\ Eamon Earl and earle2
-		\\ Tyler Magarelli and magarelt
+        \\ Safwan Hossain and hossam18
+        \\ Eamon Earl and earle2
+        \\ Tyler Magarelli and magarelt
 }
 
 \date{March 18, 2022}
@@ -845,8 +845,21 @@ Implementing players and unfoldedPlayers as dynamic arrays seems ideal.
 \noindent getNextPlayer():
 \begin{itemize}
     \item return: the next player to go
-    \exception 
+    \exception catching out of bounds errors
 \end{itemize}
+
+\noindent getCurrentPlayer():
+\begin{itemize}
+    \item return: the current player to go
+    \exception catching out of bounds errors
+\end{itemize}
+
+\noindent giveNextTurn():
+\begin{itemize}
+    \item action: triggers the next players turn
+\end{itemize}
+
+
 
 \section*{Hand Evaluator}
 
