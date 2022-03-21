@@ -7,8 +7,12 @@ public class ClientController {
     private Player player;
     private Client client;
     private Game game;
+    private final boolean isHost;
+    private boolean gameHasStarted;
 
-    public ClientController(Socket socket, String username) throws IOException {
+    public ClientController(Socket socket, String username, boolean isHost) throws IOException {
+        this.isHost = isHost;
+        this.gameHasStarted = false;
         client = new Client(socket, username);
         player = new Player(username, 1000);
 
@@ -17,9 +21,21 @@ public class ClientController {
         game = new Game(players, 100);
     }
 
-    public void startController() throws IOException {
-        Scanner scanner = new Scanner(System.in);
+    public void startController(Scanner scanner) throws IOException {
         listenForIncomingMessages();
+
+        while (!gameHasStarted) {
+            if (isHost) {
+                System.out.println("Type in \"START\" to start the game");
+                String response = scanner.nextLine();
+                if (response.equalsIgnoreCase("START")) {
+                    break;
+                }
+            }
+            else {
+                // wait
+            }
+        }
         performGameAction(scanner);
     }
 
@@ -32,7 +48,8 @@ public class ClientController {
             while (client.IsConnectedToServer()) {
                 try {
                     GameInfo gameInfo = (GameInfo) client.listenForMessage();
-                    System.out.println(gameInfo);
+                    //System.out.println(gameInfo);
+                    deconstructGameInfo(gameInfo);
                 } catch (IOException | ClassNotFoundException e) {
                     e.printStackTrace();
                 }
@@ -46,14 +63,45 @@ public class ClientController {
         if (playerAction.isABet()) {
             amount = getValidBet(scanner);
         }
-        client.sendMessage(CreateGameInfo(playerAction, amount));
+
+        client.sendMessage(createGameInfo(playerAction, amount));
     }
 
-    private GameInfo CreateGameInfo(PlayerAction playerAction, int amount) {
+    private GameInfo createGameInfo(PlayerAction playerAction, int amount) {
         return new GameInfo(client.getClientID(), player.name, playerAction, amount);
 //        TODO
 //        return new GameInfo(client.getClientID(), player.getName(), playerAction, amount);
     }
+
+    private void deconstructGameInfo(GameInfo gameInfo) {
+        switch (gameInfo.getUpdateType()) {
+            case GAME_STATE -> changeGameState(gameInfo);
+            case PLAYER_ACTION -> applyPlayerAction(gameInfo);
+            case CONNECTION_STATUS -> playerConnectionUpdate(gameInfo);
+            case SERVER_MESSAGE -> System.out.println("SERVER: " + gameInfo.getClientID());
+        }
+    }
+
+    private void changeGameState(GameInfo gameInfo) {
+
+    }
+
+    private void applyPlayerAction(GameInfo gameInfo) {
+
+    }
+
+    private void playerConnectionUpdate(GameInfo gameInfo) {
+        if (!gameInfo.hasGameStarted()) {
+            String action = "";
+            switch (gameInfo.getConnectionStatus()) {
+                case JOINED -> action = "joined";
+                case DISCONNECTED -> action = "disconnected from";
+                case RECONNECTED -> action = "reconnected from";
+            }
+            System.out.println(gameInfo.getPlayerName() + " has " + action + " the table!");
+        }
+    }
+
 
     private PlayerAction getValidPlayerAction(Scanner scanner) {
         while (true) {
