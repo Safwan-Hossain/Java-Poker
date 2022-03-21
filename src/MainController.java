@@ -7,8 +7,11 @@ import java.util.Scanner;
 public class MainController {
     private static final int MAX_NUM_OPTIONS = 3;
     private static String username;
-    private static Socket socket;
     private static Client client;
+
+    private static ClientController clientController;
+    private static Socket socket;
+    private static Server server;
 
     private static String getValidUsername(Scanner scanner) {
         String username = "";
@@ -61,10 +64,20 @@ public class MainController {
     }
 
     private static void hostServer() throws IOException {
-        ServerSocket serverSocket = new ServerSocket(100);
-        Server server = new Server(serverSocket);
-        new Thread(server::startServer).start();
+        // catch
 
+        //if a server exists and is not closed
+        if (server != null && !server.isClosed()) {
+            System.out.println("Already hosting a server!");
+            InetAddress localIP = InetAddress.getLocalHost();
+            MainMenuView.displayServerIPAddress(localIP.toString());
+            return;
+        }
+
+        ServerSocket serverSocket = new ServerSocket(100);
+        server = new Server(serverSocket);
+        new Thread(server::startServer).start();
+        // catch
         InetAddress localIP = InetAddress.getLocalHost();
         MainMenuView.displaySuccessfullyStartedServer();
         MainMenuView.displayServerIPAddress(localIP.toString());
@@ -73,17 +86,37 @@ public class MainController {
     private static void joinServer(Scanner scanner) throws IOException {
         socket = getValidSocketForServer(scanner);
         username = getValidUsername(scanner);
-        Client client = new Client(socket, username);
+        final boolean isHost = server != null;
+        System.out.println(socket.getInetAddress());
+        clientController = new ClientController(socket, username, isHost);
+        clientController.startController(scanner);
+        //TODO start client
+    }
+
+    private static void joinServer(Scanner scanner, InetAddress serverIP) throws IOException {
+        socket = new Socket(serverIP, 100);
+        username = getValidUsername(scanner);
+        clientController = new ClientController(socket, username, true);
+        clientController.startController(scanner);
         //TODO start client
     }
 
     private static void exitProgram() {
+        if (server != null) {
+            server.closeServer();
+        }
+        if (clientController != null) {
+            // close client
+        }
         System.exit(0);
     }
 
     private static void performMainMenuOperation(Scanner scanner, int option) throws IOException {
         switch (option) {
-            case 1 -> hostServer();
+            case 1 -> {
+                hostServer();
+                joinServer(scanner, InetAddress.getLocalHost());
+            }
             case 2 -> joinServer(scanner);
             case 3 -> exitProgram();
             default -> { }
