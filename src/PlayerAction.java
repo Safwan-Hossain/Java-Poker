@@ -26,4 +26,3 @@ public enum PlayerAction {
         throw new IllegalArgumentException("Unexpected value: " + action);
     }
 }
-
