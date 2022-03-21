@@ -5,12 +5,14 @@ import java.util.ArrayList;
 public class ClientHandler implements Runnable {
 
     public static ArrayList<ClientHandler> clientHandlers = new ArrayList<>();
+    private static Game mainGame;
     private Socket socket;
     private ObjectOutputStream outputStream;
     private ObjectInputStream inputStream;
-    private String clientUsername;
+    private String clientName;
+    private String clientID;
 
-    public ClientHandler(Socket socket) {
+    public ClientHandler(Socket socket, String clientID) {
         try {
             this.socket = socket;
             outputStream = new ObjectOutputStream(socket.getOutputStream());
@@ -19,6 +21,7 @@ public class ClientHandler implements Runnable {
         } catch (IOException e) {
             closeEverything();
         }
+        this.clientID = clientID;
     }
 
     @Override
@@ -26,8 +29,17 @@ public class ClientHandler implements Runnable {
         GameInfo gameInfo;
         while (socket.isConnected()) {
             try {
+                // First message is client username
+                if (clientName == null) {
+                    clientName = (String) inputStream.readObject();
+                    GameInfo gm = new GameInfo(clientID, clientName);
+                    gm.setUpdateType(UpdateType.CONNECTION_STATUS);
+                    gm.setConnectionStatus(ConnectionStatus.JOINED);
+                    updateOtherClients(gm);
+                }
+
                 gameInfo = (GameInfo) inputStream.readObject();
-                updateClients(gameInfo);
+                updateAllClients(gameInfo);
                 System.out.println(gameInfo);
             } catch (IOException | ClassNotFoundException e) {
                 closeEverything();
@@ -37,7 +49,13 @@ public class ClientHandler implements Runnable {
 
     }
 
-    private void updateClients(GameInfo gameInfo) {
+    private void updateAllClients(GameInfo gameInfo) throws IOException {
+        this.outputStream.writeObject(gameInfo);
+        this.outputStream.flush();
+        updateOtherClients(gameInfo);
+    }
+
+    private void updateOtherClients(GameInfo gameInfo) {
         for (ClientHandler clientHandler : clientHandlers) {
             try {
                 if (clientHandler != this) {
