@@ -32,9 +32,7 @@ public class GameInfo implements Serializable {
 
     public void setTableCards(ArrayList<Card> tableCards) {
         this.tableCards = new ArrayList<>();
-        for (Card card: tableCards) {
-            this.tableCards.add(card);
-        }
+        this.tableCards.addAll(tableCards);
     }
 
     private ArrayList<Card> tableCards;

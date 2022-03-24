@@ -67,6 +67,9 @@ public class Game implements Serializable {
     }
 
     public void betByPlayer(Player player, int betAmount) {
+        if (betAmount > player.getChips()) {
+            betAmount = player.getChips();
+        }
         player.takeChips(betAmount);
         totalPot += betAmount;
         playerBettings.put(player, betAmount);
@@ -74,9 +77,13 @@ public class Game implements Serializable {
     }
 
     public void callByPlayer(Player player) {
-        player.takeChips(minimumCallAmount);
-        totalPot += minimumCallAmount;
-        playerBettings.put(player, minimumCallAmount);
+        int actualCalLAmount = minimumCallAmount;
+        if (minimumCallAmount > player.getChips()) {
+            actualCalLAmount = player.getChips();
+        }
+        player.takeChips(actualCalLAmount);
+        totalPot += actualCalLAmount;
+        playerBettings.put(player, actualCalLAmount);
     }
     
     public boolean isRoundStateOver() {
@@ -328,6 +335,14 @@ public class Game implements Serializable {
             playerBettings.put(player, 0);
         }
         updateTableCards();
+    }
+
+    public void showDown() {
+        ArrayList<Player> winners = getWinningPlayers();
+        int winningShare = this.totalPot / winners.size();
+        for (Player winner: winners) {
+            winner.set_chips(winner.getChips() + winningShare);
+        }
     }
 
     public ArrayList<Card> getTableCards() {
