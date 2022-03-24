@@ -59,12 +59,12 @@ public class HandEval
 
         if(fl && st){
             if(highCard(a) == 14){
-                System.out.println("You have a royal flush!");
+//                System.out.println("You have a royal flush!");
                 score[0] = 9;
                 score[1] = 14;
             }
             else{
-                System.out.println("You have a straight flush!");
+//                System.out.println("You have a straight flush!");
                 score[0] = 8;
                 score[1] = highCard(a);
             }
@@ -72,50 +72,50 @@ public class HandEval
 
 		else if (fourOfaKind(a))
 		{
-			System.out.println("You have four of a kind!");
+//			System.out.println("You have four of a kind!");
             score[0] = 7;
             score[1] = highCard(a);
 		}
 		else if (fullHouse(a))
 		{
-			System.out.println("You have a full house!");
+//			System.out.println("You have a full house!");
             score[0] = 6;
             score[1] = highCard(a);
 		}
 		else if (fl)
 		{
-			System.out.println("You have a flush!");
+//			System.out.println("You have a flush!");
             score[0] = 5;
             score[1] = highCard(a);
 		}
 		else if (st)
 		{
-			System.out.println("You have a straight!");
+//			System.out.println("You have a straight!");
             score[0] = 4;
             score[1] = highCard(a);
 		}
 		else if (triple(a))
 		{
-			System.out.println("You have a triple!");
+//			System.out.println("You have a triple!");
             score[0] = 3;
             score[1] = highCard(a);
 		}
 		else if (twoPairs(a))
 		{
-			System.out.println("You have two pairs!");
+//			System.out.println("You have two pairs!");
             score[0] = 2;
             score[1] = highCard(a);
 		}
 		else if (pair(a))
 		{
-			System.out.println("You have a pair!");
+//			System.out.println("You have a pair!");
             score[0] = 1;
             score[1] = highCard(a);
 		}
 		else
 		{
 			int highCard = highCard(a);
-			System.out.println("Your highest card is " + highCard);
+//			System.out.println("Your highest card is " + highCard);
             score[0] = 0;
             score[1] = highCard(a);
 		}

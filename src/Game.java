@@ -13,6 +13,10 @@ public class Game implements Serializable {
     private int smallBlind;
     private int bigBlind;
 
+    public int getMinimumCallAmount() {
+        return minimumCallAmount;
+    }
+
     private int minimumCallAmount;
     private int totalPot;
 
@@ -46,7 +50,7 @@ public class Game implements Serializable {
         for (Player player: players) {
             playerBettings.put(player, 0);
         }
-
+        this.minimumCallAmount = bigBlind;
         this.dealerIndex = 0;
         this.currentPlayerIndex = 0;
         this.nextPlayerIndex = 0;
@@ -68,8 +72,13 @@ public class Game implements Serializable {
         }
     }
     public void endRound() {
-        giveChipsToWinners();
-
+        for (Player player: playerBettings.keySet()) {
+            playerBettings.put(player, 0);
+        }
+        tableCards.clear();
+        for (Player player: players) {
+            player.get_hand().clear();
+        }
     }
 
     public void betByPlayer(Player player, int betAmount) {

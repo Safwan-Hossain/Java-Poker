@@ -113,7 +113,6 @@ public class ClientController {
         if (gameInfo.getUpdateType() == null) {
             throw new RuntimeException("Update type cannot be null");
         }
-//        System.out.println(gameInfo.getUpdateType());
         switch (gameInfo.getUpdateType()) {
             case GAME_STARTED -> startGame(gameInfo);
             case NEW_ROUND -> initializeRound(gameInfo);
@@ -131,7 +130,6 @@ public class ClientController {
         thisGame = gameInfo.getGame();
         ArrayList<Player> players = new ArrayList<>(gameInfo.getPlayerHands().keySet());
         thisGame.setPlayers(players);
-        System.out.println(players);
         gameHasStarted = true;
     }
 
@@ -179,11 +177,12 @@ public class ClientController {
     }
 
     private void updateRoundState(GameInfo gameInfo) {
+        RoundState roundState = gameInfo.getRoundState();
         ArrayList<Card> tableCards = gameInfo.getTableCards();
         System.out.println("TABLE CARDS: " + tableCards.toString());
         thisGame.setTableCards(tableCards);
-
-        if (gameInfo.getGame().getRoundState().equals(RoundState.SHOWDOWN)) {
+        System.out.println(roundState);
+        if (roundState.equals(RoundState.SHOWDOWN)) {
             printOutHands();
             printOutWinners();
             thisGame.giveChipsToWinners();
@@ -205,7 +204,7 @@ public class ClientController {
         updateRoles(gameInfo);
         updateAllHands(gameInfo);
         updateTurn(gameInfo);
-        System.out.println(mainGame.getPlayerHand(thisPlayer));
+        System.out.println("Your Hand: " + mainGame.getPlayerHand(thisPlayer));
     }
 
     private void updateTurn(GameInfo gameInfo) {
@@ -270,16 +269,18 @@ public class ClientController {
     }
 
     private int getValidBet(Scanner scanner) {
-        int amount = 0;
+        int amount = -1;
+        int minimumAmount = thisGame.getMinimumCallAmount();
         //TODO
-        while (amount <= 0 /* !player.CanBet(amount)*/) {
+        while (amount < minimumAmount /* !player.CanBet(amount)*/) {
             System.out.println("How much do you want to bet/raise?: ");
             if (scanner.hasNextInt()) {
                 amount = scanner.nextInt();
                 scanner.nextLine();
             }
-            if (amount <= 0) {
-                System.out.println("Invalid betting amount. Try again.");
+            if (amount < minimumAmount) {
+                System.out.println("Bet too low. Minimum bet: " + minimumAmount + ".");
+                scanner.nextLine();
             }
         }
         return amount;

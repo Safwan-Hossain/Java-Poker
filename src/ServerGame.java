@@ -154,4 +154,7 @@ public class ServerGame {
         mainGame.updateTableCards();
     }
 
+    public void endRound() {
+        mainGame.endRound();
+    }
 }

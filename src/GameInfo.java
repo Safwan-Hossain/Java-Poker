@@ -9,6 +9,15 @@ public class GameInfo implements Serializable {
     private final String playerName; // Name of player who performed an action
 
     private Player playerWithTurn; // Player with turn
+
+    public RoundState getRoundState() {
+        return roundState;
+    }
+
+    public void setRoundState(RoundState roundState) {
+        this.roundState = roundState;
+    }
+
     private RoundState roundState;
 
     public HashMap<Player, ArrayList<Card>> getPlayerHands() {

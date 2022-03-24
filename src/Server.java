@@ -39,16 +39,14 @@ public class Server {
 
             while (true) {
                 if (serverGame.getRoundState().equals(RoundState.SHOWDOWN)) {
-                    gameInfo = getNewRoundStateInfo();
-                    ClientHandler.updateAllClients(gameInfo);
+                    ClientHandler.updateAllClients(getNewRoundStateInfo());
                     showDown();
                     break;
                 }
                 else {
                     takeBets();
                     advanceRoundState();
-                    gameInfo = getNewRoundStateInfo();
-                    ClientHandler.updateAllClients(gameInfo);
+                    ClientHandler.updateAllClients(getNewRoundStateInfo());
                     serverGame.giveNextPlayerTurn();
                     ClientHandler.updateAllClients(getTurnInfo());
                 }
@@ -60,6 +58,7 @@ public class Server {
 
     private GameInfo getNewRoundStateInfo() {
         GameInfo gameInfo = new GameInfo("Server", "Server");
+        gameInfo.setRoundState(serverGame.getMainGame().getRoundState());
         gameInfo.setGame(serverGame.getMainGame());
         gameInfo.setTableCards(serverGame.getMainGame().getTableCards());
         gameInfo.setUpdateType(UpdateType.NEW_ROUND_STATE);
@@ -75,6 +74,7 @@ public class Server {
     }
 
     private void endRound() {
+        serverGame.endRound();
         try {
             Thread.sleep(500);
         } catch (InterruptedException ignored) {
