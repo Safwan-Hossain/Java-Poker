@@ -39,6 +39,8 @@ public class Server {
 
             while (true) {
                 if (serverGame.getRoundState().equals(RoundState.SHOWDOWN)) {
+                    gameInfo = getNewRoundStateInfo();
+                    ClientHandler.updateAllClients(gameInfo);
                     showDown();
                     break;
                 }
@@ -46,7 +48,6 @@ public class Server {
                     takeBets();
                     advanceRoundState();
                     gameInfo = getNewRoundStateInfo();
-                    System.out.println(gameInfo.getTableCards());
                     ClientHandler.updateAllClients(gameInfo);
                     serverGame.giveNextPlayerTurn();
                     ClientHandler.updateAllClients(getTurnInfo());
@@ -65,10 +66,8 @@ public class Server {
         return gameInfo;
     }
     private void showDown() {
-        // Compare cards
-        // Print out everyone's hands
-        // Declare winner
-        // Give money to winner
+        serverGame.giveChipsToWinners();
+        serverGame.removeLosers();
     }
 
     private void advanceRoundState() {
@@ -76,7 +75,11 @@ public class Server {
     }
 
     private void endRound() {
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException ignored) {
 
+        }
     }
 
     // TODO - incomplete method
@@ -127,6 +130,15 @@ public class Server {
         gameInfo.setGame(serverGame.getMainGame());
         gameInfo.setUpdateType(UpdateType.GAME_STARTED);
         gameInfo.setGameHasStarted(true);
+
+        HashMap<Player, ArrayList<Card>> playerHands = new HashMap<>();
+        ArrayList<Player> players = serverGame.getMainGame().getPlayers();
+        for (Player player: players) {
+            ArrayList<Card> hand = player.get_hand();
+            playerHands.put(player, hand);
+        }
+        gameInfo.setPlayerHands(playerHands);
+
         return gameInfo;
     }
 
@@ -136,8 +148,11 @@ public class Server {
         gameInfo.setGame(serverGame.getMainGame());
         gameInfo.setPlayerWithTurn(serverGame.getPlayerWithTurn());
 
-        HashMap<Player, ArrayList<Card>> playerHands = new HashMap<>();
         ArrayList<Player> players = serverGame.getMainGame().getPlayers();
+
+        gameInfo.setRoles(serverGame.getMainGame().getPlayersWithRoles());
+
+        HashMap<Player, ArrayList<Card>> playerHands = new HashMap<>();
         for (Player player: players) {
             ArrayList<Card> hand = player.get_hand();
             playerHands.put(player, hand);

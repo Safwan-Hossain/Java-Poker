@@ -46,7 +46,7 @@ public class Client {
         outputStream.flush();
     }
 
-    private void closeEverything() {
+    public void closeEverything() {
         try {
             if (outputStream != null) {
                 outputStream.close();

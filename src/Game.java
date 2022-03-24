@@ -62,7 +62,13 @@ public class Game implements Serializable {
         this.hasGameStarted = true;
     }
 
+    public void removeLoses() {
+        for (Player player: getPlayersWithNoChips()) {
+            players.remove(player);
+        }
+    }
     public void endRound() {
+        giveChipsToWinners();
 
     }
 
@@ -142,6 +148,10 @@ public class Game implements Serializable {
     }
 
     public void assignRoles() {
+        if (dealerIndex >= players.size()) {
+            dealerIndex = dealerIndex % players.size();
+        }
+
         players.get(dealerIndex).setRole(PokerRole.NONE);
 
         dealerIndex = (dealerIndex + 1) % players.size();
@@ -267,6 +277,10 @@ public class Game implements Serializable {
         return players;
     }
 
+    public void setPlayers(ArrayList<Player> players) {
+        this.players = players;
+    }
+
     public Player getPlayer(Player player) {
         for (Player currPlayer: players) {
             if (currPlayer.equals(player)) {
@@ -337,7 +351,7 @@ public class Game implements Serializable {
         updateTableCards();
     }
 
-    public void showDown() {
+    public void giveChipsToWinners() {
         ArrayList<Player> winners = getWinningPlayers();
         int winningShare = this.totalPot / winners.size();
         for (Player winner: winners) {
@@ -365,13 +379,24 @@ public class Game implements Serializable {
         return winners;
     }
 
-    private int[] getScore(Player player) {
+    public ArrayList<Player> getPlayersWithNoChips() {
+        ArrayList<Player> playersWithNoChips = new ArrayList<>();
+        for (Player player: players) {
+            if (player.getChips() <= 0) {
+                playersWithNoChips.add(player);
+            }
+        }
+        return playersWithNoChips;
+    }
+
+    public int[] getScore(Player player) {
         HandEval evaluator = new HandEval();
         ArrayList<Card> totalHand = new ArrayList<>(tableCards);
         totalHand.addAll(player.get_hand());
         return evaluator.evaluate(totalHand);
     }
-    private int[] getHighestScore() {
+
+    public int[] getHighestScore() {
         int[] highestScore = {0, 0};
         for (Player player: players) {
             int[] currentScore = getScore(player);

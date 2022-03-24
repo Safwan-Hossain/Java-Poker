@@ -2,6 +2,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Scanner;
 
 public class ClientController {
@@ -128,6 +129,9 @@ public class ClientController {
     private void startGame(GameInfo gameInfo) {
         System.out.println("The game is starting...");
         thisGame = gameInfo.getGame();
+        ArrayList<Player> players = new ArrayList<>(gameInfo.getPlayerHands().keySet());
+        thisGame.setPlayers(players);
+        System.out.println(players);
         gameHasStarted = true;
     }
 
@@ -135,10 +139,59 @@ public class ClientController {
 
     }
 
+    private void printOutHands() {
+        for (Player player: thisGame.getPlayers()) {
+            String handName = HandEval.getHandName(thisGame.getScore(player));
+            if (thisPlayer.equals(player)) {
+                System.out.println("You have " + handName);
+            }
+            else {
+                System.out.println(player.getName().toUpperCase() + " has " + handName);
+            }
+        }
+    }
+
+    private void printOutWinners() {
+        String message = "";
+        ArrayList<Player> winningPlayers = thisGame.getWinningPlayers();
+        for (Player player: winningPlayers) {
+            if (winningPlayers.indexOf(player) == winningPlayers.size() - 1) {
+                message += player.getName().toUpperCase() + " wins";
+            }
+            else {
+                message += player.getName().toUpperCase() + ", ";
+            }
+        }
+        String winningHand = HandEval.getHandName(thisGame.getHighestScore());
+        System.out.println(message + " with " + winningHand);
+    }
+    private void printOutLosers() {
+        ArrayList<Player> players = thisGame.getPlayersWithNoChips();
+        for (Player player: players) {
+            if (player.equals(thisPlayer)) {
+                System.out.println("You lost. Exiting the game...");
+                client.closeEverything();
+                System.exit(0);
+                return;
+            }
+            System.out.println(player.getName().toUpperCase() + " lost. They will leave the table.");
+        }
+    }
+
     private void updateRoundState(GameInfo gameInfo) {
         ArrayList<Card> tableCards = gameInfo.getTableCards();
         System.out.println("TABLE CARDS: " + tableCards.toString());
         thisGame.setTableCards(tableCards);
+
+        if (gameInfo.getGame().getRoundState().equals(RoundState.SHOWDOWN)) {
+            printOutHands();
+            printOutWinners();
+            thisGame.giveChipsToWinners();
+            printOutLosers();
+            thisGame.removeLoses();
+        }
+
+
     }
 
     private void initializeRound(GameInfo gameInfo) {
@@ -149,7 +202,7 @@ public class ClientController {
         System.out.println("DEBUG: New Round");
 
         Game mainGame = gameInfo.getGame();
-        updateRoles(mainGame);
+        updateRoles(gameInfo);
         updateAllHands(gameInfo);
         updateTurn(gameInfo);
         System.out.println(mainGame.getPlayerHand(thisPlayer));
@@ -160,8 +213,8 @@ public class ClientController {
         thisGame.setPlayerWithTurn(playerWithTurn);
     }
 
-    private void updateRoles(Game mainGame) {
-        HashMap<PokerRole, Player> hashMap = mainGame.getPlayersWithRoles();
+    private void updateRoles(GameInfo gameInfo) {
+        HashMap<PokerRole, Player> hashMap = gameInfo.getRoles();
         thisGame.setPlayerRoles(hashMap);
 
         Player dealer = hashMap.get(PokerRole.DEALER);

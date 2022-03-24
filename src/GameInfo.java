@@ -14,7 +14,19 @@ public class GameInfo implements Serializable {
     public HashMap<Player, ArrayList<Card>> getPlayerHands() {
         return playerHands;
     }
-    private HashMap<Player, ArrayList<Card>> allPlayerHands;
+
+    public HashMap<PokerRole, Player> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(HashMap<PokerRole, Player> roles) {
+        this.roles = new HashMap<>();
+        for (PokerRole pokerRole: roles.keySet()) {
+            this.roles.put(pokerRole, roles.get(pokerRole));
+        }
+    }
+
+    private HashMap<PokerRole, Player> roles;
 
     public void setPlayerHands(HashMap<Player, ArrayList<Card>> map) {
         this.playerHands = new HashMap<>();

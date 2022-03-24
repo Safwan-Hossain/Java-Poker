@@ -82,6 +82,15 @@ public class ServerGame {
     public void giveNextPlayerTurn() {
         mainGame.giveNextPlayerTurn();
     }
+
+    public void giveChipsToWinners() {
+        mainGame.giveChipsToWinners();
+    }
+
+    public void removeLosers() {
+        mainGame.removeLoses();
+    }
+
     // ======== Getters and Setters ========= //
 
     public Game getMainGame() {
