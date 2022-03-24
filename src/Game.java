@@ -1,27 +1,176 @@
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 
-public class Game {
-    private Deck deck;
-    private ArrayList<Player> players;
-    // players who haven't folded
-    private ArrayList<Player> unfoldedPlayers;
-    private ArrayList<Card> tableCards;
+public class Game implements Serializable {
+    private int playerWithTurnIndex;
     private int currentPlayerIndex;
     private int nextPlayerIndex;
-    private int minimumCallAmount;
+    private int dealerIndex;
+    private int smallBlindIndex;
+    private int bigBlindIndex;
 
-    public Game(ArrayList<Player> players, int minimumCallAmount) {
+    private int smallBlind;
+    private int bigBlind;
+
+    private int minimumCallAmount;
+    private int totalPot;
+
+    private final int MAX_HAND_SIZE;
+
+    private Deck deck;
+    private ArrayList<Player> players;
+    private ArrayList<Player> unfoldedPlayers; // players who haven't folded
+
+    private ArrayList<Card> tableCards;
+    private HashMap<Player, Integer> playerBettings;
+    private Player lastBetter;
+
+    private boolean hasGameStarted;
+    private boolean hasGameEnded;
+    private RoundState roundState;
+
+
+    public Game(ArrayList<Player> players, int smallBlind) {
         this.deck = new Deck();
+        this.tableCards = new ArrayList<>();
         this.players = players;
-        this.tableCards = new ArrayList<Card>();
-        this.minimumCallAmount = minimumCallAmount;
+
+        this.smallBlind = smallBlind;
+        this.bigBlind = smallBlind * 2;
+        this.totalPot = 0;
+
+        this.MAX_HAND_SIZE = 2;
+
+        this.playerBettings = new HashMap<>();
+        for (Player player: players) {
+            playerBettings.put(player, 0);
+        }
+
+        this.dealerIndex = 0;
         this.currentPlayerIndex = 0;
         this.nextPlayerIndex = 0;
+
+        this.hasGameStarted = false;
+        this.hasGameEnded = false;
+        this.roundState = RoundState.PRE_FLOP;
     }
 
     public void startGame() {
-        dealCards();
-        giveNextTurn();
+        deck.fillDeck();
+        deck.shuffle();
+        this.hasGameStarted = true;
+    }
+
+    public void endRound() {
+
+    }
+
+    public void betByPlayer(Player player, int betAmount) {
+        player.takeChips(betAmount);
+        totalPot += betAmount;
+        playerBettings.put(player, betAmount);
+        this.minimumCallAmount = betAmount;
+    }
+
+    public void callByPlayer(Player player) {
+        player.takeChips(minimumCallAmount);
+        totalPot += minimumCallAmount;
+        playerBettings.put(player, minimumCallAmount);
+    }
+    
+    public boolean isRoundStateOver() {
+
+        if (players.size() <= 1) {
+            return false;
+        }
+
+        boolean everyBetIsSame = true;
+
+        int betAmount = -1;
+        for (Player player: playerBettings.keySet()) {
+            if (betAmount == -1) {
+                betAmount = playerBettings.get(player);
+            }
+            else if (betAmount != playerBettings.get(player)) {
+                everyBetIsSame = false;
+            }
+        }
+
+        if (players.size() == 2) {
+            return everyBetIsSame && playerBettings.get(players.get(0)) > bigBlind;
+        }
+
+        boolean everyoneHadATurn = false;
+        if (lastBetter == null) {
+            everyoneHadATurn = playerWithTurnIndex == (bigBlindIndex + 1) % players.size();
+        }
+        else {
+            everyoneHadATurn = getPlayerWithTurn().equals(lastBetter);
+        }
+
+        return everyBetIsSame && everyoneHadATurn;
+    }
+
+    public void initializeRound() {
+        this.roundState = RoundState.PRE_FLOP;
+        assignRoles();
+        assignCards();
+        assignTurn();
+    }
+
+    private void addToTableCards(int numOfCards) {
+        for (Card card: deck.draw(numOfCards)) {
+            tableCards.add(card);
+        }
+    }
+
+    public void updateTableCards() {
+        if (roundState == null) { throw new NullPointerException(); }
+        switch (roundState) {
+            case PRE_FLOP, SHOWDOWN -> {}
+            case FLOP -> addToTableCards(3);
+            case TURN, RIVER -> addToTableCards(1);
+        }
+    }
+
+    public void assignRoles() {
+        players.get(dealerIndex).setRole(PokerRole.NONE);
+
+        dealerIndex = (dealerIndex + 1) % players.size();
+        smallBlindIndex = (dealerIndex + 1) % players.size();
+        bigBlindIndex = (dealerIndex + 2) % players.size();
+
+        players.get(dealerIndex).setRole(PokerRole.DEALER);
+        players.get(smallBlindIndex).setRole(PokerRole.SMALL_BLIND);
+        players.get(bigBlindIndex).setRole(PokerRole.BIG_BLIND);
+    }
+
+    public void assignCards() {
+        for (Player player : players) {
+            Card[] playerHand = deck.draw(2);
+            for (Card card: playerHand) {
+                player.addToHand(card);
+            }
+            if (playerHand.length > MAX_HAND_SIZE) {
+                throw new RuntimeException("Player has more than 2 cards");
+            }
+        }
+    }
+
+    public void assignTurn() {
+        playerWithTurnIndex = (bigBlindIndex + 1) % players.size();
+        players.get(playerWithTurnIndex).setTurn(true);
+    }
+
+    public Player getPlayerWithTurn() {
+        return players.get(playerWithTurnIndex);
+    }
+
+    public void giveNextPlayerTurn() {
+        getPlayerWithTurn().setTurn(false);
+        playerWithTurnIndex = (playerWithTurnIndex + 1) % players.size();
+        getPlayerWithTurn().setTurn(true);
     }
 
     public void removePlayer(Player player) {
@@ -31,7 +180,6 @@ public class Game {
     public void foldPlayer(Player player) {
         unfoldedPlayers.remove(player);
     }
-
 
     public void dealCards() {
         for (Player player : players) {
@@ -66,5 +214,164 @@ public class Game {
         getCurrentPlayer();
         getNextPlayer().giveTurn();
     }
+
+    public HashMap<PokerRole, Player> getPlayersWithRoles() {
+        HashMap<PokerRole, Player> hashMap = new HashMap<>();
+        hashMap.put(PokerRole.DEALER, players.get(dealerIndex));
+        hashMap.put(PokerRole.SMALL_BLIND, players.get(smallBlindIndex));
+        hashMap.put(PokerRole.BIG_BLIND, players.get(bigBlindIndex));
+        return hashMap;
+    }
+
+    public void setPlayerRoles(HashMap<PokerRole, Player> hashMap) {
+        Player dealer = hashMap.get(PokerRole.DEALER);
+        Player smallBlind = hashMap.get(PokerRole.SMALL_BLIND);
+        Player bigBlind = hashMap.get(PokerRole.BIG_BLIND);
+
+        // TODO check if player exists
+        findPlayerUsingID(dealer).setRole(PokerRole.DEALER);
+        findPlayerUsingID(smallBlind).setRole(PokerRole.SMALL_BLIND);
+        findPlayerUsingID(bigBlind).setRole(PokerRole.BIG_BLIND);
+
+    }
+
+    public ArrayList<Card> getPlayerHand(Player player) {
+        return getPlayer(player).get_hand();
+    }
+
+    public void setPlayerHand(Player player, ArrayList<Card> playerHand) {
+        getPlayer(player).setHand(playerHand);
+    }
+
+    public void setPlayerWithTurn(Player playerWithTurn) {
+        String playerIDToFind = playerWithTurn.getPlayerID();
+        for (Player player: players) {
+            String playerID = player.getPlayerID();
+            if (playerID.equals(playerIDToFind)) {
+                player.setTurn(true);
+            }
+            else {
+                player.setTurn(false);
+            }
+        }
+    }
+
+    public ArrayList<Player> getPlayers() {
+        return players;
+    }
+
+    public Player getPlayer(Player player) {
+        for (Player currPlayer: players) {
+            if (currPlayer.equals(player)) {
+                return currPlayer;
+            }
+        }
+        throw new RuntimeException("Cannot find player");
+    }
+
+    public void applyPlayerAction(Player actingPlayer, PlayerAction playerAction, int betAmount) {
+        Player player = getPlayer(actingPlayer);
+        switch (playerAction) {
+            case FOLD -> {
+                //TODO
+            }
+            case BET, RAISE -> {
+                betByPlayer(player, betAmount);
+                lastBetter = player;
+            }
+            case CALL -> {
+                callByPlayer(player);
+            }
+        }
+    }
+
+    public RoundState getRoundState() {
+        return roundState;
+    }
+
+    public void setRoundState(RoundState roundState) {
+        this.roundState = roundState;
+    }
+
+
+    public boolean hasGameStarted() {
+        return hasGameStarted;
+    }
+
+    public void setHasGameStarted(boolean hasGameStarted) {
+        this.hasGameStarted = hasGameStarted;
+    }
+
+    public boolean hasGameEnded() {
+        return hasGameEnded;
+    }
+
+    public void setHasGameEnded(boolean hasGameEnded) {
+        this.hasGameEnded = hasGameEnded;
+    }
+
+
+    private Player findPlayerUsingID(Player playerToFind) {
+        String playerIDToFind = playerToFind.getPlayerID();
+        for (Player player: players) {
+            String playerID = player.getPlayerID();
+            if (playerID.equals(playerIDToFind)) {
+                return player;
+            }
+        }
+        throw new RuntimeException("Cannot find player");
+    }
+
+    public void advanceRoundState() {
+        this.roundState = RoundState.getNextRoundState(roundState);
+        for (Player player: playerBettings.keySet()) {
+            playerBettings.put(player, 0);
+        }
+        updateTableCards();
+    }
+
+    public ArrayList<Card> getTableCards() {
+        return tableCards;
+    }
+    public void setTableCards(ArrayList<Card> tableCards) {
+        this.tableCards = tableCards;
+    }
+
+    public ArrayList<Player> getWinningPlayers() {
+        ArrayList<Player> winners = new ArrayList<>();
+        int[] highestScore = getHighestScore();
+        for (Player player: players) {
+            int[] currScore = getScore(player);
+            if (highestScore[0] == currScore[0] &&
+                highestScore[1] == currScore[1]) {
+                winners.add(player);
+            }
+        }
+        return winners;
+    }
+
+    private int[] getScore(Player player) {
+        HandEval evaluator = new HandEval();
+        ArrayList<Card> totalHand = new ArrayList<>(tableCards);
+        totalHand.addAll(player.get_hand());
+        return evaluator.evaluate(totalHand);
+    }
+    private int[] getHighestScore() {
+        int[] highestScore = {0, 0};
+        for (Player player: players) {
+            int[] currentScore = getScore(player);
+            if (highestScore[0] < currentScore [0]) {
+                highestScore = currentScore;
+            }
+            else if (highestScore[0] == currentScore[0]) {
+                if (highestScore[1] < currentScore[1]) {
+                    highestScore = currentScore;
+                }
+            }
+        }
+        return highestScore;
+    }
+
+
 
 }

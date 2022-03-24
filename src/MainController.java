@@ -36,6 +36,8 @@ public class MainController {
             if (scanner.hasNextInt()) {
                 option = scanner.nextInt();
                 scanner.nextLine();
+            } else if (scanner.hasNextLine()) {
+                scanner.nextLine();
             }
 
             if (option <= 0 || option > maxNumOptions) {
@@ -49,16 +51,19 @@ public class MainController {
         String serverIP = "";
         Socket socket;
         while (true) {
+            MainMenuView.displayServerJoinMenu();
+            serverIP = scanner.nextLine();
             try {
-                MainMenuView.displayServerJoinMenu();
-                serverIP = scanner.nextLine();
-                socket = new Socket(serverIP, 100);
-                break;
+                if (!serverIP.isBlank()) {
+                    socket = new Socket(serverIP, 101);
+                    break;
+                }
             }
             catch (IOException e) {
                 MainMenuView.displayFailedToConnectToServer(serverIP);
             }
         }
+        System.out.println(serverIP);
         MainMenuView.displaySuccessfulConnection();
         return socket;
     }
@@ -74,7 +79,7 @@ public class MainController {
             return;
         }
 
-        ServerSocket serverSocket = new ServerSocket(100);
+        ServerSocket serverSocket = new ServerSocket(101);
         server = new Server(serverSocket);
         new Thread(server::startServer).start();
         // catch
@@ -87,14 +92,13 @@ public class MainController {
         socket = getValidSocketForServer(scanner);
         username = getValidUsername(scanner);
         final boolean isHost = server != null;
-        System.out.println(socket.getInetAddress());
         clientController = new ClientController(socket, username, isHost);
         clientController.startController(scanner);
         //TODO start client
     }
 
     private static void joinServer(Scanner scanner, InetAddress serverIP) throws IOException {
-        socket = new Socket(serverIP, 100);
+        socket = new Socket(serverIP, 101);
         username = getValidUsername(scanner);
         clientController = new ClientController(socket, username, true);
         clientController.startController(scanner);

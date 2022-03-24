@@ -1,3 +1,4 @@
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /***********************
@@ -7,12 +8,19 @@ import java.util.ArrayList;
  *  Player class
  */
 
-public class Player 
+public class Player implements Serializable
 {
+	public String getName() {
+		return name;
+	}
+
 	public String name;
+	private String playerID;
 	protected int chips;
 	private ArrayList<Card> hand;
 	private boolean hasTurn;
+	private PokerRole role;
+
 
 	// gets 5 cards from deck
 	public Player(String name, int chips)
@@ -20,10 +28,30 @@ public class Player
 		this.name = name;
 		this.chips = chips;
 		this.hasTurn = false;
+		this.hand = new ArrayList<>();
+	}
+	public Player(String name, String playerID)
+	{
+		this.name = name;
+		this.playerID = playerID;
+		this.hasTurn = false;
+		this.hand = new ArrayList<>();
+	}
+
+	public String getPlayerID() {
+		return playerID;
+	}
+
+	public void setPlayerID(String playerID) {
+		this.playerID = playerID;
 	}
 
 	public boolean hasTurn() {
 		return this.hasTurn;
+	}
+
+	public void setTurn(boolean hasTurn) {
+		this.hasTurn = hasTurn;
 	}
 
 	public void giveTurn() {
@@ -32,6 +60,22 @@ public class Player
 
 	public void takeTurn() {
 		this.hasTurn = false;
+	}
+
+	public PokerRole getRole() {
+		return role;
+	}
+
+	public void setRole(PokerRole role) {
+		this.role = role;
+	}
+
+	public void addToHand(Card card) {
+		hand.add(card);
+	}
+
+	public void setHand(ArrayList<Card> hand) {
+		this.hand = hand;
 	}
 
 	public void set_chips(int c){ //for now just int - later normalized to standard 5, 10, 20 values
@@ -75,6 +119,20 @@ public class Player
 	}
 
 
+	@Override
+	public boolean equals(Object obj) {
+
+		if (this == obj) return true;
+
+		if (!(obj instanceof Player)) {
+			return false;
+		}
+		Player player = (Player) obj;
+
+		return this.getPlayerID().equals(player.getPlayerID());
+	}
+
+
 	/*
 	// switches card for a new card
 	public Card redraw(int counter, Deck deck)
@@ -83,5 +141,6 @@ public class Player
 		return card;
 	}
 	*/
+
 
 }

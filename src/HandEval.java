@@ -11,12 +11,40 @@ import java.util.ArrayList;
 public class HandEval
 {
 
-	
+	// TEMPORARY
+	public static String getHandName(int[] score) {
+		if (score[0] == 9 && score[1] == 14) {
+			System.out.println("a royal flush!");
+		}
+		else if (score[0] == 8) {
+			System.out.println("a straight flush!");
+		}
+		else if (score[0] == 7) {
+			return "four of a kind!";
+		}
+		else if (score[0] == 6) {
+			return "a full house!";
+		}
+		else if (score[0] == 5) {
+			return "a flush!";
+		}
+		else if (score[0] == 4) {
+			return "a straight!";
+		}
+		else if (score[0] == 3) {
+			return "a triple!";
+		}
+		else if (score[0] == 2) {
+			return "two pairs!";
+		}
+	return "a high card!";
+	}
+
 	//NOTE: FOR NOW ACES ARE ONLY HIGH
 	// evaluates the hand -- need to produce a score - ScoreT with [score for hand type, rank of highest card] - scores go from 0-9 while ranks go 2-14
 	public int[] evaluate(ArrayList<Card> a)
 	{
-        int[] score = new int[] {0, 2}; 
+        int[] score = new int[] {0, 2};
 
         boolean fl = false;
         boolean st = false;
