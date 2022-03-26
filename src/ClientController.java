@@ -2,23 +2,49 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Scanner;
 
 public class ClientController {
-    private Player thisPlayer;
+    private Player myPlayer;
     private Client client;
-    private volatile Game thisGame;
     private final boolean isHost;
+    private volatile Game myGame;
     private volatile boolean gameHasStarted;
 
     public ClientController(Socket socket, String username, boolean isHost) throws IOException {
         this.isHost = isHost;
         this.gameHasStarted = false;
-        client = new Client(socket, username);
+        this.client = new Client(socket, username);
     }
 
     public void startController(Scanner scanner) throws IOException {
+        setUpClient(); // sets up client name and ID with server
+        GameView.displayClientInformation(client);
+        setUpMyPlayer(); // sets up player using client name and ID
+
+        new Thread(this::listenForIncomingMessages).start(); // listens for messages from server on separate thread
+
+        if (isHost) {
+            askHostToStart(scanner);
+        }
+        else {
+            waitForHostReady();
+        }
+
+        GameView.displayGameIsStartingMessage();
+        waitForGameToStart(); // wait for game to initialize and start
+
+        runGame(scanner);
+        closeController();
+    }
+
+    public void closeController() {
+        if (client != null) {
+            client.closeEverything();
+        }
+    }
+
+    private void setUpClient() throws IOException {
         GameInfo clientSetUpInfo = new GameInfo("", client.getClientName());
         client.sendMessage(clientSetUpInfo);
         try {
@@ -26,209 +52,196 @@ public class ClientController {
             client.setClientID(clientSetUpInfo.getClientID());
         } catch (ClassNotFoundException e) {
         }
-        System.out.println("Client Name: " + client.getClientName() + " | ID: " + client.getClientID());
-        thisPlayer = new Player(client.getClientName(), client.getClientID());
+    }
 
-        listenForIncomingMessages();
-        while (!gameHasStarted) {
-            if (isHost) {
-                System.out.println("Type in \"START\" to start the game");
-                String response = scanner.nextLine();
-                if (response.equalsIgnoreCase("START")) {
-                    GameInfo gameInfo = new GameInfo(client.getClientID(), client.getClientName());
+    private void setUpMyPlayer() {
+        myPlayer = new Player(client.getClientName(), client.getClientID());
+    }
 
-                    // TODO - set NEW_ROUND to game start
-                    gameInfo.setUpdateType(UpdateType.NEW_ROUND);
-                    gameInfo.setGameHasStarted(true);
-                    client.sendMessage(gameInfo);
-                    break;
-                }
-            }
-            else {
-                System.out.println("Waiting for host to start the game...");
-                while (!gameHasStarted) {
-                    Thread.onSpinWait();
-                }
-            }
-        }
+    private boolean myPlayerHasTurn() {
+        return myGame.getPlayer(myPlayer).hasTurn();
+    }
 
-        while (thisGame == null) {
-            Thread.onSpinWait();
-        }
-
+    private void askHostToStart(Scanner scanner) throws IOException {
         while (true) {
-            if (thisGame.getPlayer(thisPlayer).hasTurn()) {
-                performGameAction(scanner);
-                thisGame.getPlayer(thisPlayer).setTurn(false);
-            } else {
-                System.out.println("Waiting for player to move");
-                while (!thisGame.getPlayer(thisPlayer).hasTurn()) {
-                    Thread.onSpinWait();
-                }
+            GameView.askHostToStart();
+            String response = scanner.nextLine();
+            if (response.strip().equalsIgnoreCase("START")) {
+                GameInfo gameInfo = new GameInfo(client.getClientID(), client.getClientName());
+                gameInfo.setUpdateType(UpdateType.GAME_STARTED);
+                gameInfo.setGameHasStarted(true);
+                client.sendMessage(gameInfo);
+                return;
             }
         }
     }
 
-    private void listenForIncomingMessages() {
-        if (client == null) {
-            throw new RuntimeException("Client is not setup");
+    private void waitForHostReady() {
+        GameView.displayWaitingForHostMessage();
+        while (!gameHasStarted) {
+            Thread.onSpinWait();
         }
+    }
 
-        new Thread(() -> {
-            try {
-                while (client.IsConnectedToServer()) {
-                    GameInfo gameInfo = (GameInfo) client.listenForMessage();
-                    deconstructGameInfo(gameInfo);
-                }
+    private void waitForGameToStart() {
+        while (myGame == null) {
+            Thread.onSpinWait();
+        }
+    }
+
+
+    private void runGame(Scanner scanner) throws IOException {
+        while (true) {
+            if (myPlayerHasTurn()) {
+                performGameAction(scanner);
             }
-            catch (IOException | ClassNotFoundException e) {
-                throw new RuntimeException("Something is wrong");
-            }
-        }).start();
+            waitForTurn();
+        }
     }
 
     private void performGameAction(Scanner scanner) throws IOException {
         PlayerAction playerAction = getValidPlayerAction(scanner);
-        int amount = 0;
-        if (playerAction.isABet()) {
-            amount = getValidBet(scanner);
-        }
+        int amount = getValidBet(playerAction, scanner);
 
-        client.sendMessage(createGameInfo(playerAction, amount));
+        client.sendMessage(createPlayerActionInfo(playerAction, amount));
+        myGame.getPlayer(myPlayer).setTurn(false);
     }
 
-    private GameInfo createGameInfo(PlayerAction playerAction, int amount) {
-        GameInfo gameInfo = new GameInfo(client.getClientID(), thisPlayer.name);
-        gameInfo.setPlayerWithTurn(thisGame.getPlayer(thisPlayer));
+    private void waitForTurn() {
+        while (!myPlayerHasTurn()) {
+            Thread.onSpinWait();
+        }
+    }
+
+    private GameInfo createPlayerActionInfo(PlayerAction playerAction, int amount) {
+        GameInfo gameInfo = new GameInfo(client.getClientID(), myPlayer.name);
+
+        gameInfo.setPlayerWithTurn(myGame.getPlayer(myPlayer));
         gameInfo.setPlayerAction(playerAction);
         gameInfo.setBetAmount(amount);
         gameInfo.setUpdateType(UpdateType.PLAYER_ACTION);
-        return gameInfo;
 
-//        TODO
-//        return new GameInfo(client.getClientID(), player.getName(), playerAction, amount);
+        return gameInfo;
+    }
+
+    private void listenForIncomingMessages() {
+        try {
+            while (client.IsConnectedToServer()) {
+                GameInfo gameInfo = (GameInfo) client.listenForMessage();
+                deconstructGameInfo(gameInfo);
+            }
+        }
+        catch (IOException | ClassNotFoundException e) {
+            throw new RuntimeException("Something is wrong");
+        }
     }
 
     private void deconstructGameInfo(GameInfo gameInfo) {
         if (gameInfo.getUpdateType() == null) {
-            throw new RuntimeException("Update type cannot be null");
+            throw new NullPointerException("Update type cannot be null");
         }
+
         switch (gameInfo.getUpdateType()) {
             case GAME_STARTED -> startGame(gameInfo);
-            case NEW_ROUND -> initializeRound(gameInfo);
             case NEW_ROUND_STATE -> updateRoundState(gameInfo);
             case PLAYER_TURN -> updateTurn(gameInfo);
             case PLAYER_ACTION -> applyPlayerAction(gameInfo);
             case CONNECTION_STATUS -> playerConnectionUpdate(gameInfo);
-            case SERVER_MESSAGE -> System.out.println("SERVER: " + gameInfo.getClientID());
+            case SERVER_MESSAGE -> GameView.displayServerMessage(gameInfo.getServerMessage());
             case GAME_ENDED -> endGame(gameInfo);
         }
-        gameInfo = null;
     }
     private void startGame(GameInfo gameInfo) {
-        System.out.println("The game is starting...");
-        thisGame = gameInfo.getGame();
+        myGame = gameInfo.getGame();
         ArrayList<Player> players = new ArrayList<>(gameInfo.getPlayerHands().keySet());
-        thisGame.setPlayers(players);
+        myGame.setPlayers(players);
         gameHasStarted = true;
     }
 
     private void endGame(GameInfo gameInfo) {
-
     }
 
-    private void printOutHands() {
-        for (Player player: thisGame.getPlayers()) {
-            String handName = HandEval.getHandName(thisGame.getScore(player));
-            if (thisPlayer.equals(player)) {
-                System.out.println("You have " + handName);
-            }
-            else {
-                System.out.println(player.getName().toUpperCase() + " has " + handName);
-            }
-        }
-    }
 
-    private void printOutWinners() {
-        String message = "";
-        ArrayList<Player> winningPlayers = thisGame.getWinningPlayers();
-        for (Player player: winningPlayers) {
-            if (winningPlayers.indexOf(player) == winningPlayers.size() - 1) {
-                message += player.getName().toUpperCase() + " wins";
-            }
-            else {
-                message += player.getName().toUpperCase() + ", ";
-            }
-        }
-        String winningHand = HandEval.getHandName(thisGame.getHighestScore());
-        System.out.println(message + " with " + winningHand);
-    }
-    private void printOutLosers() {
-        ArrayList<Player> players = thisGame.getPlayersWithNoChips();
-        for (Player player: players) {
-            if (player.equals(thisPlayer)) {
-                System.out.println("You lost. Exiting the game...");
-                client.closeEverything();
-                System.exit(0);
-                return;
-            }
-            System.out.println(player.getName().toUpperCase() + " lost. They will leave the table.");
-        }
+    private void endGame() {
+        client.closeEverything();
+        System.exit(0);
     }
 
     private void updateRoundState(GameInfo gameInfo) {
         RoundState roundState = gameInfo.getRoundState();
-        ArrayList<Card> tableCards = gameInfo.getTableCards();
-        System.out.println("TABLE CARDS: " + tableCards.toString());
-        thisGame.setTableCards(tableCards);
-        System.out.println(roundState);
-        if (roundState.equals(RoundState.SHOWDOWN)) {
-            printOutHands();
-            printOutWinners();
-            thisGame.giveChipsToWinners();
-            printOutLosers();
-            thisGame.removeLoses();
+        GameView.displayNewRoundState(roundState);
+        switch (roundState) {
+            case PRE_FLOP -> {
+                updateRoles(gameInfo);
+                updateAllHands(gameInfo);
+                updateTurn(gameInfo);
+            }
+            case FLOP, TURN, RIVER -> {
+                updateTableCards(gameInfo);
+            }
+            case SHOWDOWN -> {
+                displayHands();
+                displayWinners();
+                myGame.giveChipsToWinners();
+                displayLosers();
+                myGame.removeLoses();
+            }
         }
-
-
     }
 
-    private void initializeRound(GameInfo gameInfo) {
-        while (thisGame == null) {
-            Thread.onSpinWait();
+    private void displayHands() {
+        for (Player player: myGame.getPlayers()) {
+            String handName = HandEval.getHandName(myGame.getScore(player));
+            if (myPlayer.equals(player)) {
+                GameView.displayMyHandRanking(handName);
+            }
+            else {
+                GameView.displayPlayerHandRanking(player, handName);
+            }
         }
+    }
 
-        System.out.println("DEBUG: New Round");
+    private void displayWinners() {
+        ArrayList<Player> winningPlayers = myGame.getWinningPlayers();
+        String winningHand = HandEval.getHandName(myGame.getHighestScore());
+        GameView.displayCurrentRoundWinners(winningPlayers, winningHand);
+    }
+    private void displayLosers() {
+        ArrayList<Player> players = myGame.getPlayersWithNoChips();
+        for (Player player: players) {
+            // TODO - make lose game different for myPlayer
+            if (player.equals(myPlayer)) {
+                GameView.displayLoseGameScreen();
+                endGame();
+            }
+            GameView.displayPlayerLostMessage(player);
+        }
+    }
 
-        Game mainGame = gameInfo.getGame();
-        updateRoles(gameInfo);
-        updateAllHands(gameInfo);
-        updateTurn(gameInfo);
-        System.out.println("Your Hand: " + mainGame.getPlayerHand(thisPlayer));
+    private void updateTableCards(GameInfo gameInfo) {
+        ArrayList<Card> tableCards = gameInfo.getTableCards();
+        myGame.setTableCards(tableCards);
+        GameView.displayPlayerHUD(tableCards, myGame.getPlayerHand(myPlayer));
     }
 
     private void updateTurn(GameInfo gameInfo) {
         Player playerWithTurn = gameInfo.getPlayerWithTurn();
-        thisGame.setPlayerWithTurn(playerWithTurn);
+        myGame.setPlayerWithTurn(playerWithTurn);
+        if (!playerWithTurn.equals(myPlayer)) {
+            GameView.displayWaitingForPlayerMessage(playerWithTurn);
+        }
     }
 
     private void updateRoles(GameInfo gameInfo) {
         HashMap<PokerRole, Player> hashMap = gameInfo.getRoles();
-        thisGame.setPlayerRoles(hashMap);
-
-        Player dealer = hashMap.get(PokerRole.DEALER);
-        Player smallBlind = hashMap.get(PokerRole.SMALL_BLIND);
-        Player bigBlind = hashMap.get(PokerRole.BIG_BLIND);
-
-        System.out.println(dealer.getName().toUpperCase() + " is the dealer.");
-        System.out.println(smallBlind.getName().toUpperCase() + " is the small blind.");
-        System.out.println(bigBlind.getName().toUpperCase() + " is the big blind.");
+        myGame.setPlayerRoles(hashMap);
+        GameView.displayRoles(hashMap);
     }
 
     private void updateAllHands(GameInfo gameInfo) {
         HashMap<Player, ArrayList<Card>> playerHands = gameInfo.getPlayerHands();
         for (Player player: playerHands.keySet()) {
-            thisGame.setPlayerHand(player, playerHands.get(player));
+            myGame.setPlayerHand(player, playerHands.get(player));
         }
     }
 
@@ -236,51 +249,56 @@ public class ClientController {
         Player actingPlayer = gameInfo.getPlayerWithTurn();
         PlayerAction playerAction = gameInfo.getPlayerAction();
         int betAmount = gameInfo.getBetAmount();
-        thisGame.applyPlayerAction(actingPlayer, playerAction, betAmount);
 
-        if (betAmount == 0) {
-            System.out.println(actingPlayer.getName().toUpperCase() + " performs the action " + playerAction.name());
-        }
-        System.out.println(actingPlayer.getName().toUpperCase() + " performs the action " + playerAction.name() + " for an amount of " + betAmount);
+        myGame.applyPlayerAction(actingPlayer, playerAction, betAmount);
+        GameView.displayPlayerAction(actingPlayer, playerAction, betAmount);
     }
 
     private void playerConnectionUpdate(GameInfo gameInfo) {
-        if (!gameInfo.hasGameStarted()) {
-            String action = "";
-            switch (gameInfo.getConnectionStatus()) {
-                case JOINED -> action = "joined";
-                case DISCONNECTED -> action = "disconnected from";
-                case RECONNECTED -> action = "reconnected from";
-            }
-            System.out.println(gameInfo.getPlayerName() + " has " + action + " the table!");
-        }
+        // TODO should not be playerWithTurn
+        GameView.displayConnectionUpdate(gameInfo.getPlayerWithTurn(), gameInfo.getConnectionStatus());
     }
-
 
     private PlayerAction getValidPlayerAction(Scanner scanner) {
+        GameView.displayReceivedTurnMessage();
+        ArrayList<PlayerAction> validActions = myGame.getValidActions();
+
         while (true) {
-            System.out.println("Enter an action: ");
-            String actionToMake = scanner.nextLine();
-            if (PlayerAction.actionIsValid(actionToMake)) {
-                return PlayerAction.getActionByString(actionToMake);
+            GameView.askForAnAction(validActions);
+            String input = scanner.nextLine();
+            if (PlayerAction.actionIsValid(input)) {
+                PlayerAction action = PlayerAction.getActionByString(input);
+                if (validActions.contains(action)) {
+                    return action;
+                }
             }
-            System.out.println("Invalid action");
+            GameView.displayInvalidActionMessage();
         }
     }
 
-    private int getValidBet(Scanner scanner) {
+    private int getValidBet(PlayerAction playerAction, Scanner scanner) {
+        if (!playerAction.isABet()) {
+            return 0;
+        }
+
         int amount = -1;
-        int minimumAmount = thisGame.getMinimumCallAmount();
+        // TODO - Make getMinBetAmount method
+        int minimumAmount = myGame.getMinimumCallAmount();
         //TODO
         while (amount < minimumAmount /* !player.CanBet(amount)*/) {
-            System.out.println("How much do you want to bet/raise?: ");
+            GameView.askForABetAmount(playerAction, minimumAmount);
+            if (!scanner.hasNextLine()) {
+                // If the input is not an integer than display invalid value message and skip rest of the loop
+                GameView.displayInvalidValueMessage();
+                scanner.nextLine();
+                continue;
+            }
             if (scanner.hasNextInt()) {
                 amount = scanner.nextInt();
                 scanner.nextLine();
             }
             if (amount < minimumAmount) {
-                System.out.println("Bet too low. Minimum bet: " + minimumAmount + ".");
-                scanner.nextLine();
+                GameView.displayBetTooLowMessage(playerAction, minimumAmount);
             }
         }
         return amount;
