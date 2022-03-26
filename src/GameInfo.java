@@ -9,16 +9,9 @@ public class GameInfo implements Serializable {
     private final String playerName; // Name of player who performed an action
 
     private Player playerWithTurn; // Player with turn
-
-
     private RoundState roundState;
-
-
-
     private HashMap<PokerRole, Player> roles;
-
-
-    HashMap<Player, ArrayList<Card>> playerHands;
+    private HashMap<Player, ArrayList<Card>> playerHands;
 
     private ArrayList<Card> tableCards;
 
@@ -156,7 +149,7 @@ public class GameInfo implements Serializable {
     public void setGame(Game game) {
         this.game = game;
     }
-    
+
     @Override
     public String toString() {
         if (betAmount == 0) {
