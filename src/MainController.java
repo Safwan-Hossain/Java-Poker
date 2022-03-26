@@ -7,7 +7,6 @@ import java.util.Scanner;
 public class MainController {
     private static final int MAX_NUM_OPTIONS = 3;
     private static String username;
-    private static Client client;
 
     private static ClientController clientController;
     private static Socket socket;
@@ -48,7 +47,7 @@ public class MainController {
     }
 
     private static Socket getValidSocketForServer(Scanner scanner) {
-        String serverIP = "";
+        String serverIP;
         Socket socket;
         while (true) {
             MainMenuView.displayServerJoinMenu();
@@ -94,7 +93,6 @@ public class MainController {
         final boolean isHost = server != null;
         clientController = new ClientController(socket, username, isHost);
         clientController.startController(scanner);
-        //TODO start client
     }
 
     private static void joinServer(Scanner scanner, InetAddress serverIP) throws IOException {
@@ -102,7 +100,6 @@ public class MainController {
         username = getValidUsername(scanner);
         clientController = new ClientController(socket, username, true);
         clientController.startController(scanner);
-        //TODO start client
     }
 
     private static void exitProgram() {

@@ -62,25 +62,5 @@ public class Client {
             e.printStackTrace();
         }
     }
-
-    // TODO TEMPORARY CODE
-    private static String GetValidUsername() {
-        Scanner scanner = new Scanner(System.in);
-        String username = "";
-        while (username.strip().isBlank()) {
-            System.out.print("Please print your username: ");
-            username = scanner.nextLine();
-        }
-        scanner.close();
-        return username;
-    }
-
-    public static void main(String[] args) throws IOException, ClassNotFoundException {
-        String username = GetValidUsername();
-        Socket socket = new Socket(InetAddress.getLocalHost(), 100);
-        Client client = new Client(socket, username);
-        client.listenForMessage();
-        //client.performAction();
-    }
 }
 

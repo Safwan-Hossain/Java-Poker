@@ -10,8 +10,6 @@ public class Server {
     private ServerGame serverGame;
     private ArrayList<String> clientIDs = new ArrayList<>();
     private ServerSocket serverSocket;
-    private String hostClientID;
-    private InetAddress hostAddress;
 
     public Server (ServerSocket serverSocket) {
         this.serverSocket = serverSocket;
@@ -28,14 +26,14 @@ public class Server {
         waitForHostReady();
 
         serverGame.startGame();
-        GameInfo gameInfo = getStartGameInfo();
-        ClientHandler.updateAllClients(gameInfo);
+        ClientHandler.updateAllClients(getStartGameInfo());
+        runGame();
+    }
 
+    private void runGame() {
         while (true) {
             serverGame.initializeRound();
-            System.out.println(serverGame.getRoundState());
-            gameInfo = getNewRoundInfo();
-            ClientHandler.updateAllClients(gameInfo);
+            ClientHandler.updateAllClients(getNewRoundInfo());
 
             while (true) {
                 if (serverGame.getRoundState().equals(RoundState.SHOWDOWN)) {
@@ -43,17 +41,14 @@ public class Server {
                     showDown();
                     break;
                 }
-                else {
-                    takeBets();
-                    advanceRoundState();
-                    ClientHandler.updateAllClients(getNewRoundStateInfo());
-                    serverGame.giveNextPlayerTurn();
-                    ClientHandler.updateAllClients(getTurnInfo());
-                }
+                takeBets();
+                advanceRoundState();
+                ClientHandler.updateAllClients(getNewRoundStateInfo());
+                serverGame.giveNextPlayerTurn();
+                ClientHandler.updateAllClients(getTurnInfo());
             }
             endRound();
         }
-
     }
 
     private GameInfo getNewRoundStateInfo() {
@@ -119,10 +114,6 @@ public class Server {
             Thread.onSpinWait();
         }
         serverGame.setHasPlayerResponded(false);
-    }
-
-    private void applyPlayerAction() {
-
     }
 
     private GameInfo getStartGameInfo() {
@@ -220,4 +211,4 @@ public class Server {
         System.out.println(InetAddress.getLocalHost());
         server.startServer();
     }
-    }
+}

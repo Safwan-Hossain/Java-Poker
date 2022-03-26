@@ -14,30 +14,33 @@ public class HandEval
 	// TEMPORARY
 	public static String getHandName(int[] score) {
 		if (score[0] == 9 && score[1] == 14) {
-			System.out.println("a royal flush!");
+			System.out.println("royal flush");
 		}
 		else if (score[0] == 8) {
-			System.out.println("a straight flush!");
+			System.out.println("straight flush");
 		}
 		else if (score[0] == 7) {
-			return "four of a kind!";
+			return "four of a kind";
 		}
 		else if (score[0] == 6) {
-			return "a full house!";
+			return "full house";
 		}
 		else if (score[0] == 5) {
-			return "a flush!";
+			return "flush";
 		}
 		else if (score[0] == 4) {
-			return "a straight!";
+			return "straight";
 		}
 		else if (score[0] == 3) {
-			return "a triple!";
+			return "triple";
 		}
 		else if (score[0] == 2) {
-			return "two pairs!";
+			return "two pairs";
 		}
-	return "a high card!";
+		else if (score[0] == 1) {
+			return "pair";
+		}
+	return "high card";
 	}
 
 	//NOTE: FOR NOW ACES ARE ONLY HIGH
