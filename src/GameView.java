@@ -2,8 +2,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class GameView {
-    public static void displayClientInformation(String clientName, String clientID){
-        System.out.println("Client Name: " + clientName + " | ID: " + clientID);
+    public static void displayClientInformation(Client client){
+        System.out.println("Client Name: " + client.getClientName() + " | ID: " + client.getClientID());
     }
     public static void askHostToStart(){
         System.out.println("Type in \"START\" to start the game.");
@@ -11,8 +11,8 @@ public class GameView {
     public static void displayWaitingForHostMessage(){
         System.out.println("Waiting for host to start the game...");
     }
-    public static void displayWaitingForPlayerMessage(String playerName){
-        System.out.println("Waiting for " + playerName.toUpperCase() + " to make their move...");
+    public static void displayWaitingForPlayerMessage(Player player){
+        System.out.println("Waiting for " + player.getName().toUpperCase() + " to make their move...");
     }
     public static void displayServerMessage(String serverMessage){
         System.out.println("SERVER: " + serverMessage);
@@ -23,8 +23,8 @@ public class GameView {
     public static void displayMyHandRanking(String handRankName) {
         System.out.println("You have " + getHandDescription(handRankName) + "!");
     }
-    public static void displayOtherHandRanking(String playerName, String handRankName) {
-        System.out.println(playerName.toUpperCase() + " has" + getHandDescription(handRankName) + "!");
+    public static void displayPlayerHandRanking(Player player, String handRankName) {
+        System.out.println(player.getName().toUpperCase() + " has" + getHandDescription(handRankName) + "!");
     }
 
     private static String getHandDescription(String handRankName) {
@@ -44,6 +44,7 @@ public class GameView {
         message += lastPlayerName + " wins the round with " + getHandDescription(winningHandRankName) + "! ";
         System.out.println(message);
     }
+
     public static void displayPlayerLostMessage(Player player) {
         System.out.println(player.getName().toUpperCase() + " lost. They will be leaving the table.");
     }
@@ -51,6 +52,9 @@ public class GameView {
     public static void displayLoseGameScreen() {
         System.out.println("You've lost all your chips. You are asked to leave the table.");
         System.out.println("Exiting the game...");
+    }
+    public static void displayNewRoundState(RoundState roundState) {
+        System.out.println(" - - " + roundState.name().toUpperCase() + " - -  ");
     }
     public static void displayNewRoundMessage(int i) {
         System.out.println("=== ROUND "+ i + " === ");
