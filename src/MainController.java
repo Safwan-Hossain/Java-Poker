@@ -107,7 +107,7 @@ public class MainController {
             server.closeServer();
         }
         if (clientController != null) {
-            // close client
+            clientController.closeController();
         }
         System.exit(0);
     }
