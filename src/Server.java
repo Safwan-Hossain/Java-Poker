@@ -79,7 +79,9 @@ public class Server {
 
     // TODO - incomplete method
     private boolean isHostReady() {
-        return serverGame.hasPlayerResponded() && serverGame.getGameInfo().hasGameStarted();
+        return serverGame.hasPlayerResponded() &&
+                serverGame.getGameInfo().getUpdateType().equals(UpdateType.GAME_STARTED) &&
+                serverGame.getGameInfo().hasGameStarted();
     }
 
     private void waitForHostReady() {
@@ -135,7 +137,7 @@ public class Server {
 
     private GameInfo getNewRoundInfo() {
         GameInfo gameInfo = new GameInfo("Server", "Server");
-        gameInfo.setUpdateType(UpdateType.NEW_ROUND);
+        gameInfo.setUpdateType(UpdateType.NEW_ROUND_STATE);
         gameInfo.setGame(serverGame.getMainGame());
         gameInfo.setPlayerWithTurn(serverGame.getPlayerWithTurn());
 

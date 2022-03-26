@@ -2,7 +2,6 @@ public enum UpdateType {
     SERVER_MESSAGE,
     PLAYER_ACTION,
     CONNECTION_STATUS,
-    NEW_ROUND,
     NEW_ROUND_STATE,
     PLAYER_TURN,
     GAME_STARTED,
