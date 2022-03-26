@@ -10,61 +10,17 @@ public class GameInfo implements Serializable {
 
     private Player playerWithTurn; // Player with turn
 
-    public RoundState getRoundState() {
-        return roundState;
-    }
-
-    public void setRoundState(RoundState roundState) {
-        this.roundState = roundState;
-    }
 
     private RoundState roundState;
 
-    public HashMap<Player, ArrayList<Card>> getPlayerHands() {
-        return playerHands;
-    }
 
-    public HashMap<PokerRole, Player> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(HashMap<PokerRole, Player> roles) {
-        this.roles = new HashMap<>();
-        for (PokerRole pokerRole: roles.keySet()) {
-            this.roles.put(pokerRole, roles.get(pokerRole));
-        }
-    }
 
     private HashMap<PokerRole, Player> roles;
 
-    public void setPlayerHands(HashMap<Player, ArrayList<Card>> map) {
-        this.playerHands = new HashMap<>();
-        for (Player player: map.keySet()) {
-            ArrayList<Card> cards = new ArrayList<>(player.get_hand());
-            this.playerHands.put(player, cards);
-        }
-    }
 
     HashMap<Player, ArrayList<Card>> playerHands;
 
-    public ArrayList<Card> getTableCards(){
-        return tableCards;
-    }
-
-    public void setTableCards(ArrayList<Card> tableCards) {
-        this.tableCards = new ArrayList<>();
-        this.tableCards.addAll(tableCards);
-    }
-
     private ArrayList<Card> tableCards;
-
-    public Game getGame() {
-        return game;
-    }
-
-    public void setGame(Game game) {
-        this.game = game;
-    }
 
     // THE MAIN GAME
     private Game game;
@@ -152,6 +108,55 @@ public class GameInfo implements Serializable {
         this.betAmount = betAmount;
     }
 
+
+    public RoundState getRoundState() {
+        return roundState;
+    }
+
+    public void setRoundState(RoundState roundState) {
+        this.roundState = roundState;
+    }
+
+    public HashMap<PokerRole, Player> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(HashMap<PokerRole, Player> roles) {
+        this.roles = new HashMap<>();
+        for (PokerRole pokerRole: roles.keySet()) {
+            this.roles.put(pokerRole, roles.get(pokerRole));
+        }
+    }
+
+    public HashMap<Player, ArrayList<Card>> getPlayerHands() {
+        return playerHands;
+    }
+
+    public void setPlayerHands(HashMap<Player, ArrayList<Card>> map) {
+        this.playerHands = new HashMap<>();
+        for (Player player: map.keySet()) {
+            ArrayList<Card> cards = new ArrayList<>(player.get_hand());
+            this.playerHands.put(player, cards);
+        }
+    }
+
+    public ArrayList<Card> getTableCards(){
+        return tableCards;
+    }
+
+    public void setTableCards(ArrayList<Card> tableCards) {
+        this.tableCards = new ArrayList<>();
+        this.tableCards.addAll(tableCards);
+    }
+
+    public Game getGame() {
+        return game;
+    }
+
+    public void setGame(Game game) {
+        this.game = game;
+    }
+    
     @Override
     public String toString() {
         if (betAmount == 0) {
