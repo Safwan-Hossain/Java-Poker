@@ -38,6 +38,10 @@ public class Player implements Serializable
 		this.hand = new ArrayList<>();
 	}
 
+	public boolean isBankrupt() {
+		return chips <= 0;
+	}
+
 	public String getPlayerID() {
 		return playerID;
 	}
@@ -114,7 +118,7 @@ public class Player implements Serializable
 		hand = a;
     }
 
-	public ArrayList<Card> get_hand(){
+	public ArrayList<Card> getHand(){
 		return hand;
 	}
 

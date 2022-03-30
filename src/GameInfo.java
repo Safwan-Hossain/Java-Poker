@@ -128,7 +128,7 @@ public class GameInfo implements Serializable {
     public void setPlayerHands(HashMap<Player, ArrayList<Card>> map) {
         this.playerHands = new HashMap<>();
         for (Player player: map.keySet()) {
-            ArrayList<Card> cards = new ArrayList<>(player.get_hand());
+            ArrayList<Card> cards = new ArrayList<>(player.getHand());
             this.playerHands.put(player, cards);
         }
     }
