@@ -88,7 +88,7 @@ public class ServerGame {
     }
 
     public void removeLosers() {
-        mainGame.removeLoses();
+        mainGame.removeLosers();
     }
 
     // ======== Getters and Setters ========= //
