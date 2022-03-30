@@ -2,7 +2,8 @@ public enum PlayerAction {
     FOLD,
     BET,
     RAISE,
-    CALL;
+    CALL,
+    CHECK;
 
     public boolean isABet() {
         return this == BET || this == RAISE;
