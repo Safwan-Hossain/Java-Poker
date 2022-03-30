@@ -32,29 +32,30 @@ public class ClientHandler implements Runnable {
             try {
                 // First message is client username
                 if (clientName == null) {
-                    GameInfo clientSetupInfo = (GameInfo) inputStream.readObject();
-                    clientName = clientSetupInfo.getPlayerName();
-                    clientSetupInfo = new GameInfo(clientID, clientName);
-                    clientSetupInfo.setUpdateType(UpdateType.CONNECTION_STATUS);
-                    clientSetupInfo.setConnectionStatus(ConnectionStatus.JOINED);
-                    updateClient(clientSetupInfo);
-                    clientSetupInfo.setUpdateType(UpdateType.CONNECTION_STATUS);
-                    clientSetupInfo.setConnectionStatus(ConnectionStatus.JOINED);
-                    //updateOtherClients(clientSetupInfo);
+                    setUpClient();
                     serverGame.addPlayer(clientName, clientID);
                 }
-
                 gameInfo = (GameInfo) inputStream.readObject();
                 serverGame.setGameInfo(gameInfo);
                 serverGame.setHasPlayerResponded(true);
-                //updateAllClients(gameInfo);
-                //System.out.println(gameInfo);
             } catch (IOException | ClassNotFoundException e) {
                 closeEverything();
                 break;
             }
         }
 
+    }
+
+    private void setUpClient() throws IOException, ClassNotFoundException {
+        GameInfo clientSetupInfo = (GameInfo) inputStream.readObject();
+        clientName = clientSetupInfo.getPlayerName();
+
+        clientSetupInfo = new GameInfo(clientID, clientName);
+        clientSetupInfo.setUpdateType(UpdateType.CONNECTION_STATUS);
+        clientSetupInfo.setConnectionStatus(ConnectionStatus.JOINED);
+
+        updateClient(clientSetupInfo);
+        updateOtherClients(clientSetupInfo);
     }
 
     public static void updateAllClients(GameInfo gameInfo) {
