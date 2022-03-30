@@ -1,5 +1,8 @@
 dist
 cabal-dev
+3xa3poker_l02_grp12.iml
+out/
+.idea/
 *.o
 *.hi
 *.chi
@@ -22,3 +25,4 @@ cabal.config
 *.out
 *.snm
 *-nup.pdf
+*.class

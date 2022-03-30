@@ -1,57 +1,95 @@
 import java.io.Serializable;
 
 public class GameInfo implements Serializable {
-    public enum playerActions{FOLD, BET, RAISE, CALL}
 
-    private Game game;
-    private String playerWithTurn; // Name of player who has the current turn
-    private String message; // Any messages from the server
+    // REQUIRED EVERYTIME MESSAGE IS SENT
+    private final String clientID; // ID of client (player) who performed action
+    private final String playerName; // Name of player who performed an action
 
-    private String playerName; // Name of player who performed an action
-    private playerActions playerAction; // The type of action performed by a player
+    // USED TO DEFINE WHAT TYPE OF INFORMATION IS BEING SENT
+    private UpdateType updateType;
+
+    // USED TO SEND PLAYER ACTIONS
+    private PlayerAction playerAction; // The type of action performed by a player
     private int amount; // amount of chips a player puts in for a bet or raise (0 if fold/call/check)
 
+    // USED TO SEND DIFFERENT UPDATES e.g, player has disconnected
+    private boolean gameHasStarted;
+    private ConnectionStatus connectionStatus;
 
-    public GameInfo(Game game, String message, String playerWithTurn, playerActions playerAction, String playerName, int amount) {
-        this.game = game;
-        this.message = message;
-        this.playerWithTurn = playerWithTurn;
+    // USED TO BROADCAST SERVER MESSAGE
+    private String serverMessage;
+
+    public GameInfo(String clientID, String playerName, PlayerAction playerAction, int amount) {
+        this.clientID = clientID;
         this.playerName = playerName;
-        this.playerAction = playerAction;
-        this.amount = amount;
     }
 
-    public GameInfo(String playerName, playerActions playerAction, int amount) {
-        this.game = null;
-        this.message = null;
-        this.playerWithTurn = null;
+    public GameInfo(String clientID, String playerName) {
+        this.clientID = clientID;
         this.playerName = playerName;
-        this.playerAction = playerAction;
-        this.amount = amount;
     }
 
-    public Game getGame() {
-        return game;
+    // DUMMY CODE -- NOT GOING TO BE ON FINAL CODE
+    public GameInfo() {
+        this.clientID = "";
+        this.playerName = "";
     }
 
-    public String getMessage() {
-        return message;
+    public String getServerMessage() {
+        return serverMessage;
     }
 
-    public String getPlayerWithTurn() {
-        return playerWithTurn;
+    public void setServerMessage(String serverMessage) {
+        this.serverMessage = serverMessage;
     }
 
-    public playerActions getPlayerAction() {
-        return playerAction;
+    public UpdateType getUpdateType() {
+        return updateType;
+    }
+
+    public void setUpdateType(UpdateType updateType) {
+        this.updateType = updateType;
+    }
+
+    public String getClientID() {
+        return clientID;
     }
 
     public String getPlayerName() {
         return playerName;
     }
 
+    public boolean hasGameStarted() {
+        return gameHasStarted;
+    }
+
+    public void setGameHasStarted(boolean gameHasStarted) {
+        this.gameHasStarted = gameHasStarted;
+    }
+
+    public ConnectionStatus getConnectionStatus() {
+        return connectionStatus;
+    }
+
+    public void setConnectionStatus(ConnectionStatus connectionStatus) {
+        this.connectionStatus = connectionStatus;
+    }
+
+    public PlayerAction getPlayerAction() {
+        return playerAction;
+    }
+
+    public void setPlayerAction(PlayerAction playerAction) {
+        this.playerAction = playerAction;
+    }
+
     public int getAmount() {
         return amount;
+    }
+
+    public void setAmount(int amount) {
+        this.amount = amount;
     }
 
     @Override
