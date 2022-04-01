@@ -43,10 +43,36 @@ public class HandEval
 	return "high card";
 	}
 
+	private static ArrayList<Card> organizeCards(ArrayList<Card> cards) {
+
+		ArrayList<Card> unorganizedCards = new ArrayList<>(cards);
+		ArrayList<Card> organizedCards = new ArrayList<>();
+
+		while (organizedCards.size() < cards.size()) {
+			Card lowestCard = unorganizedCards.get(0);
+
+			for (Card card: unorganizedCards) {
+				if (card.getRank() < lowestCard.getRank() &&
+					!organizedCards.contains(card)) {
+					lowestCard = card;
+				}
+			}
+
+			organizedCards.add(lowestCard);
+			unorganizedCards.remove(lowestCard);
+		}
+
+		if (organizedCards.size() != cards.size()) {
+			throw new RuntimeException("Hands dont match up");
+		}
+
+		return organizedCards;
+	}
 	//NOTE: FOR NOW ACES ARE ONLY HIGH
 	// evaluates the hand -- need to produce a score - ScoreT with [score for hand type, rank of highest card] - scores go from 0-9 while ranks go 2-14
-	public int[] evaluate(ArrayList<Card> a)
+	public int[] evaluate(ArrayList<Card> cards)
 	{
+		ArrayList<Card> a = organizeCards(cards);
         int[] score = new int[] {0, 2};
 
         boolean fl = false;
