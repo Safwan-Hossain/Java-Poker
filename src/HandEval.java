@@ -14,10 +14,10 @@ public class HandEval
 	// TEMPORARY
 	public static String getHandName(int[] score) {
 		if (score[0] == 9 && score[1] == 14) {
-			System.out.println("royal flush");
+			return "royal flush";
 		}
 		else if (score[0] == 8) {
-			System.out.println("straight flush");
+			return "straight flush";
 		}
 		else if (score[0] == 7) {
 			return "four of a kind";
@@ -194,10 +194,7 @@ public class HandEval
 		}
 		return false;
 	}
-	
-	
-	
-	
+
 	// checks for triple
 	public static boolean triple(ArrayList<Card> a)
 	{
@@ -214,6 +211,7 @@ public class HandEval
 		int check = 0;
 		for(int counter = 1; counter < a.size(); counter++)
 		{
+
 			if (a.get(counter - 1).rank == a.get(counter).rank)
 			{
 				check++;
