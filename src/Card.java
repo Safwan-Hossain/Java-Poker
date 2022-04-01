@@ -7,11 +7,19 @@ import java.io.Serializable;
  *  Card class
  */
 
-public class Card implements Serializable
+public class Card implements Serializable, Comparable<Card>
 {
   // I.V.s are suit and rank
 	public int suit;
 	public int rank;
+
+	public int getSuit() {
+		return suit;
+	}
+
+	public int getRank() {
+		return rank;
+	}
 	
 	public boolean greater_than(Card o) 
 	{
@@ -41,5 +49,10 @@ public class Card implements Serializable
 		}
 
 		return rankName + " of " + suitName;
+	}
+
+	@Override
+	public int compareTo(Card card) {
+		return Integer.compare(this.rank, card.rank);
 	}
 }
