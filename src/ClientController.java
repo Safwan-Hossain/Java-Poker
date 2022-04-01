@@ -126,7 +126,8 @@ public class ClientController {
 
     private void listenForIncomingMessages() {
         try {
-            while (client.IsConnectedToServer()) {
+            // TODO  --
+            while (client.isConnectedToServer() && !myPlayerLost) {
                 GameInfo gameInfo = (GameInfo) client.listenForMessage();
                 deconstructGameInfo(gameInfo);
             }
