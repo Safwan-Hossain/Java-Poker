@@ -1,12 +1,5 @@
 import java.io.Serializable;
 
-/***********************
- *  Assignment 4
- *  Andreas Hadjigeorgiou
- *  ahh2131
- *  Card class
- */
-
 public class Card implements Serializable, Comparable<Card>
 {
   // I.V.s are suit and rank
