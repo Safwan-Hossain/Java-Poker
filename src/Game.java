@@ -68,10 +68,16 @@ public class Game implements Serializable {
     }
 
     public void initializeRound() {
+        this.turnCounter = 0;
+        this.totalPot = 0;
+        this.minimumCallAmount = bigBlind;
+        this.minimumBetAmount = bigBlind * 2;
         this.roundState = RoundState.PRE_FLOP;
+
         assignRoles();
         assignCards();
-        assignTurn();
+        assignFirstTurn();
+        takeChipsFromBlinds();
     }
 
     public void takeChipsFromBlinds() {
@@ -91,7 +97,7 @@ public class Game implements Serializable {
 
         dealerIndex = (dealerIndex + 1) % players.size();
         smallBlindIndex = (dealerIndex + 1) % players.size();
-        bigBlindIndex = (dealerIndex + 2) % players.size();
+        bigBlindIndex = (smallBlindIndex + 1) % players.size();
 
         players.get(dealerIndex).setRole(PokerRole.DEALER);
         players.get(smallBlindIndex).setRole(PokerRole.SMALL_BLIND);
@@ -104,8 +110,8 @@ public class Game implements Serializable {
             for (Card card: playerHand) {
                 player.addToHand(card);
             }
-            if (playerHand.length > MAX_HAND_SIZE) {
-                throw new RuntimeException("Player has more than 2 cards");
+            if (player.getHand().size() > MAX_HAND_SIZE) {
+                throw new RuntimeException("Player has more than " + MAX_HAND_SIZE + " cards.");
             }
         }
     }
@@ -239,10 +245,15 @@ public class Game implements Serializable {
         getPlayerWithTurn().setTurn(true);
     }
 
+    public boolean isPlayerWithTurnBankrupt() {
+        return getPlayerWithTurn().isBankrupt();
+    }
+
     public void removePlayer(Player player) {
         players.remove(player);
     }
 
+    // TODO
     public void foldPlayer(Player player) {
         unfoldedPlayers.remove(player);
     }
@@ -260,11 +271,13 @@ public class Game implements Serializable {
         Player smallBlind = hashMap.get(PokerRole.SMALL_BLIND);
         Player bigBlind = hashMap.get(PokerRole.BIG_BLIND);
 
-        // TODO check if player exists
-        findPlayerUsingID(dealer).setRole(PokerRole.DEALER);
-        findPlayerUsingID(smallBlind).setRole(PokerRole.SMALL_BLIND);
-        findPlayerUsingID(bigBlind).setRole(PokerRole.BIG_BLIND);
+        getPlayer(dealer).setRole(PokerRole.DEALER);
+        getPlayer(smallBlind).setRole(PokerRole.SMALL_BLIND);
+        getPlayer(bigBlind).setRole(PokerRole.BIG_BLIND);
 
+        dealerIndex = players.indexOf(getPlayer(dealer));
+        smallBlindIndex = players.indexOf(getPlayer(smallBlind));
+        bigBlindIndex = players.indexOf(getPlayer(bigBlind));
     }
 
     public ArrayList<Card> getPlayerHand(Player player) {
@@ -319,11 +332,19 @@ public class Game implements Serializable {
     }
 
     public void advanceRoundState() {
+        endRoundState();
         this.roundState = RoundState.getNextRoundState(roundState);
+        updateTableCards();
+    }
+
+    public void endRoundState() {
         for (Player player: playerBettings.keySet()) {
             playerBettings.put(player, 0);
         }
-        updateTableCards();
+        lastBetter = null;
+        turnCounter = 0;
+        minimumCallAmount = 0;
+        minimumBetAmount = smallBlind;
     }
 
     public void giveChipsToWinners() {
