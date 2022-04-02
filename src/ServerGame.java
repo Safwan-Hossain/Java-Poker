@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Objects;
 
 public class ServerGame {
@@ -83,6 +84,18 @@ public class ServerGame {
         mainGame.giveNextPlayerTurn();
     }
 
+    public ArrayList<Player> getPlayers() {
+        return mainGame.getPlayers();
+    }
+
+    public HashMap<PokerRole, Player> getPlayersWithRoles() {
+        return mainGame.getPlayersWithRoles();
+    }
+
+    public ArrayList<Card> getTableCards() {
+        return mainGame.getTableCards();
+    }
+
     public void giveChipsToWinners() {
         mainGame.giveChipsToWinners();
     }
@@ -91,6 +104,12 @@ public class ServerGame {
         mainGame.removeLosers();
     }
 
+    public ArrayList<Player> getWinningPlayers() {
+        return mainGame.getWinningPlayers();
+    }
+    public ArrayList<Player> getPlayersWithNoChips() {
+        return mainGame.getPlayersWithNoChips();
+    }
     // ======== Getters and Setters ========= //
 
     public Game getMainGame() {
@@ -156,5 +175,9 @@ public class ServerGame {
 
     public void endRound() {
         mainGame.endRound();
+    }
+
+    public boolean isGameOver() {
+        return mainGame.isGameOver();
     }
 }
