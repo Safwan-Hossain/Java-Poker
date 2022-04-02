@@ -421,6 +421,106 @@ public class Game implements Serializable {
         return highestScore;
     }
 
+    public ArrayList<Player> getWinningPlayers() {
+        ArrayList<Player> winners = new ArrayList<>();
+        int[] highestScore = getHighestScore();
+        for (Player player: players) {
+            int[] currScore = getScore(player);
+            if (highestScore[0] == currScore[0] &&
+                    highestScore[1] == currScore[1]) {
+                winners.add(player);
+            }
+        }
+        return winners;
+    }
 
+    private boolean canCheck(Player player) {
+        if (playerBettings.get(player) == minimumCallAmount) {
+            return true;
+        }
+
+        for (Player currPlayer : playerBettings.keySet()) {
+            if (playerBettings.get(currPlayer) > 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean canBet() {
+        return lastBetter == null;
+    }
+
+    public HashSet<PlayerAction> getValidActions(Player player) {
+        Player localPlayer = getPlayer(player);
+        HashSet<PlayerAction> validActions = new HashSet<>();
+
+        int playerBetPower = localPlayer.getChips() + playerBettings.get(localPlayer);
+        if (playerBetPower > minimumCallAmount) {
+            if (canBet()) {
+                validActions.add(PlayerAction.BET);
+            }
+            else {
+                validActions.add(PlayerAction.RAISE);
+            }
+        }
+        if (canCheck(localPlayer)) {
+            validActions.add(PlayerAction.CHECK);
+        }
+        else {
+            validActions.add(PlayerAction.CALL);
+        }
+        validActions.add(PlayerAction.FOLD);
+
+        return validActions;
+    }
+
+    public int getPlayerSidePot(Player player) {
+        if (playerBettings.containsKey(player)) {
+            return playerBettings.get(player);
+        }
+        return playerBettings.get(getPlayer(player));
+    }
+
+    public int getPlayerBettingPower(Player player) {
+        Player localPlayer = getPlayer(player);
+        return playerBettings.get(localPlayer) + localPlayer.getChips();
+    }
+
+    public int getMinimumCallAmount() {
+        return minimumCallAmount;
+    }
+
+    public int getMinimumBetAmount() {
+        return this.minimumBetAmount;
+    }
+
+    public RoundState getRoundState() {
+        return roundState;
+    }
+
+    public void setRoundState(RoundState roundState) {
+        this.roundState = roundState;
+    }
+
+    public boolean hasGameStarted() {
+        return hasGameStarted;
+    }
+
+    public void setHasGameStarted(boolean hasGameStarted) {
+        this.hasGameStarted = hasGameStarted;
+    }
+
+    public boolean hasGameEnded() {
+        return hasGameEnded;
+    }
+
+    public void setHasGameEnded(boolean hasGameEnded) {
+        this.hasGameEnded = hasGameEnded;
+    }
+
+    public int getTotalPot() {
+        return totalPot;
+    }
 
 }
