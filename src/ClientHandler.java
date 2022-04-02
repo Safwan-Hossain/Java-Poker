@@ -4,7 +4,8 @@ import java.util.ArrayList;
 
 public class ClientHandler implements Runnable {
 
-    public static ArrayList<ClientHandler> clientHandlers = new ArrayList<>();
+    public static volatile ArrayList<ClientHandler> clientHandlers = new ArrayList<>();
+    private static volatile boolean isUpdating = false;
     private static ServerGame serverGame;
     private Socket socket;
     private ObjectOutputStream outputStream;
@@ -63,9 +64,16 @@ public class ClientHandler implements Runnable {
     }
 
     public static void updateAllClients(GameInfo gameInfo) {
+        isUpdating = true;
         for (ClientHandler clientHandler : clientHandlers) {
-            clientHandler.updateClient(gameInfo);
+            if (clientHandler != null) {
+                if (gameInfo.getUpdateType().equals(UpdateType.NEW_ROUND_STATE) && gameInfo.getRoundState().equals(RoundState.SHOWDOWN)) {
+                    System.out.println("Showdown update for: " + clientHandler.getClientName());
+                }
+                clientHandler.updateClient(gameInfo);
+            }
         }
+        isUpdating = false;
     }
 
     public static void startGame(GameInfo gameInfo) {
@@ -109,7 +117,11 @@ public class ClientHandler implements Runnable {
             if (socket != null) {
                 socket.close();
             }
-            System.out.println("CLIENT HANDLER: CLOSED EVERYTHING");
+            while (isUpdating) {
+                Thread.onSpinWait();
+            }
+            clientHandlers.remove(this);
+            System.out.println("CLIENT HANDLER: CLOSED EVERYTHING FOR: " + clientName);
         } catch (IOException e) {
             e.printStackTrace();
         }
