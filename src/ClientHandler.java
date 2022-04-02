@@ -74,11 +74,7 @@ public class ClientHandler implements Runnable {
         }
     }
 
-//    private void updateAllClients(GameInfo gameInfo) throws IOException {
-//        this.outputStream.writeObject(gameInfo);
-//        this.outputStream.flush();
-//        updateOtherClients(gameInfo);
-//    }
+
     public void updateClient(GameInfo gameInfo) {
         try {
             this.outputStream.writeObject(gameInfo);
