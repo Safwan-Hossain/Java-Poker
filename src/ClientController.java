@@ -118,20 +118,29 @@ public class ClientController {
     }
 
     private void performGameAction(Scanner scanner) throws IOException {
-        PlayerAction playerAction = getValidPlayerAction(scanner);
-        int amount = getValidBet(playerAction, scanner);
+        if (myGame.getPlayer(myPlayer).isBankrupt()) {
+            client.sendMessage(getPlayerActionInfo(PlayerAction.WAIT, 0));
+            return;
+        }
+        PlayerAction playerAction = null;
+        int amount = -1;
 
-        client.sendMessage(createPlayerActionInfo(playerAction, amount));
-        myGame.getPlayer(myPlayer).setTurn(false);
+        GameView.displayReceivedTurnMessage();
+        while (amount < 0) {
+            playerAction = getValidPlayerAction(scanner);
+            if (!playerAction.isABet()) { break; }
+            amount = getValidBet(playerAction, scanner);
+        }
+        client.sendMessage(getPlayerActionInfo(playerAction, amount));
     }
 
     private void waitForTurn() {
-        while (!myPlayerHasTurn()) {
+        while (!gameHasEnded && !myPlayerLost && !myPlayerHasTurn()) {
             Thread.onSpinWait();
         }
     }
 
-    private GameInfo createPlayerActionInfo(PlayerAction playerAction, int amount) {
+    private GameInfo getPlayerActionInfo(PlayerAction playerAction, int amount) {
         GameInfo gameInfo = new GameInfo(client.getClientID(), myPlayer.name);
 
         gameInfo.setPlayerWithTurn(myGame.getPlayer(myPlayer));
@@ -161,13 +170,21 @@ public class ClientController {
         }
 
         switch (gameInfo.getUpdateType()) {
+            case GAME_ENDED -> {
+                Player winner = gameInfo.getWinningPlayers().get(0);
+                GameView.displayGameOverScreen(winner);
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException ignored) {
+                }
+                gameHasEnded = true;
+            }
             case GAME_STARTED -> startGame(gameInfo);
             case NEW_ROUND_STATE -> updateRoundState(gameInfo);
             case PLAYER_TURN -> updateTurn(gameInfo);
             case PLAYER_ACTION -> applyPlayerAction(gameInfo);
             case CONNECTION_STATUS -> playerConnectionUpdate(gameInfo);
             case SERVER_MESSAGE -> GameView.displayServerMessage(gameInfo.getServerMessage());
-            case GAME_ENDED -> endGame(gameInfo);
         }
     }
 
@@ -195,16 +212,21 @@ public class ClientController {
     private void updateRoundState(GameInfo gameInfo) {
         RoundState roundState = gameInfo.getRoundState();
         GameView.displayNewRoundState(roundState);
+        myGame.endRoundState();
         switch (roundState) {
             case PRE_FLOP -> {
                 updateRoles(gameInfo);
                 updateAllHands(gameInfo);
+                myGame.takeChipsFromBlinds();
+                DisplayMyPlayerHUD();
                 updateTurn(gameInfo);
             }
             case FLOP, TURN, RIVER -> {
                 updateTableCards(gameInfo);
             }
             case SHOWDOWN -> {
+                updateAllHands(gameInfo);
+                updatePlayers(gameInfo);
                 displayHands();
                 displayWinners(gameInfo);
                 displayLosers(gameInfo);
@@ -245,10 +267,10 @@ public class ClientController {
         }
     }
 
-    private void displayWinners() {
-        ArrayList<Player> winningPlayers = myGame.getWinningPlayers();
-        String winningHand = HandEval.getHandName(myGame.getHighestScore());
-        GameView.displayCurrentRoundWinners(winningPlayers, winningHand);
+    private void displayWinners(GameInfo gameInfo) {
+        ArrayList<Player> winningPlayers = gameInfo.getWinningPlayers();
+        String nameOfWinningHand = gameInfo.getNameOfWinningHand();
+        GameView.displayCurrentRoundWinners(winningPlayers, nameOfWinningHand);
     }
 
     private void checkIfMyPlayerLost(GameInfo gameInfo) {
@@ -270,7 +292,7 @@ public class ClientController {
     private void updateTableCards(GameInfo gameInfo) {
         ArrayList<Card> tableCards = gameInfo.getTableCards();
         myGame.setTableCards(tableCards);
-        GameView.displayPlayerHUD(tableCards, myGame.getPlayerHand(myPlayer));
+        GameView.displayPlayerHUD(tableCards, myGame.getPlayerHand(myPlayer), myGame.getTotalPot(), myGame.getPlayer(myPlayer).getChips());
     }
 
     private void updateTurn(GameInfo gameInfo) {
@@ -304,13 +326,11 @@ public class ClientController {
     }
 
     private void playerConnectionUpdate(GameInfo gameInfo) {
-        // TODO should not be playerWithTurn
-        GameView.displayConnectionUpdate(gameInfo.getPlayerWithTurn(), gameInfo.getConnectionStatus());
+        GameView.displayConnectionUpdate(gameInfo.getPlayerName(), gameInfo.getConnectionStatus());
     }
 
     private PlayerAction getValidPlayerAction(Scanner scanner) {
-        GameView.displayReceivedTurnMessage();
-        ArrayList<PlayerAction> validActions = myGame.getValidActions();
+        HashSet<PlayerAction> validActions = myGame.getValidActions(myPlayer);
 
         while (true) {
             System.out.println("Minimum call amount: " + myGame.getMinimumCallAmount());
@@ -329,14 +349,9 @@ public class ClientController {
     }
 
     private int getValidBet(PlayerAction playerAction, Scanner scanner) {
-        if (!playerAction.isABet()) {
-            return 0;
-        }
-
         int amount = -1;
-        // TODO - Make getMinBetAmount method
-        int minimumAmount = myGame.getMinimumCallAmount();
-        //TODO
+        int minimumAmount = Math.min(myGame.getMinimumBetAmount(), myGame.getPlayerBettingPower(myPlayer));
+
         while (amount < minimumAmount /* !player.CanBet(amount)*/) {
             GameView.askForABetAmount(playerAction, minimumAmount, CANCEL_BET_VALUE);
             String input = scanner.nextLine().strip();
