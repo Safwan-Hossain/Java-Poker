@@ -45,6 +45,23 @@ public class GameView {
         System.out.println(message);
     }
 
+    public static void displayGameOverScreen(Player winner) {
+        String winnerName = winner.getName().toUpperCase();
+        int winnerChips = winner.getChips();
+        String winnerMessage = " ".repeat(5) + winnerName + " wins with " + winnerChips + " total chips!" + " ".repeat(5);
+        String gameOverDash = "- ".repeat(winnerMessage.length() / 4);
+        gameOverDash = gameOverDash.substring(0, gameOverDash.length() - 1);
+        String gameOverText = "GAME OVER";
+        String gameOverMessage = gameOverDash + " " + gameOverText + " " + gameOverDash;
+        String winnerMessageSpacing = " ".repeat((gameOverMessage.length() - winnerMessage.length()) / 2);
+        winnerMessage = winnerMessageSpacing + winnerMessage + winnerMessageSpacing;
+        String horizontalDivider = "=".repeat(gameOverMessage.length());
+
+        String finalMessage = "\n" + horizontalDivider + "\n" + gameOverMessage + "\n" + horizontalDivider  + "\n\n" +
+                                 winnerMessage + "\n\n" + horizontalDivider + "\n\n";
+        System.out.println(finalMessage);
+    }
+
     public static void displayPlayerLostMessage(Player player) {
         System.out.println(player.getName().toUpperCase() + " lost. They will be leaving the table.");
     }
