@@ -4,8 +4,6 @@ import java.util.HashMap;
 
 public class Game implements Serializable {
     private int playerWithTurnIndex;
-    private int currentPlayerIndex;
-    private int nextPlayerIndex;
     private int dealerIndex;
     private int smallBlindIndex;
     private int bigBlindIndex;
@@ -34,7 +32,6 @@ public class Game implements Serializable {
     private boolean hasGameEnded;
     private RoundState roundState;
 
-
     public Game(ArrayList<Player> players, int smallBlind) {
         this.deck = new Deck();
         this.tableCards = new ArrayList<>();
@@ -52,8 +49,6 @@ public class Game implements Serializable {
         }
         this.minimumCallAmount = bigBlind;
         this.dealerIndex = 0;
-        this.currentPlayerIndex = 0;
-        this.nextPlayerIndex = 0;
 
         this.hasGameStarted = false;
         this.hasGameEnded = false;
@@ -205,40 +200,6 @@ public class Game implements Serializable {
 
     public void foldPlayer(Player player) {
         unfoldedPlayers.remove(player);
-    }
-
-    public void dealCards() {
-        for (Player player : players) {
-            Card[] playerHand = deck.draw(5);
-            for (Card card: playerHand) {
-                player.insert(card);
-            }
-        }
-    }
-
-    private Player getNextPlayer() {
-        if (nextPlayerIndex >= unfoldedPlayers.size()) {
-            throw new RuntimeException("Index out of bounds");
-        }
-
-        Player nextPlayer = unfoldedPlayers.get(nextPlayerIndex);
-        currentPlayerIndex = nextPlayerIndex;
-        nextPlayerIndex = (nextPlayerIndex + 1) % unfoldedPlayers.size();
-
-        return nextPlayer;
-    }
-
-    private Player getCurrentPlayer() {
-        if (currentPlayerIndex >= unfoldedPlayers.size()) {
-            throw new RuntimeException("Index out of bounds");
-        }
-
-        return unfoldedPlayers.get(currentPlayerIndex);
-    }
-
-    public void giveNextTurn() {
-        getCurrentPlayer();
-        getNextPlayer().giveTurn();
     }
 
     public HashMap<PokerRole, Player> getPlayersWithRoles() {
