@@ -54,8 +54,8 @@ public class GameInfo implements Serializable {
         return isHost;
     }
 
-    public void setHost(boolean host) {
-        isHost = host;
+    public void setIsHost(boolean isHost) {
+        this.isHost = isHost;
     }
 
     public boolean isGameHasStarted() {
