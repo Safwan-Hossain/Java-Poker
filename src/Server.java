@@ -51,6 +51,38 @@ public class Server {
         }
     }
 
+    private boolean isGameOver() {
+        return serverGame.isGameOver();
+    }
+
+    private ArrayList<String> getAllPlayerIDs() {
+        ArrayList<String> playerIDs = new ArrayList<>();
+        ArrayList<Player> players = serverGame.getPlayers();
+        for (Player player: players) {
+            playerIDs.add(player.getPlayerID());
+        }
+        return playerIDs;
+    }
+
+    private boolean everyClientHandlerHasAPlayer() {
+        ArrayList<String> playerIDs = getAllPlayerIDs();
+        for (ClientHandler clientHandler : ClientHandler.clientHandlers) {
+            String clientID = clientHandler.getClientID();
+            if (!playerIDs.contains(clientID)) {
+                System.out.println("Client Name: " + clientHandler.getClientName());
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private GameInfo getGameEndedInfo() {
+        GameInfo gameInfo = new GameInfo("Server", "Server");
+        gameInfo.setUpdateType(UpdateType.GAME_ENDED);
+        gameInfo.setWinningPlayers(serverGame.getPlayers());
+        return gameInfo;
+    }
+
     private GameInfo getNewRoundStateInfo() {
         GameInfo gameInfo = new GameInfo("Server", "Server");
         gameInfo.setRoundState(serverGame.getMainGame().getRoundState());
