@@ -5,7 +5,8 @@ import java.net.Socket;
 import java.util.Scanner;
 
 public class MainController {
-    private static final int MAX_NUM_OPTIONS = 3;
+    //TODO - might want to change back to 3. Last 2 options are debugs.
+    private static final int MAX_NUM_OPTIONS = 5;
     private static String username;
 
     private static ClientController clientController;
@@ -106,9 +107,6 @@ public class MainController {
         if (server != null) {
             server.closeServer();
         }
-        if (clientController != null) {
-            clientController.closeController();
-        }
         System.exit(0);
     }
 
@@ -120,6 +118,8 @@ public class MainController {
             }
             case 2 -> joinServer(scanner);
             case 3 -> exitProgram();
+            case 4 -> quickStartAndJoinServer(scanner);
+            case 5 -> quickJoinLocalServer(scanner);
             default -> { }
         }
     }
@@ -138,7 +138,19 @@ public class MainController {
         enterProgram();
     }
 
+    // =-=-= DEBUG METHODS =-=-=
+    private static void quickStartAndJoinServer(Scanner scanner) throws IOException {
+        hostServer();
+        socket = new Socket(InetAddress.getLocalHost(), 101);
+        username = "Host";
+        clientController = new ClientController(socket, username, true);
+        clientController.startController(scanner);
+    }
 
-
-
+    private static void quickJoinLocalServer(Scanner scanner) throws IOException {
+        socket = new Socket(InetAddress.getLocalHost(), 101);
+        username = "Player " + (int) (Math.random() * 100 + 1);
+        clientController = new ClientController(socket, username, false);
+        clientController.startController(scanner);
+    }
 }
