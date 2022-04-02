@@ -2,6 +2,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Scanner;
 
 public class ClientController {
@@ -57,7 +58,7 @@ public class ClientController {
         try {
             clientSetUpInfo = (GameInfo) client.listenForMessage();
             client.setClientID(clientSetUpInfo.getClientID());
-        } catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException ignored) {
         }
     }
 
@@ -312,6 +313,9 @@ public class ClientController {
         ArrayList<PlayerAction> validActions = myGame.getValidActions();
 
         while (true) {
+            System.out.println("Minimum call amount: " + myGame.getMinimumCallAmount());
+            System.out.println("Minimum bet amount: " + myGame.getMinimumBetAmount());
+            System.out.println("Your side pot: " + myGame.getPlayerSidePot(myPlayer));
             GameView.askForAnAction(validActions);
             String input = scanner.nextLine();
             if (PlayerAction.actionIsValid(input)) {
