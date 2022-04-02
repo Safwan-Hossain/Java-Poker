@@ -136,6 +136,13 @@ public class Server {
         }
     }
 
+    private void waitForPlayerToRespond() {
+        while (!serverGame.hasPlayerResponded()) {
+            Thread.onSpinWait();
+        }
+        serverGame.setHasPlayerResponded(false);
+    }
+
     private GameInfo getTurnInfo() {
         GameInfo gameInfo = new GameInfo("Server", "Server");
         gameInfo.setUpdateType(UpdateType.PLAYER_TURN);
@@ -143,12 +150,6 @@ public class Server {
         return gameInfo;
     }
 
-    private void waitForPlayerToRespond() {
-        while (!serverGame.hasPlayerResponded()) {
-            Thread.onSpinWait();
-        }
-        serverGame.setHasPlayerResponded(false);
-    }
 
     private GameInfo getStartGameInfo() {
         GameInfo gameInfo = new GameInfo("Server", "Server");
