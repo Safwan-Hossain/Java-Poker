@@ -36,6 +36,10 @@ public class ClientHandler implements Runnable {
                     serverGame.addPlayer(clientName, clientID);
                 }
                 gameInfo = (GameInfo) inputStream.readObject();
+                if (gameInfo.getUpdateType() == UpdateType.PLAYER_QUIT) {
+                    closeEverything();
+                    return;
+                }
                 serverGame.setGameInfo(gameInfo);
                 serverGame.setHasPlayerResponded(true);
             } catch (IOException | ClassNotFoundException e) {
