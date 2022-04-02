@@ -115,4 +115,13 @@ public class ClientHandler implements Runnable {
         }
     }
 
+    public String getClientName() {
+        return clientName;
+    }
+
+    public String getClientID() {
+        return clientID;
+    }
+
+
 }
