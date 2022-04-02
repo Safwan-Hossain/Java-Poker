@@ -47,11 +47,11 @@ public class Server {
                     serverGame.removeLosers();
                     showdownGameInfo.setPlayers(serverGame.getPlayers());
                     ClientHandler.updateAllClients(showdownGameInfo);
-                    waitForNumOfSeconds(3);
+                    waitForNumOfSeconds(2);
                     break;
                 }
                 ClientHandler.updateAllClients(getNewRoundStateInfo());
-                waitForNumOfSeconds(2);
+                waitForNumOfSeconds(1);
                 serverGame.giveNextPlayerTurn();
                 ClientHandler.updateAllClients(getTurnInfo());
             }
@@ -157,7 +157,6 @@ public class Server {
         while (!serverGame.isRoundStateOver()) {
             waitForPlayerToRespond();
             serverGame.applyPlayerAction(serverGame.getGameInfo());
-            waitForNumOfSeconds(0.4);
             ClientHandler.updateAllClients(serverGame.getGameInfo());
             if (!serverGame.isRoundStateOver()) {
                 serverGame.giveNextPlayerTurn();

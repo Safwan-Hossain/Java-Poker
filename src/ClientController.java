@@ -119,6 +119,12 @@ public class ClientController {
 
     private void performGameAction(Scanner scanner) throws IOException {
         if (myGame.getPlayer(myPlayer).isBankrupt()) {
+            // TODO - remove sleep
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             client.sendMessage(getPlayerActionInfo(PlayerAction.WAIT, 0));
             return;
         }
