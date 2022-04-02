@@ -31,23 +31,48 @@ public class Server {
     }
 
     private void runGame() {
-        while (true) {
+        while (!isGameOver()) {
             serverGame.initializeRound();
             ClientHandler.updateAllClients(getNewRoundInfo());
 
             while (true) {
-                if (serverGame.getRoundState().equals(RoundState.SHOWDOWN)) {
-                    ClientHandler.updateAllClients(getNewRoundStateInfo());
-                    showDown();
-                    break;
-                }
                 takeBets();
                 advanceRoundState();
+                if (serverGame.getRoundState().equals(RoundState.SHOWDOWN)) {
+                    serverGame.giveChipsToWinners();
+                    GameInfo showdownGameInfo = getNewRoundStateInfo();
+                    serverGame.removeLosers();
+                    showdownGameInfo.setPlayers(serverGame.getPlayers());
+                    ClientHandler.updateAllClients(showdownGameInfo);
+                    waitForNumOfSeconds(3);
+                    break;
+                }
                 ClientHandler.updateAllClients(getNewRoundStateInfo());
+                waitForNumOfSeconds(2);
                 serverGame.giveNextPlayerTurn();
                 ClientHandler.updateAllClients(getTurnInfo());
             }
-            endRound();
+            serverGame.endRound();
+
+//            System.out.println("SERVER POINT: 1");
+            while (!everyClientHandlerHasAPlayer()) {
+                waitForNumOfSeconds(0.1);
+            }
+//            System.out.println("SERVER POINT: 2");
+        }
+//        System.out.println("SERVER POINT: 3");
+        ClientHandler.updateAllClients(getGameEndedInfo());
+        while (ClientHandler.clientHandlers.size() > 0) {
+            waitForNumOfSeconds(0.5);
+        }
+//        System.out.println("SERVER POINT: 4");
+        closeServer();
+    }
+
+    private void waitForNumOfSeconds(double numOfSeconds) {
+        try {
+            Thread.sleep((int) numOfSeconds * 1000L);
+        } catch (InterruptedException ignored) {
         }
     }
 
@@ -104,22 +129,9 @@ public class Server {
         }
         return gameInfo;
     }
-    private void showDown() {
-        serverGame.giveChipsToWinners();
-        serverGame.removeLosers();
-    }
 
     private void advanceRoundState() {
         serverGame.advanceRoundState();
-    }
-
-    private void endRound() {
-        serverGame.endRound();
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException ignored) {
-
-        }
     }
 
     // TODO - incomplete method
@@ -141,6 +153,7 @@ public class Server {
         while (!serverGame.isRoundStateOver()) {
             waitForPlayerToRespond();
             serverGame.applyPlayerAction(serverGame.getGameInfo());
+            waitForNumOfSeconds(0.4);
             ClientHandler.updateAllClients(serverGame.getGameInfo());
             if (!serverGame.isRoundStateOver()) {
                 serverGame.giveNextPlayerTurn();
