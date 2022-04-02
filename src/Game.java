@@ -1,8 +1,12 @@
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Game implements Serializable {
+    private final int MAX_HAND_SIZE;
+
     private int playerWithTurnIndex;
     private int dealerIndex;
     private int smallBlindIndex;
@@ -12,9 +16,8 @@ public class Game implements Serializable {
     private int bigBlind;
 
     private int minimumCallAmount;
+    private int minimumBetAmount;
     private int totalPot;
-
-    private final int MAX_HAND_SIZE;
 
     private Deck deck;
     private ArrayList<Player> players;
@@ -29,21 +32,22 @@ public class Game implements Serializable {
     private RoundState roundState;
 
     public Game(ArrayList<Player> players, int smallBlind) {
-        this.deck = new Deck();
-        this.tableCards = new ArrayList<>();
-        this.players = players;
-
-        this.smallBlind = smallBlind;
-        this.bigBlind = smallBlind * 2;
-        this.totalPot = 0;
-
         this.MAX_HAND_SIZE = 2;
 
+        //Sets up cards and players
+        this.deck = new Deck();
+        this.tableCards = new ArrayList<>();
+        this.players = new ArrayList<>(players);
         this.playerBettings = new HashMap<>();
         for (Player player: players) {
             playerBettings.put(player, 0);
         }
-        this.minimumCallAmount = bigBlind;
+
+        //Sets up chip values
+        this.smallBlind = smallBlind;
+        this.bigBlind = smallBlind * 2;
+        this.totalPot = 0;
+
         this.dealerIndex = 0;
 
         this.hasGameStarted = false;
