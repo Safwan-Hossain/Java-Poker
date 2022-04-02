@@ -8,6 +8,8 @@ public class GameInfo implements Serializable {
     private final String clientID; // ID of client (player) who performed action
     private final String playerName; // Name of player who performed an action
 
+    private boolean isHost;
+
     private Player playerWithTurn; // Player with turn
     private RoundState roundState;
     private HashMap<PokerRole, Player> roles;
@@ -46,6 +48,18 @@ public class GameInfo implements Serializable {
     public GameInfo(String clientID, String playerName) {
         this.clientID = clientID;
         this.playerName = playerName;
+    }
+
+    public boolean isHost() {
+        return isHost;
+    }
+
+    public void setHost(boolean host) {
+        isHost = host;
+    }
+
+    public boolean isGameHasStarted() {
+        return gameHasStarted;
     }
 
     public Player getPlayerWithTurn() {
