@@ -12,6 +12,9 @@ public class Game implements Serializable {
     private int smallBlindIndex;
     private int bigBlindIndex;
 
+    // counts how many players had a turn for the current round phase
+    private int turnCounter;
+
     private int smallBlind;
     private int bigBlind;
 
@@ -52,7 +55,10 @@ public class Game implements Serializable {
 
         this.hasGameStarted = false;
         this.hasGameEnded = false;
-        this.roundState = RoundState.PRE_FLOP;
+    }
+
+    public boolean isGameOver() {
+        return players.size() <= 1;
     }
 
     public void startGame() {
@@ -68,19 +74,12 @@ public class Game implements Serializable {
         assignTurn();
     }
 
-    private void addToTableCards(int numOfCards) {
-        for (Card card: deck.draw(numOfCards)) {
-            tableCards.add(card);
-        }
-    }
+    public void takeChipsFromBlinds() {
+        Player smallBlindPlayer = players.get(smallBlindIndex);
+        Player bigBlindPlayer = players.get(bigBlindIndex);
 
-    public void updateTableCards() {
-        if (roundState == null) { throw new NullPointerException(); }
-        switch (roundState) {
-            case PRE_FLOP, SHOWDOWN -> {}
-            case FLOP -> addToTableCards(3);
-            case TURN, RIVER -> addToTableCards(1);
-        }
+        performBetByPlayer(smallBlindPlayer, smallBlind);
+        performBetByPlayer(bigBlindPlayer, bigBlind);
     }
 
     public void assignRoles() {
@@ -339,20 +338,7 @@ public class Game implements Serializable {
         return tableCards;
     }
     public void setTableCards(ArrayList<Card> tableCards) {
-        this.tableCards = tableCards;
-    }
-
-    public ArrayList<Player> getWinningPlayers() {
-        ArrayList<Player> winners = new ArrayList<>();
-        int[] highestScore = getHighestScore();
-        for (Player player: players) {
-            int[] currScore = getScore(player);
-            if (highestScore[0] == currScore[0] &&
-                highestScore[1] == currScore[1]) {
-                winners.add(player);
-            }
-        }
-        return winners;
+        this.tableCards = new ArrayList<>(tableCards);
     }
 
     public ArrayList<Player> getPlayersWithNoChips() {
