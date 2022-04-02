@@ -4,15 +4,18 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
+ import java.util.Scanner;
 import java.util.UUID;
 
 public class Server {
+    private volatile boolean localHostIsReady;
     private ServerGame serverGame;
     private ArrayList<String> clientIDs = new ArrayList<>();
     private ServerSocket serverSocket;
 
     public Server (ServerSocket serverSocket) {
         this.serverSocket = serverSocket;
+        this.localHostIsReady = false;
     }
 
     public boolean isClosed() {
@@ -136,9 +139,10 @@ public class Server {
 
     // TODO - incomplete method
     private boolean isHostReady() {
-        return serverGame.hasPlayerResponded() &&
+        return (serverGame.hasPlayerResponded() &&
                 serverGame.getGameInfo().getUpdateType().equals(UpdateType.GAME_STARTED) &&
-                serverGame.getGameInfo().hasGameStarted();
+                serverGame.getGameInfo().hasGameStarted()) ||
+                localHostIsReady;
     }
 
     private void waitForHostReady() {
@@ -269,6 +273,12 @@ public class Server {
         ServerSocket serverSocket = new ServerSocket(101);
         Server server = new Server(serverSocket);
         System.out.println(InetAddress.getLocalHost());
+        new Thread(() -> {
+            Scanner scanner = new Scanner(System.in);
+            if (scanner.nextLine().equalsIgnoreCase("start")) {
+                server.localHostIsReady = true;
+            }
+        }).start();
         server.startServer();
     }
 }
