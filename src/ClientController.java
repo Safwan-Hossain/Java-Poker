@@ -40,22 +40,14 @@ public class ClientController {
             leaveTable();
         }
         if (isHost) {
-            askHostToStart(scanner);
+            waitForGameFinish();
         }
-        else {
-            waitForHostReady();
-        }
-
-        GameView.displayGameIsStartingMessage();
-        waitForGameToStart(); // wait for game to initialize and start
-
-        runGame(scanner);
-        closeController();
     }
 
-    public void closeController() {
-        if (client != null) {
-            client.closeEverything();
+    private void waitForGameFinish() {
+        System.out.println("Since you are the host you will have to wait for the game to finish...");
+        while(!gameHasEnded) {
+            Thread.onSpinWait();
         }
     }
 
@@ -185,13 +177,18 @@ public class ClientController {
         gameHasStarted = true;
     }
 
-    private void endGame(GameInfo gameInfo) {
-    }
+    private void leaveTable() {
+        for (Thread thread: runningThreads) {
+            thread.interrupt();
+        }
 
+        GameInfo quitGameInfo = new GameInfo(client.getClientID(), client.getClientName());
+        quitGameInfo.setUpdateType(UpdateType.PLAYER_QUIT);
 
-    private void endGame() {
-        client.closeEverything();
-        System.exit(0);
+        try {
+            client.sendMessage(quitGameInfo);
+        } catch (IOException ignored) {
+        }
     }
 
     private void updateRoundState(GameInfo gameInfo) {
@@ -208,12 +205,31 @@ public class ClientController {
             }
             case SHOWDOWN -> {
                 displayHands();
-                displayWinners();
-                myGame.giveChipsToWinners();
-                displayLosers();
-                myGame.removeLoses();
+                displayWinners(gameInfo);
+                displayLosers(gameInfo);
+                checkIfMyPlayerLost(gameInfo);
+                myGame.endRound();
             }
         }
+    }
+
+    private void DisplayMyPlayerHUD() {
+        ArrayList<Card> tableCards = myGame.getTableCards();
+        ArrayList<Card> myHand = myGame.getPlayerHand(myPlayer);
+        int totalPot = myGame.getTotalPot();
+        int myChips = myGame.getPlayer(myPlayer).getChips();
+        GameView.displayPlayerHUD(tableCards, myHand, totalPot, myChips);
+    }
+
+    private void updatePlayers(GameInfo gameInfo) {
+        ArrayList<Player> players = gameInfo.getPlayers();
+        // TODO - FIND BETTER WAY TO HANDLE THIS -- CURRENTLY TRIES TO AVOID DIFFERENT THREAD CHECKIGN IF PLAYER HAS TURN
+        // IF player is removed then there is null exception
+        if (!players.contains(myPlayer)) {
+            players.add(myPlayer);
+        }
+
+        myGame.setPlayers(players);
     }
 
     private void displayHands() {
@@ -233,15 +249,20 @@ public class ClientController {
         String winningHand = HandEval.getHandName(myGame.getHighestScore());
         GameView.displayCurrentRoundWinners(winningPlayers, winningHand);
     }
-    private void displayLosers() {
-        ArrayList<Player> players = myGame.getPlayersWithNoChips();
-        for (Player player: players) {
-            // TODO - make lose game different for myPlayer
-            if (player.equals(myPlayer)) {
-                GameView.displayLoseGameScreen();
-                endGame();
+
+    private void checkIfMyPlayerLost(GameInfo gameInfo) {
+        ArrayList<Player> playersWhoLost = gameInfo.getLosingPlayers();
+        if (playersWhoLost.contains(myPlayer)) {
+            myPlayerLost = true;
+        }
+    }
+
+    private void displayLosers(GameInfo gameInfo) {
+        ArrayList<Player> playersWhoLost = gameInfo.getLosingPlayers();
+        for (Player player: playersWhoLost) {
+            if (!player.equals(myPlayer)) {
+                GameView.displayPlayerLostMessage(player);
             }
-            GameView.displayPlayerLostMessage(player);
         }
     }
 
@@ -330,6 +351,16 @@ public class ClientController {
             }
         }
         return amount;
+    }
+
+    private boolean isInteger(String string) {
+        try {
+            Integer.parseInt(string);
+            return true;
+        }
+        catch(NumberFormatException ignored) {
+            return false;
+        }
     }
 
 }
