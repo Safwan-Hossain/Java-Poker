@@ -95,9 +95,11 @@ public class Server {
     private boolean everyClientHandlerHasAPlayer() {
         ArrayList<String> playerIDs = getAllPlayerIDs();
         for (ClientHandler clientHandler : ClientHandler.clientHandlers) {
+            if (clientHandler.getIsHost()) {
+                continue;
+            }
             String clientID = clientHandler.getClientID();
             if (!playerIDs.contains(clientID)) {
-                System.out.println("Client Name: " + clientHandler.getClientName());
                 return false;
             }
         }
