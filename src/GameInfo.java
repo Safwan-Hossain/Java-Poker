@@ -11,7 +11,18 @@ public class GameInfo implements Serializable {
     private Player playerWithTurn; // Player with turn
     private RoundState roundState;
     private HashMap<PokerRole, Player> roles;
+    // Note that copying an arraylist of players will not copy the arraylist of cards (their hand) inside each player
+    // Therefore, currently it is stored in hashmap
     private HashMap<Player, ArrayList<Card>> playerHands;
+
+    private String nameOfWinningHand;
+    // List of all players in the current game
+    private ArrayList<Player> players;
+
+    // List of players who won during the showdown of the current round
+    private ArrayList<Player> winningPlayers;
+    // List of players who lost all their chips after the showdown of the current round
+    private ArrayList<Player> losingPlayers;
 
     private ArrayList<Card> tableCards;
 
@@ -101,13 +112,20 @@ public class GameInfo implements Serializable {
         this.betAmount = betAmount;
     }
 
-
     public RoundState getRoundState() {
         return roundState;
     }
 
     public void setRoundState(RoundState roundState) {
         this.roundState = roundState;
+    }
+
+    public String getNameOfWinningHand() {
+        return nameOfWinningHand;
+    }
+
+    public void setNameOfWinningHand(String nameOfWinningHand) {
+        this.nameOfWinningHand = nameOfWinningHand;
     }
 
     public HashMap<PokerRole, Player> getRoles() {
@@ -130,6 +148,46 @@ public class GameInfo implements Serializable {
         for (Player player: map.keySet()) {
             ArrayList<Card> cards = new ArrayList<>(player.getHand());
             this.playerHands.put(player, cards);
+        }
+    }
+
+    public ArrayList<Player> getPlayers() {
+        return players;
+    }
+
+    public void setPlayers(ArrayList<Player> players) {
+        this.players = new ArrayList<>();
+        for (Player player: players) {
+            Player newPlayer = new Player(player.getName(), player.getPlayerID());
+            newPlayer.set_chips(player.getChips());
+            this.players.add(newPlayer);
+        }
+    }
+
+    public ArrayList<Player> getWinningPlayers() {
+        return winningPlayers;
+    }
+
+    public void setWinningPlayers(ArrayList<Player> winningPlayers) {
+        this.winningPlayers = new ArrayList<>();
+        for (Player player: winningPlayers) {
+            Player newPlayer = new Player(player.getName(), player.getPlayerID());
+            newPlayer.set_chips(player.getChips());
+            this.winningPlayers.add(newPlayer);
+        }
+    }
+
+
+    public ArrayList<Player> getLosingPlayers() {
+        return losingPlayers;
+    }
+
+    public void setLosingPlayers(ArrayList<Player> losingPlayers) {
+        this.losingPlayers = new ArrayList<>();
+        for (Player player: losingPlayers) {
+            Player newPlayer = new Player(player.getName(), player.getPlayerID());
+            newPlayer.set_chips(player.getChips());
+            this.losingPlayers.add(newPlayer);
         }
     }
 
