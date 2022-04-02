@@ -138,6 +138,7 @@ public class Server {
     private GameInfo getNewRoundInfo() {
         GameInfo gameInfo = new GameInfo("Server", "Server");
         gameInfo.setUpdateType(UpdateType.NEW_ROUND_STATE);
+        gameInfo.setRoundState(RoundState.PRE_FLOP);
         gameInfo.setGame(serverGame.getMainGame());
         gameInfo.setPlayerWithTurn(serverGame.getPlayerWithTurn());
 
@@ -150,6 +151,7 @@ public class Server {
             ArrayList<Card> hand = player.get_hand();
             playerHands.put(player, hand);
         }
+
         gameInfo.setPlayerHands(playerHands);
         return gameInfo;
     }
