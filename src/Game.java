@@ -116,7 +116,7 @@ public class Game implements Serializable {
         }
     }
 
-    public void assignTurn() {
+    public void assignFirstTurn() {
         playerWithTurnIndex = (bigBlindIndex + 1) % players.size();
         players.get(playerWithTurnIndex).setTurn(true);
     }
@@ -281,7 +281,7 @@ public class Game implements Serializable {
     }
 
     public ArrayList<Card> getPlayerHand(Player player) {
-        return getPlayer(player).get_hand();
+        return getPlayer(player).getHand();
     }
 
     public void setPlayerHand(Player player, ArrayList<Card> playerHand) {
@@ -289,15 +289,9 @@ public class Game implements Serializable {
     }
 
     public void setPlayerWithTurn(Player playerWithTurn) {
-        String playerIDToFind = playerWithTurn.getPlayerID();
         for (Player player: players) {
-            String playerID = player.getPlayerID();
-            if (playerID.equals(playerIDToFind)) {
-                player.setTurn(true);
-            }
-            else {
-                player.setTurn(false);
-            }
+            boolean hasTurn = player.equals(playerWithTurn);
+            player.setTurn(hasTurn);
         }
     }
 
@@ -306,7 +300,14 @@ public class Game implements Serializable {
     }
 
     public void setPlayers(ArrayList<Player> players) {
-        this.players = players;
+        for (Player player: players) {
+            if (this.players.contains(player)) {
+                getPlayer(player).set_chips(player.getChips());
+            }
+            else {
+                this.players.remove(player);
+            }
+        }
     }
 
     public Player getPlayer(Player player) {
@@ -375,7 +376,7 @@ public class Game implements Serializable {
     public int[] getScore(Player player) {
         HandEval evaluator = new HandEval();
         ArrayList<Card> totalHand = new ArrayList<>(tableCards);
-        totalHand.addAll(player.get_hand());
+        totalHand.addAll(player.getHand());
         return evaluator.evaluate(totalHand);
     }
 
