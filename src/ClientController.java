@@ -10,11 +10,18 @@ public class ClientController {
     private final boolean isHost;
     private volatile Game myGame;
     private volatile boolean gameHasStarted;
+    private volatile boolean gameHasEnded;
+    private volatile boolean myPlayerLost;
+    private ArrayList<Thread> runningThreads;
+
+    private final String CANCEL_BET_VALUE = "B";
+    private final String START_GAME_COMMAND = "START";
 
     public ClientController(Socket socket, String username, boolean isHost) throws IOException {
         this.isHost = isHost;
         this.gameHasStarted = false;
         this.client = new Client(socket, username);
+        this.runningThreads = new ArrayList<>();
     }
 
     public void startController(Scanner scanner) throws IOException {
@@ -22,8 +29,16 @@ public class ClientController {
         GameView.displayClientInformation(client);
         setUpMyPlayer(); // sets up player using client name and ID
 
-        new Thread(this::listenForIncomingMessages).start(); // listens for messages from server on separate thread
+        Thread listeningThread = new Thread(this::listenForIncomingMessages); // listens for messages from server on separate thread
+        runningThreads.add(listeningThread);
+        listeningThread.start();
 
+        runGame(scanner);
+        if (myPlayerLost) {
+            GameView.displayLoseGameScreen();
+            GameView.displayExitMessage();
+            leaveTable();
+        }
         if (isHost) {
             askHostToStart(scanner);
         }
@@ -64,9 +79,9 @@ public class ClientController {
 
     private void askHostToStart(Scanner scanner) throws IOException {
         while (true) {
-            GameView.askHostToStart();
-            String response = scanner.nextLine();
-            if (response.strip().equalsIgnoreCase("START")) {
+            GameView.askHostToStart(START_GAME_COMMAND);
+            String response = scanner.nextLine().strip();
+            if (response.equalsIgnoreCase(START_GAME_COMMAND)) {
                 GameInfo gameInfo = new GameInfo(client.getClientID(), client.getClientName());
                 gameInfo.setUpdateType(UpdateType.GAME_STARTED);
                 gameInfo.setGameHasStarted(true);
@@ -89,11 +104,21 @@ public class ClientController {
         }
     }
 
-
     private void runGame(Scanner scanner) throws IOException {
-        while (true) {
+
+        if (isHost) {
+            askHostToStart(scanner);
+        }
+        else {
+            waitForHostReady();
+        }
+
+        GameView.displayGameIsStartingMessage();
+        waitForGameToStart(); // wait for game to initialize and start
+        while (!myPlayerLost && !gameHasEnded) {
             if (myPlayerHasTurn()) {
                 performGameAction(scanner);
+                myGame.getPlayer(myPlayer).setTurn(false);
             }
             waitForTurn();
         }
@@ -152,6 +177,7 @@ public class ClientController {
             case GAME_ENDED -> endGame(gameInfo);
         }
     }
+
     private void startGame(GameInfo gameInfo) {
         myGame = gameInfo.getGame();
         ArrayList<Player> players = new ArrayList<>(gameInfo.getPlayerHands().keySet());
@@ -287,19 +313,20 @@ public class ClientController {
         int minimumAmount = myGame.getMinimumCallAmount();
         //TODO
         while (amount < minimumAmount /* !player.CanBet(amount)*/) {
-            GameView.askForABetAmount(playerAction, minimumAmount);
-            if (!scanner.hasNextLine()) {
-                // If the input is not an integer than display invalid value message and skip rest of the loop
+            GameView.askForABetAmount(playerAction, minimumAmount, CANCEL_BET_VALUE);
+            String input = scanner.nextLine().strip();
+
+            if (isInteger(input)) {
+                amount = Integer.parseInt(input);
+                if (amount < minimumAmount) {
+                    GameView.displayBetTooLowMessage(playerAction, minimumAmount);
+                }
+            }
+            else {
+                if (input.equalsIgnoreCase(CANCEL_BET_VALUE)) {
+                    return -1;
+                }
                 GameView.displayInvalidValueMessage();
-                scanner.nextLine();
-                continue;
-            }
-            if (scanner.hasNextInt()) {
-                amount = scanner.nextInt();
-                scanner.nextLine();
-            }
-            if (amount < minimumAmount) {
-                GameView.displayBetTooLowMessage(playerAction, minimumAmount);
             }
         }
         return amount;
