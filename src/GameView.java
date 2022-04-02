@@ -1,12 +1,13 @@
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 public class GameView {
     public static void displayClientInformation(Client client){
         System.out.println("Client Name: " + client.getClientName() + " | ID: " + client.getClientID());
     }
-    public static void askHostToStart(){
-        System.out.println("Type in \"START\" to start the game.");
+    public static void askHostToStart(String startGameCommand){
+        System.out.println("Type in \"" + startGameCommand +"\" to start the game.");
     }
     public static void displayWaitingForHostMessage(){
         System.out.println("Waiting for host to start the game...");
@@ -24,7 +25,7 @@ public class GameView {
         System.out.println("You have " + getHandDescription(handRankName) + "!");
     }
     public static void displayPlayerHandRanking(Player player, String handRankName) {
-        System.out.println(player.getName().toUpperCase() + " has" + getHandDescription(handRankName) + "!");
+        System.out.println(player.getName().toUpperCase() + " has " + getHandDescription(handRankName) + "!");
     }
 
     private static String getHandDescription(String handRankName) {
@@ -41,7 +42,7 @@ public class GameView {
             message += playerName + ", ";
         }
         String lastPlayerName = players.get(players.size() - 1).getName().toUpperCase();
-        message += lastPlayerName + " wins the round with " + getHandDescription(winningHandRankName) + "! ";
+        message += "and " + lastPlayerName + " wins the round with " + getHandDescription(winningHandRankName) + "! ";
         System.out.println(message);
     }
 
@@ -67,19 +68,35 @@ public class GameView {
     }
 
     public static void displayLoseGameScreen() {
-        System.out.println("You've lost all your chips. You are asked to leave the table.");
-        System.out.println("Exiting the game...");
+        String loseGameMessage = "You've lost all your chips.";
+        String horizontalDivider = "=".repeat(loseGameMessage.length());
+        System.out.println("\n" + horizontalDivider + "\n" + loseGameMessage);
     }
+
+    public static void displayExitMessage() {
+        System.out.println("Exiting the game... \n");
+    }
+
     public static void displayNewRoundState(RoundState roundState) {
-        System.out.println(" - - " + roundState.name().toUpperCase() + " - -  ");
+        String roundStateMessage = " - - " + roundState.name().toUpperCase() + " - -  ";
+        String horizontalDivider = "=".repeat(roundStateMessage.length());
+        System.out.println(horizontalDivider + "\n" + roundStateMessage + "\n" + horizontalDivider);
     }
     public static void displayNewRoundMessage(int i) {
         System.out.println("=== ROUND "+ i + " === ");
     }
-    public static void displayPlayerHUD(ArrayList<Card> tableCards, ArrayList<Card> playerHand) {
-        System.out.println("===================");
-        System.out.println("TABLE CARDS: " + tableCards.toString());
-        System.out.println("YOUR HAND: " + playerHand.toString());
+    public static void displayPlayerHUD(ArrayList<Card> tableCards, ArrayList<Card> playerHand, int totalPot, int playerChips) {
+        String totalPotDisplay = "TOTAL POT: " + totalPot;
+        String playerChipsDisplay = "YOUR CHIPS: " + playerChips;
+        int totalPotSpacing = totalPotDisplay.length();
+        int playerChipsSpacing = playerChipsDisplay.length();
+        int spacing = Math.max(totalPotSpacing, playerChipsSpacing) + 1;
+
+        String tableInfo = totalPotDisplay + " ".repeat(spacing - totalPotSpacing) + "|  " + "TABLE CARDS: " + tableCards.toString();
+        String playerInfo = playerChipsDisplay + " ".repeat(spacing - playerChipsSpacing) + "|  " +  "YOUR HAND: " + playerHand.toString();
+        String horizontalDivider = "=".repeat(Math.max(playerInfo.length(), tableInfo.length()));
+        String message =  horizontalDivider + "\n" + tableInfo + "\n" + playerInfo + "\n" + horizontalDivider;
+        System.out.println(message);
     }
     public static void displayRoles(HashMap<PokerRole, Player> roles) {
         String dealerName = roles.get(PokerRole.DEALER).getName().toUpperCase();
@@ -96,25 +113,28 @@ public class GameView {
         String action = playerAction.name().toLowerCase() + "s";
         String message = playerName + " " + action;
 
-        if (playerAction.isABet()) {
-            // Converts message from "JOHN bets" to "JOHN bets 100 chips"
+        if (playerAction.equals(PlayerAction.BET)) {
+
             message += " " + betAmount + " chips";
         }
-
+        else if (playerAction.equals(PlayerAction.RAISE)) {
+            message += " to " + betAmount + " chips";
+        }
         System.out.println(message);
     }
-    public static void displayConnectionUpdate(Player player, ConnectionStatus status) {
+    public static void displayConnectionUpdate(String playerName, ConnectionStatus status) {
         String action = "";
         switch (status) {
             case JOINED -> action = "joined";
             case DISCONNECTED -> action = "disconnected from";
             case RECONNECTED -> action = "reconnected to";
         }
-        System.out.println(player + " has " + action + " the table!");
+        System.out.println(playerName + " has " + action + " the table!");
 
     }
-    public static void askForABetAmount(PlayerAction action, int minimumBet) {
+    public static void askForABetAmount(PlayerAction action, int minimumBet, String cancelValue) {
         String actionName = action.name().toLowerCase();
+        System.out.println("Type \"" + cancelValue + "\" to cancel bet.");
         System.out.println("How much do you want to " + actionName + "?: ");
     }
     public static void displayBetTooLowMessage(PlayerAction action, int minimumAmount) {
@@ -127,15 +147,20 @@ public class GameView {
     public static void displayReceivedTurnMessage() {
         System.out.println("It is your turn!");
     }
-    public static void askForAnAction(ArrayList<PlayerAction> validActions) {
+    public static void askForAnAction(HashSet<PlayerAction> validActions) {
+        int i = 0;
         String availableActions = "(";
-        for (int i = 0; i < validActions.size() - 1; i++) {
-            String action = validActions.get(i).name();
-            availableActions += action + ", ";
+        for (PlayerAction playerAction: validActions) {
+            if (i < validActions.size() - 1) {
+                String action = playerAction.name();
+                availableActions += action + ", ";
+            }
+            else {
+                String lastAction = playerAction.name();
+                availableActions += lastAction + ")";
+            }
+            i++;
         }
-        String lastAction = validActions.get(validActions.size() - 1).name();
-        availableActions += lastAction + ")";
-
         System.out.println("Please enter an available action " + availableActions + ": ");
     }
     public static void displayInvalidActionMessage() {
