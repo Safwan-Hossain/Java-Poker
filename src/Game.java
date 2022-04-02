@@ -11,10 +11,6 @@ public class Game implements Serializable {
     private int smallBlind;
     private int bigBlind;
 
-    public int getMinimumCallAmount() {
-        return minimumCallAmount;
-    }
-
     private int minimumCallAmount;
     private int totalPot;
 
@@ -59,74 +55,6 @@ public class Game implements Serializable {
         deck.fillDeck();
         deck.shuffle();
         this.hasGameStarted = true;
-    }
-
-    public void removeLoses() {
-        for (Player player: getPlayersWithNoChips()) {
-            players.remove(player);
-        }
-    }
-    public void endRound() {
-        for (Player player: playerBettings.keySet()) {
-            playerBettings.put(player, 0);
-        }
-        tableCards.clear();
-        for (Player player: players) {
-            player.get_hand().clear();
-        }
-    }
-
-    public void betByPlayer(Player player, int betAmount) {
-        if (betAmount > player.getChips()) {
-            betAmount = player.getChips();
-        }
-        player.takeChips(betAmount);
-        totalPot += betAmount;
-        playerBettings.put(player, betAmount);
-        this.minimumCallAmount = betAmount;
-    }
-
-    public void callByPlayer(Player player) {
-        int actualCalLAmount = minimumCallAmount;
-        if (minimumCallAmount > player.getChips()) {
-            actualCalLAmount = player.getChips();
-        }
-        player.takeChips(actualCalLAmount);
-        totalPot += actualCalLAmount;
-        playerBettings.put(player, actualCalLAmount);
-    }
-    
-    public boolean isRoundStateOver() {
-
-        if (players.size() <= 1) {
-            return false;
-        }
-
-        boolean everyBetIsSame = true;
-
-        int betAmount = -1;
-        for (Player player: playerBettings.keySet()) {
-            if (betAmount == -1) {
-                betAmount = playerBettings.get(player);
-            }
-            else if (betAmount != playerBettings.get(player)) {
-                everyBetIsSame = false;
-            }
-        }
-
-        if (players.size() == 2) {
-            return everyBetIsSame && playerBettings.get(players.get(0)) > bigBlind;
-        }
-
-        boolean everyoneHadATurn = false;
-        if (lastBetter == null) {
-            everyoneHadATurn = playerWithTurnIndex == (bigBlindIndex + 1) % players.size();
-        }
-        else {
-            everyoneHadATurn = getPlayerWithTurn().equals(lastBetter);
-        }
-
-        return everyBetIsSame && everyoneHadATurn;
     }
 
     public void initializeRound() {
@@ -183,6 +111,120 @@ public class Game implements Serializable {
         playerWithTurnIndex = (bigBlindIndex + 1) % players.size();
         players.get(playerWithTurnIndex).setTurn(true);
     }
+
+    // accounts for bets and raises
+    public void performBetByPlayer(Player player, int raiseToAmount) {
+        // Existing pool of chips player already put down (includes calls, raises, bets)
+        int existingBet = playerBettings.get(player);
+        int betAmount = raiseToAmount - existingBet;
+
+        if (betAmount > player.getChips()) {
+            betAmount = player.getChips();
+            raiseToAmount = betAmount + existingBet;
+        }
+
+        if (raiseToAmount > minimumCallAmount) {
+            minimumCallAmount = raiseToAmount;
+            minimumBetAmount = raiseToAmount * 2;
+        }
+
+        player.takeChips(betAmount);
+        totalPot += betAmount;
+        playerBettings.put(player, raiseToAmount);
+        lastBetter = player;
+    }
+
+    // accounts for checks and calls
+    public void performCallByPlayer(Player player) {
+        int actualCallAmount = minimumCallAmount - playerBettings.get(player);
+        if (actualCallAmount > player.getChips()) {
+            actualCallAmount = player.getChips();
+        }
+        player.takeChips(actualCallAmount);
+        totalPot += actualCallAmount;
+        int totalCallAmount = playerBettings.get(player) + actualCallAmount;
+        playerBettings.put(player, totalCallAmount);
+    }
+
+    public void removeLosers() {
+        for (Player player: getPlayersWithNoChips()) {
+            players.remove(player);
+        }
+    }
+
+    public void endRound() {
+        playerBettings.replaceAll((player, bet) -> 0); // replaces all player bet amounts with 0
+        tableCards.clear(); // empties table cards
+        deck.reset();
+        totalPot = 0;
+        for (Player player: players) {
+            player.getHand().clear();
+        }
+    }
+
+    // Determines if everyone put in the same amount of money
+    // Exception for players who went all-in below the call amount (due to insufficient funds).
+    public boolean isEveryBetTheSame() {
+        if (players.size() <= 1) {
+            return true;
+        }
+
+        Set<Player> players = playerBettings.keySet();
+        Player prevPlayer = null;
+
+        for (Player currPlayer: players) {
+            if (prevPlayer == null) {
+                prevPlayer = currPlayer;
+                continue;
+            }
+
+            int prevPlayerBet = playerBettings.get(prevPlayer);
+            int currPlayerBet = playerBettings.get(currPlayer);
+
+            // If the player who put in less chips is bankrupt, then they are all in and therefore the method should
+            // not return false. Since they cannot afford to match.
+            if (prevPlayerBet != currPlayerBet) {
+                if (prevPlayerBet < currPlayerBet) {
+                    if (!prevPlayer.isBankrupt()) {
+                        return false;
+                    }
+                }
+                else if (!currPlayer.isBankrupt()) {
+                    return false;
+                }
+            }
+            prevPlayer = currPlayer;
+            }
+        return true;
+    }
+
+    // Determines if everyone has had a turn during the current round phase
+    public boolean hasEveryoneHadATurn() {
+        return turnCounter >= players.size();
+    }
+
+    public boolean isRoundStateOver() {
+        if (players.size() <= 1) {
+            return true;
+        }
+        return isEveryBetTheSame() && hasEveryoneHadATurn();
+    }
+
+    private void addToTableCards(int numOfCards) {
+        for (Card card: deck.draw(numOfCards)) {
+            tableCards.add(card);
+        }
+    }
+
+    public void updateTableCards() {
+        if (roundState == null) { throw new NullPointerException(); }
+        switch (roundState) {
+            case PRE_FLOP, SHOWDOWN -> {}
+            case FLOP -> addToTableCards(3);
+            case TURN, RIVER -> addToTableCards(1);
+        }
+    }
+
 
     public Player getPlayerWithTurn() {
         return players.get(playerWithTurnIndex);
