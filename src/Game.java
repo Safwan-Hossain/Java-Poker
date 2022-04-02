@@ -305,51 +305,11 @@ public class Game implements Serializable {
             case FOLD -> {
                 //TODO
             }
-            case BET, RAISE -> {
-                betByPlayer(player, betAmount);
-                lastBetter = player;
-            }
-            case CALL -> {
-                callByPlayer(player);
-            }
+            case BET, RAISE -> performBetByPlayer(player, betAmount);
+            case CALL -> performCallByPlayer(player);
+            case CHECK, WAIT -> {}
         }
-    }
-
-    public RoundState getRoundState() {
-        return roundState;
-    }
-
-    public void setRoundState(RoundState roundState) {
-        this.roundState = roundState;
-    }
-
-
-    public boolean hasGameStarted() {
-        return hasGameStarted;
-    }
-
-    public void setHasGameStarted(boolean hasGameStarted) {
-        this.hasGameStarted = hasGameStarted;
-    }
-
-    public boolean hasGameEnded() {
-        return hasGameEnded;
-    }
-
-    public void setHasGameEnded(boolean hasGameEnded) {
-        this.hasGameEnded = hasGameEnded;
-    }
-
-
-    private Player findPlayerUsingID(Player playerToFind) {
-        String playerIDToFind = playerToFind.getPlayerID();
-        for (Player player: players) {
-            String playerID = player.getPlayerID();
-            if (playerID.equals(playerIDToFind)) {
-                return player;
-            }
-        }
-        throw new RuntimeException("Cannot find player");
+        turnCounter++;
     }
 
     public void advanceRoundState() {
