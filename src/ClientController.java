@@ -35,13 +35,14 @@ public class ClientController {
         listeningThread.start();
 
         runGame(scanner);
-        if (myPlayerLost) {
+        if (myPlayerLost && !isHost) {
             GameView.displayLoseGameScreen();
             GameView.displayExitMessage();
             leaveTable();
         }
-        if (isHost) {
+        else if (myPlayerLost && isHost) {
             waitForGameFinish();
+            leaveTable();
         }
     }
 
@@ -54,6 +55,7 @@ public class ClientController {
 
     private void setUpClient() throws IOException {
         GameInfo clientSetUpInfo = new GameInfo("", client.getClientName());
+        clientSetUpInfo.setIsHost(isHost);
         client.sendMessage(clientSetUpInfo);
         try {
             clientSetUpInfo = (GameInfo) client.listenForMessage();

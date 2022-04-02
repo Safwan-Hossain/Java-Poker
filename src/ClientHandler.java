@@ -6,6 +6,7 @@ public class ClientHandler implements Runnable {
 
     public static volatile ArrayList<ClientHandler> clientHandlers = new ArrayList<>();
     private static volatile boolean isUpdating = false;
+    private volatile boolean isHost = false;
     private static ServerGame serverGame;
     private Socket socket;
     private ObjectOutputStream outputStream;
@@ -14,6 +15,7 @@ public class ClientHandler implements Runnable {
     private String clientID;
 
     public ClientHandler(Socket socket, String clientID, ServerGame serverGame) {
+        this.isHost = false;
         try {
             this.socket = socket;
             outputStream = new ObjectOutputStream(socket.getOutputStream());
@@ -54,6 +56,7 @@ public class ClientHandler implements Runnable {
     private void setUpClient() throws IOException, ClassNotFoundException {
         GameInfo clientSetupInfo = (GameInfo) inputStream.readObject();
         clientName = clientSetupInfo.getPlayerName();
+        isHost = clientSetupInfo.isHost();
 
         clientSetupInfo = new GameInfo(clientID, clientName);
         clientSetupInfo.setUpdateType(UpdateType.CONNECTION_STATUS);
@@ -67,9 +70,6 @@ public class ClientHandler implements Runnable {
         isUpdating = true;
         for (ClientHandler clientHandler : clientHandlers) {
             if (clientHandler != null) {
-                if (gameInfo.getUpdateType().equals(UpdateType.NEW_ROUND_STATE) && gameInfo.getRoundState().equals(RoundState.SHOWDOWN)) {
-                    System.out.println("Showdown update for: " + clientHandler.getClientName());
-                }
                 clientHandler.updateClient(gameInfo);
             }
         }
@@ -135,5 +135,7 @@ public class ClientHandler implements Runnable {
         return clientID;
     }
 
-
+    public boolean getIsHost() {
+        return isHost;
+    }
 }
