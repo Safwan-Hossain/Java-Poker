@@ -157,9 +157,9 @@ public class Server {
         gameInfo.setGameHasStarted(true);
 
         HashMap<Player, ArrayList<Card>> playerHands = new HashMap<>();
-        ArrayList<Player> players = serverGame.getMainGame().getPlayers();
+        ArrayList<Player> players = serverGame.getPlayers();
         for (Player player: players) {
-            ArrayList<Card> hand = player.get_hand();
+            ArrayList<Card> hand = player.getHand();
             playerHands.put(player, hand);
         }
         gameInfo.setPlayerHands(playerHands);
@@ -173,14 +173,11 @@ public class Server {
         gameInfo.setRoundState(RoundState.PRE_FLOP);
         gameInfo.setGame(serverGame.getMainGame());
         gameInfo.setPlayerWithTurn(serverGame.getPlayerWithTurn());
-
-        ArrayList<Player> players = serverGame.getMainGame().getPlayers();
-
-        gameInfo.setRoles(serverGame.getMainGame().getPlayersWithRoles());
+        gameInfo.setRoles(serverGame.getPlayersWithRoles());
 
         HashMap<Player, ArrayList<Card>> playerHands = new HashMap<>();
-        for (Player player: players) {
-            ArrayList<Card> hand = player.get_hand();
+        for (Player player: serverGame.getPlayers()) {
+            ArrayList<Card> hand = player.getHand();
             playerHands.put(player, hand);
         }
 
