@@ -85,10 +85,23 @@ public class Server {
 
     private GameInfo getNewRoundStateInfo() {
         GameInfo gameInfo = new GameInfo("Server", "Server");
-        gameInfo.setRoundState(serverGame.getMainGame().getRoundState());
+        gameInfo.setRoundState(serverGame.getRoundState());
         gameInfo.setGame(serverGame.getMainGame());
-        gameInfo.setTableCards(serverGame.getMainGame().getTableCards());
+        gameInfo.setTableCards(serverGame.getTableCards());
         gameInfo.setUpdateType(UpdateType.NEW_ROUND_STATE);
+
+        if (serverGame.getRoundState().equals(RoundState.SHOWDOWN)) {
+            gameInfo.setWinningPlayers(serverGame.getWinningPlayers());
+            gameInfo.setLosingPlayers(serverGame.getPlayersWithNoChips());
+            String winningHand = HandEval.getHandName(serverGame.getMainGame().getHighestScore());
+            gameInfo.setNameOfWinningHand(winningHand);
+            HashMap<Player, ArrayList<Card>> playerHands = new HashMap<>();
+            for (Player player: serverGame.getPlayers()) {
+                ArrayList<Card> hand = player.getHand();
+                playerHands.put(player, hand);
+            }
+            gameInfo.setPlayerHands(playerHands);
+        }
         return gameInfo;
     }
     private void showDown() {
