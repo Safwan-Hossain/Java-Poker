@@ -76,13 +76,6 @@ public class ClientHandler implements Runnable {
         isUpdating = false;
     }
 
-    public static void startGame(GameInfo gameInfo) {
-        for (ClientHandler clientHandler : clientHandlers) {
-            clientHandler.updateClient(gameInfo);
-        }
-    }
-
-
     public void updateClient(GameInfo gameInfo) {
         try {
             this.outputStream.writeObject(gameInfo);
