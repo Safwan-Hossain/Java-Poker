@@ -19,6 +19,7 @@ public class Player implements Serializable
 	protected int chips;
 	private ArrayList<Card> hand;
 	private boolean hasTurn;
+	private boolean isFolded;
 	private PokerRole role;
 
 
@@ -28,6 +29,7 @@ public class Player implements Serializable
 		this.name = name;
 		this.chips = chips;
 		this.hasTurn = false;
+		this.isFolded = false;
 		this.hand = new ArrayList<>();
 	}
 	public Player(String name, String playerID)
@@ -35,7 +37,16 @@ public class Player implements Serializable
 		this.name = name;
 		this.playerID = playerID;
 		this.hasTurn = false;
+		this.isFolded = false;
 		this.hand = new ArrayList<>();
+	}
+
+	public boolean isFolded() {
+		return isFolded;
+	}
+
+	public void setIsFolded(boolean isFolded) {
+		this.isFolded = isFolded;
 	}
 
 	public boolean isBankrupt() {

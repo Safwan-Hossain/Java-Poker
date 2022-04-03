@@ -188,12 +188,22 @@ public class ClientController {
                 gameHasEnded = true;
             }
             case GAME_STARTED -> startGame(gameInfo);
+            case LAST_UNFOLDED_PLAYER_WINS -> lastUnfoldedPlayerWins(gameInfo);
             case NEW_ROUND_STATE -> updateRoundState(gameInfo);
+            case PLAYER_QUIT -> {}
             case PLAYER_TURN -> updateTurn(gameInfo);
             case PLAYER_ACTION -> applyPlayerAction(gameInfo);
             case CONNECTION_STATUS -> playerConnectionUpdate(gameInfo);
             case SERVER_MESSAGE -> GameView.displayServerMessage(gameInfo.getServerMessage());
         }
+    }
+
+    private void lastUnfoldedPlayerWins(GameInfo gameInfo) {
+        updatePlayers(gameInfo);
+        displayUnfoldedWinner(gameInfo);
+        displayLosers(gameInfo);
+        checkIfMyPlayerLost(gameInfo);
+        myGame.endRound();
     }
 
     private void startGame(GameInfo gameInfo) {
@@ -273,6 +283,11 @@ public class ClientController {
                 GameView.displayPlayerHandRanking(player, handName);
             }
         }
+    }
+
+    private void displayUnfoldedWinner(GameInfo gameInfo) {
+        ArrayList<Player> winningPlayers = gameInfo.getWinningPlayers();
+        GameView.displayLastUnfoldedPlayer(winningPlayers.get(0));
     }
 
     private void displayWinners(GameInfo gameInfo) {

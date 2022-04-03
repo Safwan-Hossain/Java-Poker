@@ -35,6 +35,10 @@ public class GameView {
         return "a " + handRankName;
     }
 
+    public static void displayLastUnfoldedPlayer(Player lastPlayer) {
+        System.out.println("All other players folded. \n" + lastPlayer.getName().toUpperCase() + " wins the round");
+    }
+
     public static void displayCurrentRoundWinners(ArrayList<Player> players, String winningHandRankName) {
         String message = "";
         for (int i = 0; i < players.size() - 1; i++) {

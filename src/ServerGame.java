@@ -180,4 +180,12 @@ public class ServerGame {
     public boolean isGameOver() {
         return mainGame.isGameOver();
     }
+
+    public void giveChipsToLastPlayer() {
+        mainGame.giveChipsToLastPlayer();
+    }
+
+    public boolean allOtherPlayersFolded() {
+        return mainGame.allOtherPlayersFolded();
+    }
 }

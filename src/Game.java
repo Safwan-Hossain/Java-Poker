@@ -14,6 +14,7 @@ public class Game implements Serializable {
 
     // counts how many players had a turn for the current round phase
     private int turnCounter;
+    private int numOfFoldedPlayers;
 
     private int smallBlind;
     private int bigBlind;
@@ -162,10 +163,17 @@ public class Game implements Serializable {
     }
 
     public void endRound() {
+        endRoundState();
+
+        for (Player player: players) {
+            player.setIsFolded(false);
+        }
+
         playerBettings.replaceAll((player, bet) -> 0); // replaces all player bet amounts with 0
         tableCards.clear(); // empties table cards
         deck.reset();
         totalPot = 0;
+        numOfFoldedPlayers = 0;
         for (Player player: players) {
             player.getHand().clear();
         }
@@ -174,21 +182,23 @@ public class Game implements Serializable {
     // Determines if everyone put in the same amount of money
     // Exception for players who went all-in below the call amount (due to insufficient funds).
     public boolean isEveryBetTheSame() {
+        ArrayList<Player> players = new ArrayList<>(playerBettings.keySet());
+        players.removeIf(Player::isFolded);
+
         if (players.size() <= 1) {
             return true;
         }
 
-        Set<Player> players = playerBettings.keySet();
-        Player prevPlayer = null;
+        Player prevPlayer = players.get(0);
 
         for (Player currPlayer: players) {
-            if (prevPlayer == null) {
-                prevPlayer = currPlayer;
+            if (prevPlayer == currPlayer) {
                 continue;
             }
 
             int prevPlayerBet = playerBettings.get(prevPlayer);
             int currPlayerBet = playerBettings.get(currPlayer);
+
 
             // If the player who put in less chips is bankrupt, then they are all in and therefore the method should
             // not return false. Since they cannot afford to match.
@@ -209,7 +219,7 @@ public class Game implements Serializable {
 
     // Determines if everyone has had a turn during the current round phase
     public boolean hasEveryoneHadATurn() {
-        return turnCounter >= players.size();
+        return turnCounter >= players.size() - numOfFoldedPlayers;
     }
 
     public boolean isRoundStateOver() {
@@ -234,14 +244,30 @@ public class Game implements Serializable {
         }
     }
 
+    private int getNumberOfFoldedPlayers() {
+        int numOfFoldedPlayers = 0;
+        for (Player player: players) {
+            if (player.isFolded()) {
+                numOfFoldedPlayers++;
+            }
+        }
+        return numOfFoldedPlayers;
+    }
 
     public Player getPlayerWithTurn() {
         return players.get(playerWithTurnIndex);
     }
 
     public void giveNextPlayerTurn() {
+        if (getNumberOfFoldedPlayers() >= players.size() - 1) {
+            throw new RuntimeException("All players folded");
+        }
+
         getPlayerWithTurn().setTurn(false);
         playerWithTurnIndex = (playerWithTurnIndex + 1) % players.size();
+        while (getPlayerWithTurn().isFolded()) {
+            playerWithTurnIndex = (playerWithTurnIndex + 1) % players.size();
+        }
         getPlayerWithTurn().setTurn(true);
     }
 
@@ -322,9 +348,7 @@ public class Game implements Serializable {
     public void applyPlayerAction(Player actingPlayer, PlayerAction playerAction, int betAmount) {
         Player player = getPlayer(actingPlayer);
         switch (playerAction) {
-            case FOLD -> {
-                //TODO
-            }
+            case FOLD -> player.setIsFolded(true);
             case BET, RAISE -> performBetByPlayer(player, betAmount);
             case CALL -> performCallByPlayer(player);
             case CHECK, WAIT -> {}
@@ -334,6 +358,12 @@ public class Game implements Serializable {
 
     public void advanceRoundState() {
         endRoundState();
+        numOfFoldedPlayers = 0;
+        for (Player player: players) {
+            if (player.isFolded()) {
+                numOfFoldedPlayers++;
+            }
+        }
         this.roundState = RoundState.getNextRoundState(roundState);
         updateTableCards();
     }
@@ -353,6 +383,14 @@ public class Game implements Serializable {
         int winningShare = this.totalPot / winners.size();
         for (Player winner: winners) {
             winner.set_chips(winner.getChips() + winningShare);
+        }
+    }
+
+    public void giveChipsToLastPlayer() {
+        for (Player player: players) {
+            if (!player.isFolded()) {
+                player.set_chips(player.getChips() + this.totalPot);
+            }
         }
     }
 
@@ -393,6 +431,10 @@ public class Game implements Serializable {
     public int[] getHighestScore() {
         int[] highestScore = {0, 0};
         for (Player player: players) {
+            if (player.isFolded()) {
+                continue;
+            }
+
             int[] currentScore = getScore(player);
             if (highestScore[0] < currentScore [0]) {
                 highestScore = currentScore;
@@ -410,6 +452,10 @@ public class Game implements Serializable {
         ArrayList<Player> winners = new ArrayList<>();
         int[] highestScore = getHighestScore();
         for (Player player: players) {
+            if (player.isFolded()) {
+                continue;
+            }
+
             int[] currScore = getScore(player);
             if (highestScore[0] == currScore[0] &&
                     highestScore[1] == currScore[1]) {
@@ -508,4 +554,13 @@ public class Game implements Serializable {
         return totalPot;
     }
 
+    public boolean allOtherPlayersFolded() {
+        int numOfUnfolded = 0;
+        for (Player player: players) {
+            if (!player.isFolded()) {
+                numOfUnfolded++;
+            }
+        }
+        return numOfUnfolded <= 1;
+    }
 }

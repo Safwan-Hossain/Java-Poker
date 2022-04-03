@@ -4,7 +4,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
- import java.util.Scanner;
+import java.util.Scanner;
 import java.util.UUID;
 
 public class Server {
@@ -40,6 +40,15 @@ public class Server {
 
             while (true) {
                 takeBets();
+                if (serverGame.allOtherPlayersFolded()) {
+                    serverGame.giveChipsToLastPlayer();
+                    GameInfo gameInfo = getAllOtherPlayersFoldedInfo();
+                    serverGame.removeLosers();
+                    gameInfo.setPlayers(serverGame.getPlayers());
+                    ClientHandler.updateAllClients(gameInfo);
+                    waitForNumOfSeconds(2);
+                    break;
+                }
                 advanceRoundState();
                 if (serverGame.getRoundState().equals(RoundState.SHOWDOWN)) {
                     serverGame.giveChipsToWinners();
@@ -70,6 +79,22 @@ public class Server {
         }
 //        System.out.println("SERVER POINT: 4");
         closeServer();
+    }
+
+    private GameInfo getAllOtherPlayersFoldedInfo() {
+        GameInfo gameInfo = new GameInfo("Server", "Server");
+        gameInfo.setUpdateType(UpdateType.LAST_UNFOLDED_PLAYER_WINS);
+        gameInfo.setLosingPlayers(serverGame.getPlayersWithNoChips());
+        for (Player player: serverGame.getPlayers()) {
+            if (!player.isFolded()) {
+                ArrayList<Player> winningPlayers = new ArrayList<>();
+                winningPlayers.add(player);
+                gameInfo.setWinningPlayers(winningPlayers);
+                break;
+            }
+        }
+        return gameInfo;
+
     }
 
     private void waitForNumOfSeconds(double numOfSeconds) {
@@ -160,6 +185,9 @@ public class Server {
             waitForPlayerToRespond();
             serverGame.applyPlayerAction(serverGame.getGameInfo());
             ClientHandler.updateAllClients(serverGame.getGameInfo());
+            if (serverGame.allOtherPlayersFolded()) {
+                return;
+            }
             if (!serverGame.isRoundStateOver()) {
                 serverGame.giveNextPlayerTurn();
                 ClientHandler.updateAllClients(getTurnInfo());

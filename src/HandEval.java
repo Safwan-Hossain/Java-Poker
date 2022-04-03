@@ -188,7 +188,7 @@ public class HandEval
 	// checks for full house
 	public static boolean fullHouse(ArrayList<Card> a)
 	{
-		if ((a.get(0).rank == a.get(1).rank && a.get(1).rank == a.get(2).rank && a.get(3).rank == a.get(4).rank) || 
+		if ((a.get(0).rank == a.get(1).rank && a.get(1).rank == a.get(2).rank && a.get(3).rank == a.get(4).rank) ||
 		(a.get(2).rank == a.get(3).rank && a.get(3).rank == a.get(4).rank && a.get(0).rank == a.get(1).rank)){
 			return true;
 		}
@@ -244,8 +244,55 @@ public class HandEval
 	
 		return false;
 	}
-	
-	
+
+	public static void main(String[] args) {
+		ArrayList<Card> cards = new ArrayList<>();
+		Card card1 = new Card();
+		card1.suit = 4;
+		card1.rank = 1;
+
+		Card card2 = new Card();
+		card2.suit = 1;
+		card2.rank = 9;
+
+		Card card3 = new Card();
+		card3.suit = 1;
+		card3.rank = 1;
+
+		Card card4 = new Card();
+		card4.suit = 4;
+		card4.rank = 1;
+
+		Card card5 = new Card();
+		card5.suit = 4;
+		card5.rank = 3;
+
+		Card card6 = new Card();
+		card6.suit = 1;
+		card6.rank = 5;
+
+		Card card7 = new Card();
+		card7.suit = 2;
+		card7.rank = 5;
+
+
+
+		cards.add(card1);
+		cards.add(card2);
+		cards.add(card3);
+		cards.add(card4);
+		cards.add(card5);
+		cards.add(card6);
+		cards.add(card7);
+
+
+		cards = organizeCards(cards);
+
+
+		System.out.println(pair(cards));
+		System.out.println(cards);
+	}
+
 	/* PUT SOMETHING LIKE THIS IN THE VIEW
 	// generates string for each card in hand
 	public void display(Card card)
