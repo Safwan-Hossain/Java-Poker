@@ -373,6 +373,16 @@ public class Game implements Serializable {
         return playersWithNoChips;
     }
 
+    public String getPlayerHandName(Player player) {
+        if (player.getHand().size() < MAX_HAND_SIZE) {
+            throw new RuntimeException("Hand not setup for player: " + player.getName());
+        }
+        ArrayList<Card> totalHand = this.tableCards;
+        totalHand.addAll(player.getHand());
+        int[] playerScore = new HandEval().evaluate(totalHand);
+        return HandEval.getHandName(playerScore);
+    }
+
     public int[] getScore(Player player) {
         HandEval evaluator = new HandEval();
         ArrayList<Card> totalHand = new ArrayList<>(tableCards);

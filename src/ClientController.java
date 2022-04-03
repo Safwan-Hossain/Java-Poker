@@ -265,7 +265,7 @@ public class ClientController {
 
     private void displayHands() {
         for (Player player: myGame.getPlayers()) {
-            String handName = HandEval.getHandName(myGame.getScore(player));
+            String handName = myGame.getPlayerHandName(player);
             if (myPlayer.equals(player)) {
                 GameView.displayMyHandRanking(handName);
             }
