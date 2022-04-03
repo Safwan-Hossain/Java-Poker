@@ -39,7 +39,9 @@ public class Server {
             ClientHandler.updateAllClients(getNewRoundInfo());
 
             while (true) {
-                takeBets();
+                if (!serverGame.everyoneIsAllIn()) {
+                    takeBets();
+                }
                 if (serverGame.allOtherPlayersFolded()) {
                     serverGame.giveChipsToLastPlayer();
                     GameInfo gameInfo = getAllOtherPlayersFoldedInfo();
@@ -60,24 +62,22 @@ public class Server {
                     break;
                 }
                 ClientHandler.updateAllClients(getNewRoundStateInfo());
-                waitForNumOfSeconds(1);
-                serverGame.giveNextPlayerTurn();
-                ClientHandler.updateAllClients(getTurnInfo());
+                if (!serverGame.everyoneIsAllIn()) {
+                    waitForNumOfSeconds(1);
+                    serverGame.giveNextPlayerTurn();
+                    ClientHandler.updateAllClients(getTurnInfo());
+                }
             }
             serverGame.endRound();
 
-//            System.out.println("SERVER POINT: 1");
             while (!everyClientHandlerHasAPlayer()) {
                 waitForNumOfSeconds(0.1);
             }
-//            System.out.println("SERVER POINT: 2");
         }
-//        System.out.println("SERVER POINT: 3");
         ClientHandler.updateAllClients(getGameEndedInfo());
         while (ClientHandler.clientHandlers.size() > 0) {
             waitForNumOfSeconds(0.5);
         }
-//        System.out.println("SERVER POINT: 4");
         closeServer();
     }
 

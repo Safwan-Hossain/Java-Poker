@@ -188,4 +188,8 @@ public class ServerGame {
     public boolean allOtherPlayersFolded() {
         return mainGame.allOtherPlayersFolded();
     }
+
+    public boolean everyoneIsAllIn() {
+        return mainGame.everyoneIsAllIn();
+    }
 }

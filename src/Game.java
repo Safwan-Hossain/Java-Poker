@@ -229,6 +229,16 @@ public class Game implements Serializable {
         return isEveryBetTheSame() && hasEveryoneHadATurn();
     }
 
+    public boolean everyoneIsAllIn() {
+        int numOfAllIn = 0;
+        for (Player player : players) {
+            if (player.isBankrupt()) {
+                numOfAllIn++;
+            }
+        }
+        return numOfAllIn >= players.size() - 1;
+    }
+
     private void addToTableCards(int numOfCards) {
         for (Card card: deck.draw(numOfCards)) {
             tableCards.add(card);
@@ -262,7 +272,6 @@ public class Game implements Serializable {
         if (getNumberOfFoldedPlayers() >= players.size() - 1) {
             throw new RuntimeException("All players folded");
         }
-
         getPlayerWithTurn().setTurn(false);
         playerWithTurnIndex = (playerWithTurnIndex + 1) % players.size();
         while (getPlayerWithTurn().isFolded()) {
