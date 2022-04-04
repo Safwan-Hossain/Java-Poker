@@ -34,7 +34,7 @@ public class Card implements Serializable, Comparable<Card>
 
 		String rankName = "";
 		switch (rank) {
-			case 1 -> rankName = "Ace";
+			case 14 -> rankName = "Ace";
 			case 11 -> rankName = "Jack";
 			case 12 -> rankName = "Queen";
 			case 13 -> rankName = "King";

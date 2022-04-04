@@ -10,7 +10,6 @@ import java.util.ArrayList;
 
 public class HandEval
 {
-
 	// TEMPORARY
 	public static String getHandName(int[] score) {
 		if (score[0] == 9 && score[1] == 14) {
@@ -42,7 +41,7 @@ public class HandEval
 		}
 	return "high card";
 	}
-
+    /*
 	private static ArrayList<Card> organizeCards(ArrayList<Card> cards) {
 
 		ArrayList<Card> unorganizedCards = new ArrayList<>(cards);
@@ -68,13 +67,24 @@ public class HandEval
 
 		return organizedCards;
 	}
-	//NOTE: FOR NOW ACES ARE ONLY HIGH
+    */
 	// evaluates the hand -- need to produce a score - ScoreT with [score for hand type, rank of highest card] - scores go from 0-9 while ranks go 2-14
-	public int[] evaluate(ArrayList<Card> cards)
+	public int[] evaluate(ArrayList<Card> hand, ArrayList<Card> flop)
 	{
-		ArrayList<Card> a = organizeCards(cards);
-        int[] score = new int[] {0, 2};
+		int h = highCard(hand);
+        
+		//ArrayList<Card> a = organizeCards(cards);
+		ArrayList<Card> a = hand;
+		for(Card c : flop){
+			a = Services.insert(a, c);
+		}
+        
+        for(int i = 0 ; i < a.size() ; i++){
+            System.out.println(Integer.toString(a.get(i).rank));
+        }
 
+        int[] score = new int[] {0, 2};
+		score[1] = h;
         boolean fl = false;
         boolean st = false;
 
@@ -90,12 +100,10 @@ public class HandEval
             if(highCard(a) == 14){
 //                System.out.println("You have a royal flush!");
                 score[0] = 9;
-                score[1] = 14;
             }
             else{
 //                System.out.println("You have a straight flush!");
                 score[0] = 8;
-                score[1] = highCard(a);
             }
         }
 
@@ -103,50 +111,43 @@ public class HandEval
 		{
 //			System.out.println("You have four of a kind!");
             score[0] = 7;
-            score[1] = highCard(a);
+            score[1] = h;
 		}
 		else if (fullHouse(a))
 		{
 //			System.out.println("You have a full house!");
             score[0] = 6;
-            score[1] = highCard(a);
+            score[1] = h;
 		}
 		else if (fl)
 		{
 //			System.out.println("You have a flush!");
             score[0] = 5;
-            score[1] = highCard(a);
 		}
 		else if (st)
 		{
 //			System.out.println("You have a straight!");
             score[0] = 4;
-            score[1] = highCard(a);
 		}
 		else if (triple(a))
 		{
 //			System.out.println("You have a triple!");
             score[0] = 3;
-            score[1] = highCard(a);
 		}
 		else if (twoPairs(a))
 		{
 //			System.out.println("You have two pairs!");
             score[0] = 2;
-            score[1] = highCard(a);
 		}
 		else if (pair(a))
 		{
 //			System.out.println("You have a pair!");
             score[0] = 1;
-            score[1] = highCard(a);
 		}
 		else
 		{
-			int highCard = highCard(a);
 //			System.out.println("Your highest card is " + highCard);
             score[0] = 0;
-            score[1] = highCard(a);
 		}
         return score;
 	}
@@ -159,12 +160,46 @@ public class HandEval
 	}
 
 	public static boolean straight(ArrayList<Card> a){ //later need to account for a being able to be high or low
-		for(int i = 0 ; i < a.size()- 1 ; i++){
-			if (a.get(i+1).rank != a.get(i).rank + 1){
-				return false;
-			} 
+		int h = highCard(a);
+		if(h == 14){
+			boolean b1 = true;
+			boolean b2 = true;
+
+			for(int i = 0 ; i < a.size()- 1 ; i++){
+				if (a.get(i+1).rank != a.get(i).rank + 1){
+					b1 = false;
+					break;
+				} 
+			}
+
+            if(a.get(0).rank == 2){
+			    ArrayList<Card> temp = new ArrayList<>();
+			    temp.add(a.get(a.size()-1));
+			    for(int i = 0 ; i < a.size() - 1 ; i++){
+				    temp.add(a.get(i));
+			    }
+            
+			    for(int i = 1 ; i < a.size()- 1 ; i++){
+				    if (temp.get(i+1).rank != temp.get(i).rank + 1){
+					    b2 = false;
+					    break;
+				    } 
+			    }
+            }
+            else{
+                b2 = false;
+            }
+			return (b1 || b2);
 		}
-		return true;
+
+		else{
+			for(int i = 0 ; i < a.size()- 1 ; i++){
+				if (a.get(i+1).rank != a.get(i).rank + 1){
+					return false;
+				} 
+			}
+			return true;
+		}
 	}
 
 	public static int highCard(ArrayList<Card> a){
@@ -246,7 +281,51 @@ public class HandEval
 	}
 
 	public static void main(String[] args) {
-		ArrayList<Card> cards = new ArrayList<>();
+		ArrayList<Card> hand = new ArrayList<>();
+        ArrayList<Card> flop = new ArrayList<>();
+
+        Card card1 = new Card();
+        card1.suit = 4;
+		card1.rank = 14;
+        Card card2 = new Card();
+        card2.suit = 4;
+		card2.rank = 2;
+        Card card3 = new Card();
+        card3.suit = 4;
+		card3.rank = 3;
+        Card card4 = new Card();
+        card4.suit = 4;
+		card4.rank = 4;
+        Card card5 = new Card();
+        card5.suit = 4;
+		card5.rank = 5;
+
+
+        flop = Services.insert(flop, card1);
+        flop = Services.insert(flop, card2);
+
+        hand = Services.insert(hand, card3);
+        hand = Services.insert(hand, card4);
+        hand = Services.insert(hand, card5);
+        
+
+        HandEval H = new HandEval();
+
+        int[] h = H.evaluate(hand, flop);
+        System.out.println(Integer.toString(h[0]));
+        System.out.println(Integer.toString(h[1]));
+
+        /*
+        for(int i = 0 ; i < hand.size() ; i++){
+            System.out.println(Integer.toString(hand.get(i).rank));
+        }
+
+        for(int i = 0 ; i < flop.size() ; i++){
+            System.out.println(Integer.toString(flop.get(i).rank));
+        }
+        */
+
+        /*
 		Card card1 = new Card();
 		card1.suit = 4;
 		card1.rank = 1;
@@ -291,7 +370,8 @@ public class HandEval
 
 		System.out.println(pair(cards));
 		System.out.println(cards);
-	}
+	*/
+    }
 
 	/* PUT SOMETHING LIKE THIS IN THE VIEW
 	// generates string for each card in hand
