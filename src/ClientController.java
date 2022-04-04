@@ -78,8 +78,12 @@ public class ClientController {
         myPlayer = new Player(client.getClientName(), client.getClientID());
     }
 
-    private boolean myPlayerHasTurn() {
-        return myGame.getPlayer(myPlayer).hasTurn();
+    private synchronized boolean myPlayerHasTurn() {
+//        if (!myGame.getPlayers().contains(myPlayer)) {
+//            return false;
+//        }
+//        return myGame.getPlayer(myPlayer).hasTurn();
+          return myPlayer.hasTurn();
     }
 
     private void askHostToStart(Scanner scanner) throws IOException {
@@ -172,7 +176,8 @@ public class ClientController {
         while (!myPlayerLost && !gameHasEnded) {
             if (myPlayerHasTurn()) {
                 performGameAction(scanner);
-                myGame.getPlayer(myPlayer).setTurn(false);
+                myPlayer.setTurn(false);
+//                myGame.getPlayer(myPlayer).setTurn(false);
             }
             waitForTurn();
         }
@@ -184,7 +189,6 @@ public class ClientController {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
-                e.printStackTrace();
             }
             client.sendMessage(getPlayerActionInfo(PlayerAction.WAIT, 0));
             return;
@@ -210,7 +214,7 @@ public class ClientController {
     private GameInfo getPlayerActionInfo(PlayerAction playerAction, int amount) {
         GameInfo gameInfo = new GameInfo(client.getClientID(), myPlayer.name);
 
-        gameInfo.setPlayerWithTurn(myGame.getPlayer(myPlayer));
+        gameInfo.setPlayerWithTurn(myPlayer);
         gameInfo.setPlayerAction(playerAction);
         gameInfo.setBetAmount(amount);
         gameInfo.setUpdateType(UpdateType.PLAYER_ACTION);
@@ -227,7 +231,8 @@ public class ClientController {
             }
         }
         catch (IOException | ClassNotFoundException e) {
-            throw new RuntimeException("Something is wrong");
+            //TODO
+//            throw new RuntimeException("Something is wrong");
         }
     }
 
@@ -303,8 +308,8 @@ public class ClientController {
             }
             case SHOWDOWN -> {
                 updateAllHands(gameInfo);
-                updatePlayers(gameInfo);
                 displayHands();
+                updatePlayers(gameInfo);
                 displayWinners(gameInfo);
                 displayLosers(gameInfo);
                 checkIfMyPlayerLost(gameInfo);
@@ -322,7 +327,7 @@ public class ClientController {
     }
 
     private void updatePlayers(GameInfo gameInfo) {
-        ArrayList<Player> players = gameInfo.getPlayers();
+        ArrayList<Player> players = new ArrayList<>(gameInfo.getPlayers());
         // TODO - FIND BETTER WAY TO HANDLE THIS -- CURRENTLY TRIES TO AVOID DIFFERENT THREAD CHECKIGN IF PLAYER HAS TURN
         // IF player is removed then there is null exception
         if (!players.contains(myPlayer)) {
@@ -379,6 +384,9 @@ public class ClientController {
 
     private void updateTurn(GameInfo gameInfo) {
         Player playerWithTurn = gameInfo.getPlayerWithTurn();
+        if (playerWithTurn.equals(myPlayer)) {
+            myPlayer.setTurn(true);
+        }
         myGame.setPlayerWithTurn(playerWithTurn);
         if (!playerWithTurn.equals(myPlayer)) {
             GameView.displayWaitingForPlayerMessage(playerWithTurn);
