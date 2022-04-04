@@ -64,7 +64,10 @@ public class HandEval {
 	public int[] evaluate(ArrayList<Card> hand, ArrayList<Card> flop) {
 
 		//ArrayList<Card> a = organizeCards(cards);
-		ArrayList<Card> a = hand;
+		ArrayList<Card> a = new ArrayList<Card>();
+		for (Card c : hand){
+			a.add(c);
+		}
 		for (Card c : flop) {
 			a = Services.insert(a, c);
 		}
