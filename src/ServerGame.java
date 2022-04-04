@@ -192,4 +192,12 @@ public class ServerGame {
     public boolean everyoneIsAllIn() {
         return mainGame.everyoneIsAllIn();
     }
+
+    public void setBuyIn(int buyIn) {
+        this.buyIn = buyIn;
+    }
+
+    public void setSmallBlind(int smallBlind) {
+        this.smallBlind = smallBlind;
+    }
 }
