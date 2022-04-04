@@ -25,17 +25,18 @@ public class Services {
     }
     */
 
-    public ArrayList<Card> insert(ArrayList<Card> a, Card new_c){ //this can go in Player?
-        if (a.size() == 0){
+    public static ArrayList<Card> insert(ArrayList<Card> a, Card new_c){ //this can go in Player?
+        if(a.size() == 0){
             a.add(new_c);
         }
+        
         else if (a.get(0).greater_than(new_c)){
             a.add(0, new_c);
         }
         else{
             for(int i = 0 ; i < a.size() - 1 ; i++){
-                if ((new_c.greater_than(a.get(i))) && a.get(i+1).greater_than(new_c)){
-                    a.add(i, new_c);
+                if ((new_c.rank >= a.get(i).rank) && a.get(i+1).rank >= new_c.rank){
+                    a.add(i+1, new_c);
                     return a;
                 }
             }

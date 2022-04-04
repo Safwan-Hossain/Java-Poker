@@ -428,17 +428,17 @@ public class Game implements Serializable {
         if (player.getHand().size() < MAX_HAND_SIZE) {
             throw new RuntimeException("Hand not setup for player: " + player.getName());
         }
-        ArrayList<Card> totalHand = this.tableCards;
-        totalHand.addAll(player.getHand());
-        int[] playerScore = new HandEval().evaluate(totalHand);
+        //ArrayList<Card> totalHand = this.tableCards;
+        //totalHand.addAll(player.getHand());
+        int[] playerScore = new HandEval().evaluate(player.getHand(), this.tableCards);
         return HandEval.getHandName(playerScore);
     }
 
     public int[] getScore(Player player) {
         HandEval evaluator = new HandEval();
-        ArrayList<Card> totalHand = new ArrayList<>(tableCards);
-        totalHand.addAll(player.getHand());
-        return evaluator.evaluate(totalHand);
+        //ArrayList<Card> totalHand = new ArrayList<>(tableCards);
+        //totalHand.addAll(player.getHand());
+        return evaluator.evaluate(player.getHand(), this.tableCards);
     }
 
     public int[] getHighestScore() {
