@@ -8,6 +8,9 @@ public class GameInfo implements Serializable {
     private final String clientID; // ID of client (player) who performed action
     private final String playerName; // Name of player who performed an action
 
+    private int smallBlind;
+    private int buyIn;
+
     private boolean isHost;
 
     private Player playerWithTurn; // Player with turn
@@ -56,6 +59,22 @@ public class GameInfo implements Serializable {
 
     public void setIsHost(boolean isHost) {
         this.isHost = isHost;
+    }
+
+    public int getSmallBlind() {
+        return smallBlind;
+    }
+
+    public void setSmallBlind(int smallBlind) {
+        this.smallBlind = smallBlind;
+    }
+
+    public int getBuyIn() {
+        return buyIn;
+    }
+
+    public void setBuyIn(int buyIn) {
+        this.buyIn = buyIn;
     }
 
     public boolean isGameHasStarted() {
