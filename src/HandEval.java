@@ -11,12 +11,69 @@ import java.util.ArrayList;
 public class HandEval
 {
 
-	
+	// TEMPORARY
+	public static String getHandName(int[] score) {
+		if (score[0] == 9 && score[1] == 14) {
+			return "royal flush";
+		}
+		else if (score[0] == 8) {
+			return "straight flush";
+		}
+		else if (score[0] == 7) {
+			return "four of a kind";
+		}
+		else if (score[0] == 6) {
+			return "full house";
+		}
+		else if (score[0] == 5) {
+			return "flush";
+		}
+		else if (score[0] == 4) {
+			return "straight";
+		}
+		else if (score[0] == 3) {
+			return "triple";
+		}
+		else if (score[0] == 2) {
+			return "two pairs";
+		}
+		else if (score[0] == 1) {
+			return "pair";
+		}
+	return "high card";
+	}
+
+	private static ArrayList<Card> organizeCards(ArrayList<Card> cards) {
+
+		ArrayList<Card> unorganizedCards = new ArrayList<>(cards);
+		ArrayList<Card> organizedCards = new ArrayList<>();
+
+		while (organizedCards.size() < cards.size()) {
+			Card lowestCard = unorganizedCards.get(0);
+
+			for (Card card: unorganizedCards) {
+				if (card.getRank() < lowestCard.getRank() &&
+					!organizedCards.contains(card)) {
+					lowestCard = card;
+				}
+			}
+
+			organizedCards.add(lowestCard);
+			unorganizedCards.remove(lowestCard);
+		}
+
+		if (organizedCards.size() != cards.size()) {
+			throw new RuntimeException("Hands dont match up");
+		}
+
+		return organizedCards;
+	}
 	//NOTE: FOR NOW ACES ARE ONLY HIGH
 	// evaluates the hand -- need to produce a score - ScoreT with [score for hand type, rank of highest card] - scores go from 0-9 while ranks go 2-14
-	public int[] evaluate(ArrayList<Card> a)
+	public int[] evaluate(ArrayList<Card> cards)
 	{
-        int[] score = new int[] {0, 2}; 
+		ArrayList<Card> a = organizeCards(cards);
+        int[] score = new int[] {0, 2};
 
         boolean fl = false;
         boolean st = false;
@@ -31,12 +88,12 @@ public class HandEval
 
         if(fl && st){
             if(highCard(a) == 14){
-                System.out.println("You have a royal flush!");
+//                System.out.println("You have a royal flush!");
                 score[0] = 9;
                 score[1] = 14;
             }
             else{
-                System.out.println("You have a straight flush!");
+//                System.out.println("You have a straight flush!");
                 score[0] = 8;
                 score[1] = highCard(a);
             }
@@ -44,50 +101,50 @@ public class HandEval
 
 		else if (fourOfaKind(a))
 		{
-			System.out.println("You have four of a kind!");
+//			System.out.println("You have four of a kind!");
             score[0] = 7;
             score[1] = highCard(a);
 		}
 		else if (fullHouse(a))
 		{
-			System.out.println("You have a full house!");
+//			System.out.println("You have a full house!");
             score[0] = 6;
             score[1] = highCard(a);
 		}
 		else if (fl)
 		{
-			System.out.println("You have a flush!");
+//			System.out.println("You have a flush!");
             score[0] = 5;
             score[1] = highCard(a);
 		}
 		else if (st)
 		{
-			System.out.println("You have a straight!");
+//			System.out.println("You have a straight!");
             score[0] = 4;
             score[1] = highCard(a);
 		}
 		else if (triple(a))
 		{
-			System.out.println("You have a triple!");
+//			System.out.println("You have a triple!");
             score[0] = 3;
             score[1] = highCard(a);
 		}
 		else if (twoPairs(a))
 		{
-			System.out.println("You have two pairs!");
+//			System.out.println("You have two pairs!");
             score[0] = 2;
             score[1] = highCard(a);
 		}
 		else if (pair(a))
 		{
-			System.out.println("You have a pair!");
+//			System.out.println("You have a pair!");
             score[0] = 1;
             score[1] = highCard(a);
 		}
 		else
 		{
 			int highCard = highCard(a);
-			System.out.println("Your highest card is " + highCard);
+//			System.out.println("Your highest card is " + highCard);
             score[0] = 0;
             score[1] = highCard(a);
 		}
@@ -131,16 +188,13 @@ public class HandEval
 	// checks for full house
 	public static boolean fullHouse(ArrayList<Card> a)
 	{
-		if ((a.get(0).rank == a.get(1).rank && a.get(1).rank == a.get(2).rank && a.get(3).rank == a.get(4).rank) || 
+		if ((a.get(0).rank == a.get(1).rank && a.get(1).rank == a.get(2).rank && a.get(3).rank == a.get(4).rank) ||
 		(a.get(2).rank == a.get(3).rank && a.get(3).rank == a.get(4).rank && a.get(0).rank == a.get(1).rank)){
 			return true;
 		}
 		return false;
 	}
-	
-	
-	
-	
+
 	// checks for triple
 	public static boolean triple(ArrayList<Card> a)
 	{
@@ -157,6 +211,7 @@ public class HandEval
 		int check = 0;
 		for(int counter = 1; counter < a.size(); counter++)
 		{
+
 			if (a.get(counter - 1).rank == a.get(counter).rank)
 			{
 				check++;
@@ -189,8 +244,55 @@ public class HandEval
 	
 		return false;
 	}
-	
-	
+
+	public static void main(String[] args) {
+		ArrayList<Card> cards = new ArrayList<>();
+		Card card1 = new Card();
+		card1.suit = 4;
+		card1.rank = 1;
+
+		Card card2 = new Card();
+		card2.suit = 1;
+		card2.rank = 9;
+
+		Card card3 = new Card();
+		card3.suit = 1;
+		card3.rank = 1;
+
+		Card card4 = new Card();
+		card4.suit = 4;
+		card4.rank = 1;
+
+		Card card5 = new Card();
+		card5.suit = 4;
+		card5.rank = 3;
+
+		Card card6 = new Card();
+		card6.suit = 1;
+		card6.rank = 5;
+
+		Card card7 = new Card();
+		card7.suit = 2;
+		card7.rank = 5;
+
+
+
+		cards.add(card1);
+		cards.add(card2);
+		cards.add(card3);
+		cards.add(card4);
+		cards.add(card5);
+		cards.add(card6);
+		cards.add(card7);
+
+
+		cards = organizeCards(cards);
+
+
+		System.out.println(pair(cards));
+		System.out.println(cards);
+	}
+
 	/* PUT SOMETHING LIKE THIS IN THE VIEW
 	// generates string for each card in hand
 	public void display(Card card)

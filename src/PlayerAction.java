@@ -2,7 +2,9 @@ public enum PlayerAction {
     FOLD,
     BET,
     RAISE,
-    CALL;
+    CALL,
+    CHECK,
+    WAIT; // If client has no chips then they must wait
 
     public boolean isABet() {
         return this == BET || this == RAISE;

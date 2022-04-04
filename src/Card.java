@@ -1,15 +1,18 @@
-/***********************
- *  Assignment 4
- *  Andreas Hadjigeorgiou
- *  ahh2131
- *  Card class
- */
+import java.io.Serializable;
 
-public class Card
+public class Card implements Serializable, Comparable<Card>
 {
   // I.V.s are suit and rank
 	public int suit;
 	public int rank;
+
+	public int getSuit() {
+		return suit;
+	}
+
+	public int getRank() {
+		return rank;
+	}
 	
 	public boolean greater_than(Card o) 
 	{
@@ -18,6 +21,31 @@ public class Card
 	     else
 	           return false;
 	}
-	
 
+	@Override
+	public String toString() {
+		String suitName = "";
+		switch (suit) {
+			case 1 -> suitName = "clubs";
+			case 2 -> suitName = "diamonds";
+			case 3 -> suitName = "hearts";
+			case 4 -> suitName = "spades";
+		}
+
+		String rankName = "";
+		switch (rank) {
+			case 1 -> rankName = "Ace";
+			case 11 -> rankName = "Jack";
+			case 12 -> rankName = "Queen";
+			case 13 -> rankName = "King";
+			default -> rankName = Integer.toString(rank);
+		}
+
+		return rankName + " of " + suitName;
+	}
+
+	@Override
+	public int compareTo(Card card) {
+		return Integer.compare(this.rank, card.rank);
+	}
 }

@@ -4,15 +4,18 @@ import java.util.ArrayList;
 
 public class ClientHandler implements Runnable {
 
-    public static ArrayList<ClientHandler> clientHandlers = new ArrayList<>();
-    private static Game mainGame;
+    public static volatile ArrayList<ClientHandler> clientHandlers = new ArrayList<>();
+    private static volatile boolean isUpdating = false;
+    private volatile boolean isHost = false;
+    private static ServerGame serverGame;
     private Socket socket;
     private ObjectOutputStream outputStream;
     private ObjectInputStream inputStream;
     private String clientName;
     private String clientID;
 
-    public ClientHandler(Socket socket, String clientID) {
+    public ClientHandler(Socket socket, String clientID, ServerGame serverGame) {
+        this.isHost = false;
         try {
             this.socket = socket;
             outputStream = new ObjectOutputStream(socket.getOutputStream());
@@ -21,6 +24,7 @@ public class ClientHandler implements Runnable {
         } catch (IOException e) {
             closeEverything();
         }
+        ClientHandler.serverGame = serverGame;
         this.clientID = clientID;
     }
 
@@ -31,16 +35,16 @@ public class ClientHandler implements Runnable {
             try {
                 // First message is client username
                 if (clientName == null) {
-                    clientName = (String) inputStream.readObject();
-                    GameInfo gm = new GameInfo(clientID, clientName);
-                    gm.setUpdateType(UpdateType.CONNECTION_STATUS);
-                    gm.setConnectionStatus(ConnectionStatus.JOINED);
-                    updateOtherClients(gm);
+                    setUpClient();
+                    serverGame.addPlayer(clientName, clientID);
                 }
-
                 gameInfo = (GameInfo) inputStream.readObject();
-                updateAllClients(gameInfo);
-                System.out.println(gameInfo);
+                if (gameInfo.getUpdateType() == UpdateType.PLAYER_QUIT) {
+                    closeEverything();
+                    return;
+                }
+                serverGame.setGameInfo(gameInfo);
+                serverGame.setHasPlayerResponded(true);
             } catch (IOException | ClassNotFoundException e) {
                 closeEverything();
                 break;
@@ -49,10 +53,37 @@ public class ClientHandler implements Runnable {
 
     }
 
-    private void updateAllClients(GameInfo gameInfo) throws IOException {
-        this.outputStream.writeObject(gameInfo);
-        this.outputStream.flush();
-        updateOtherClients(gameInfo);
+    private void setUpClient() throws IOException, ClassNotFoundException {
+        GameInfo clientSetupInfo = (GameInfo) inputStream.readObject();
+        clientName = clientSetupInfo.getPlayerName();
+        isHost = clientSetupInfo.isHost();
+
+        clientSetupInfo = new GameInfo(clientID, clientName);
+        clientSetupInfo.setUpdateType(UpdateType.CONNECTION_STATUS);
+        clientSetupInfo.setConnectionStatus(ConnectionStatus.JOINED);
+
+        updateClient(clientSetupInfo);
+        updateOtherClients(clientSetupInfo);
+    }
+
+    public static void updateAllClients(GameInfo gameInfo) {
+        isUpdating = true;
+        for (ClientHandler clientHandler : clientHandlers) {
+            if (clientHandler != null) {
+                clientHandler.updateClient(gameInfo);
+            }
+        }
+        isUpdating = false;
+    }
+
+    public void updateClient(GameInfo gameInfo) {
+        try {
+            this.outputStream.writeObject(gameInfo);
+            this.outputStream.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+            closeEverything();
+        }
     }
 
     private void updateOtherClients(GameInfo gameInfo) {
@@ -79,9 +110,25 @@ public class ClientHandler implements Runnable {
             if (socket != null) {
                 socket.close();
             }
-            System.out.println("CLOSED EVERYTHING");
+            while (isUpdating) {
+                Thread.onSpinWait();
+            }
+            clientHandlers.remove(this);
+            System.out.println("CLIENT HANDLER: CLOSED EVERYTHING FOR: " + clientName);
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public String getClientName() {
+        return clientName;
+    }
+
+    public String getClientID() {
+        return clientID;
+    }
+
+    public boolean getIsHost() {
+        return isHost;
     }
 }
