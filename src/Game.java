@@ -2,7 +2,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Set;
+import java.util.Iterator;
 
 public class Game implements Serializable {
     private final int MAX_HAND_SIZE;
@@ -56,6 +56,7 @@ public class Game implements Serializable {
 
         this.hasGameStarted = false;
         this.hasGameEnded = false;
+
     }
 
     public boolean isGameOver() {
@@ -288,11 +289,6 @@ public class Game implements Serializable {
         players.remove(player);
     }
 
-    // TODO
-    public void foldPlayer(Player player) {
-        unfoldedPlayers.remove(player);
-    }
-
     public HashMap<PokerRole, Player> getPlayersWithRoles() {
         HashMap<PokerRole, Player> hashMap = new HashMap<>();
         hashMap.put(PokerRole.DEALER, players.get(dealerIndex));
@@ -334,18 +330,26 @@ public class Game implements Serializable {
         return players;
     }
 
-    public void setPlayers(ArrayList<Player> players) {
-        for (Player player: players) {
+    public synchronized void setPlayers(ArrayList<Player> newPlayers) {
+        Iterator<Player> iterator = players.iterator();
+        while (iterator.hasNext()) {
+            Player player = iterator.next();
+            if (!newPlayers.contains(player)) {
+                iterator.remove();
+            }
+        }
+        for (Player player: newPlayers) {
             if (this.players.contains(player)) {
                 getPlayer(player).set_chips(player.getChips());
             }
             else {
-                this.players.remove(player);
+                this.players.add(player);
             }
         }
+
     }
 
-    public Player getPlayer(Player player) {
+    public synchronized Player getPlayer(Player player) {
         for (Player currPlayer: players) {
             if (currPlayer.equals(player)) {
                 return currPlayer;
