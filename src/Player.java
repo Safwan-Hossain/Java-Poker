@@ -147,6 +147,10 @@ public class Player implements Serializable
 		return this.getPlayerID().equals(player.getPlayerID());
 	}
 
+	@Override
+	public String toString() {
+		return name;
+	}
 
 	/*
 	// switches card for a new card
