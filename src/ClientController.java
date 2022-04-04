@@ -18,6 +18,14 @@ public class ClientController {
     private final String CANCEL_BET_VALUE = "B";
     private final String START_GAME_COMMAND = "START";
 
+    // Multiply coefficients by the small blinds to determine max and min buy in.
+    // Generally casinos use 20-50 big blinds for minimum buy in and 100-250 for maximum.
+    private final int MIN_BUY_IN_COEFFICIENT = 40 * 2;
+    private final int MAX_BUY_IN_COEFFICIENT = 250 * 2;
+
+    private final int MIN_SMALL_BLIND = 10;
+    private final int MAX_SMALL_BLIND = Integer.MAX_VALUE / MAX_BUY_IN_COEFFICIENT ;
+
     public ClientController(Socket socket, String username, boolean isHost) throws IOException {
         this.isHost = isHost;
         this.gameHasStarted = false;
@@ -41,7 +49,9 @@ public class ClientController {
             leaveTable();
         }
         else if (myPlayerLost && isHost) {
+            GameView.displayLoseGameScreen();
             waitForGameFinish();
+            GameView.displayExitMessage();
             leaveTable();
         }
     }
@@ -77,11 +87,60 @@ public class ClientController {
             GameView.askHostToStart(START_GAME_COMMAND);
             String response = scanner.nextLine().strip();
             if (response.equalsIgnoreCase(START_GAME_COMMAND)) {
+                String gameSettings = "GAME SETTINGS";
+                String message = gameSettings + "\n" + "=".repeat(gameSettings.length());
+                System.out.println(message);
+                int smallBlind = getValidSmallBlind(scanner);
+                int buyIn = getValidBuyIn(scanner, smallBlind);
+
                 GameInfo gameInfo = new GameInfo(client.getClientID(), client.getClientName());
                 gameInfo.setUpdateType(UpdateType.GAME_STARTED);
                 gameInfo.setGameHasStarted(true);
+                gameInfo.setBuyIn(buyIn);
+                gameInfo.setSmallBlind(smallBlind);
                 client.sendMessage(gameInfo);
                 return;
+            }
+        }
+    }
+
+    private int getValidSmallBlind(Scanner scanner) {
+        while (true) {
+            System.out.println("Please specify the small blind: ");
+            String input = scanner.nextLine();
+            if (isInteger(input)) {
+                int smallBlind = Integer.parseInt(input);
+                if (smallBlind > MAX_SMALL_BLIND) {
+                    System.out.println("The number you entered is too large. Max small blind: " + MAX_SMALL_BLIND);
+                }
+                else if (smallBlind < MIN_SMALL_BLIND) {
+                    System.out.println("The number you entered is too small. Min small blind: " + MIN_SMALL_BLIND);
+                }
+                else {
+                    return smallBlind;
+                }
+            }
+        }
+    }
+
+    private int getValidBuyIn(Scanner scanner, int smallBlind) {
+        final int MIN_BUY_IN = smallBlind * MIN_BUY_IN_COEFFICIENT;
+        final int MAX_BUY_IN = smallBlind * MAX_BUY_IN_COEFFICIENT;
+
+        while (true) {
+            System.out.println("Please specify the buy in (all players will be given the buy in): ");
+            String input = scanner.nextLine();
+            if (isInteger(input)) {
+                int buyIn = Integer.parseInt(input);
+                if (buyIn > MAX_BUY_IN) {
+                    System.out.println("The number you entered is too large. Max buy in: " + MAX_BUY_IN);
+                }
+                else if (buyIn < MIN_BUY_IN) {
+                    System.out.println("The number you entered is too small. Min buy in: " + MIN_BUY_IN);
+                }
+                else {
+                    return buyIn;
+                }
             }
         }
     }
@@ -162,7 +221,7 @@ public class ClientController {
     private void listenForIncomingMessages() {
         try {
             // TODO  --
-            while (client.isConnectedToServer() && !myPlayerLost) {
+            while (client.isConnectedToServer() && !(myPlayerLost && !isHost)) {
                 GameInfo gameInfo = (GameInfo) client.listenForMessage();
                 deconstructGameInfo(gameInfo);
             }

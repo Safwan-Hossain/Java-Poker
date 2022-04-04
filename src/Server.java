@@ -27,7 +27,8 @@ public class Server {
         new Thread(this::listenForNewClients).start(); // listen for new clients in a new thread
 
         waitForHostReady();
-
+        serverGame.setBuyIn(serverGame.getGameInfo().getBuyIn());
+        serverGame.setSmallBlind(serverGame.getGameInfo().getSmallBlind());
         serverGame.startGame();
         ClientHandler.updateAllClients(getStartGameInfo());
         runGame();
@@ -61,9 +62,10 @@ public class Server {
                     waitForNumOfSeconds(2);
                     break;
                 }
+
                 ClientHandler.updateAllClients(getNewRoundStateInfo());
+                waitForNumOfSeconds(1);
                 if (!serverGame.everyoneIsAllIn()) {
-                    waitForNumOfSeconds(1);
                     serverGame.giveNextPlayerTurn();
                     ClientHandler.updateAllClients(getTurnInfo());
                 }
@@ -120,7 +122,7 @@ public class Server {
     private boolean everyClientHandlerHasAPlayer() {
         ArrayList<String> playerIDs = getAllPlayerIDs();
         for (ClientHandler clientHandler : ClientHandler.clientHandlers) {
-            if (clientHandler.getIsHost()) {
+            if (clientHandler != null && clientHandler.getIsHost()) {
                 continue;
             }
             String clientID = clientHandler.getClientID();
