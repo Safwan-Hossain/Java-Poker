@@ -470,8 +470,8 @@ public class Game implements Serializable {
             }
 
             int[] currScore = getScore(player);
-            if (highestScore[0] == currScore[0] &&
-                    highestScore[1] == currScore[1]) {
+            if (highestScore[0] <= currScore[0] &&
+                    highestScore[1] <= currScore[1]) {
                 winners.add(player);
             }
         }
