@@ -459,7 +459,8 @@ public class ClientController {
                 GameView.displayInvalidValueMessage();
             }
         }
-        return amount;
+
+        return Math.min(amount, myGame.getPlayer(myPlayer).getChips());
     }
 
     private boolean isInteger(String string) {
