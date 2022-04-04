@@ -460,7 +460,7 @@ public class ClientController {
             }
         }
 
-        return Math.min(amount, myGame.getPlayer(myPlayer).getChips());
+        return Math.min(amount, myGame.getPlayerBettingPower(myPlayer));
     }
 
     private boolean isInteger(String string) {
