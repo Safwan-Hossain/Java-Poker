@@ -303,7 +303,7 @@ public class Server {
         Server server = new Server(serverSocket);
         System.out.println(InetAddress.getLocalHost());
         new Thread(() -> {
-            Scanner scanner = new Scanner(System.in);
+            Scanner scanner = new Scanner(System.in); //what's going on here?
             if (scanner.nextLine().equalsIgnoreCase("start")) {
                 server.localHostIsReady = true;
             }
