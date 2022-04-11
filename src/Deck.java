@@ -5,10 +5,11 @@
  *  Deck class
  */
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class Deck 
+public class Deck implements Serializable
 {
   
 	private final int DECK_SIZE = 52;

@@ -1,23 +1,26 @@
-import org.jetbrains.annotations.NotNull;
-
 import java.io.*;
-import java.net.InetAddress;
 import java.net.Socket;
-import java.util.Scanner;
 
 public class Client {
     private String clientID;
-    private String playerName;
+    private String clientName;
     private Socket socket;
     private ObjectOutputStream outputStream;
     private ObjectInputStream inputStream;
 
-    public Client(Socket socket, String name) throws IOException {
+    public Client(Socket socket, String clientName) throws IOException {
         this.socket = socket;
-        this.playerName = name;
+        this.clientName = clientName;
         this.outputStream = new ObjectOutputStream(socket.getOutputStream());
         this.inputStream = new ObjectInputStream(socket.getInputStream());
-        sendMessage(playerName);
+    }
+
+    public String getClientName() {
+        return clientName;
+    }
+
+    public void setClientName(String clientName) {
+        this.clientName = clientName;
     }
 
     public String getClientID() {
@@ -28,7 +31,7 @@ public class Client {
         this.clientID = clientID;
     }
 
-    public boolean IsConnectedToServer() {
+    public boolean isConnectedToServer() {
         return socket.isConnected();
     }
 
@@ -41,7 +44,7 @@ public class Client {
         outputStream.flush();
     }
 
-    private void closeEverything() {
+    public void closeEverything() {
         try {
             if (outputStream != null) {
                 outputStream.close();
@@ -52,30 +55,10 @@ public class Client {
             if (socket != null) {
                 socket.close();
             }
-            System.out.println("CLOSED EVERYTHING");
+            System.out.println("CLIENT: CLOSED EVERYTHING");
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    // TODO TEMPORARY CODE
-    private static String GetValidUsername() {
-        Scanner scanner = new Scanner(System.in);
-        String username = "";
-        while (username.strip().isBlank()) {
-            System.out.print("Please print your username: ");
-            username = scanner.nextLine();
-        }
-        scanner.close();
-        return username;
-    }
-
-    public static void main(String[] args) throws IOException, ClassNotFoundException {
-        String username = GetValidUsername();
-        Socket socket = new Socket(InetAddress.getLocalHost(), 100);
-        Client client = new Client(socket, username);
-        client.listenForMessage();
-        //client.performAction();
     }
 }
 

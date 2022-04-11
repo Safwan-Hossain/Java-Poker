@@ -39,7 +39,7 @@ public class MainMenuView {
     }
 
     public static void displayFailedToConnectToServer(String serverIP) {
-        System.out.println("Failed to connect to server IP: " + serverIP);
+        System.out.println("Failed to connect to server IP.");
         System.out.println("Please try again.");
     }
 
