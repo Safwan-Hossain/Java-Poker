@@ -283,10 +283,6 @@ public class Game implements Serializable {
         getPlayerWithTurn().setTurn(true);
     }
 
-    public boolean isPlayerWithTurnBankrupt() {
-        return getPlayerWithTurn().isBankrupt();
-    }
-
     public void removePlayer(Player player) {
         players.remove(player);
     }
@@ -535,6 +531,16 @@ public class Game implements Serializable {
         return playerBettings.get(localPlayer) + localPlayer.getChips();
     }
 
+    public boolean allOtherPlayersFolded() {
+        int numOfUnfolded = 0;
+        for (Player player: players) {
+            if (!player.isFolded()) {
+                numOfUnfolded++;
+            }
+        }
+        return numOfUnfolded <= 1;
+    }
+
     public int getMinimumCallAmount() {
         return minimumCallAmount;
     }
@@ -569,16 +575,6 @@ public class Game implements Serializable {
 
     public int getTotalPot() {
         return totalPot;
-    }
-
-    public boolean allOtherPlayersFolded() {
-        int numOfUnfolded = 0;
-        for (Player player: players) {
-            if (!player.isFolded()) {
-                numOfUnfolded++;
-            }
-        }
-        return numOfUnfolded <= 1;
     }
 
     public HashMap<Player, Integer> getPlayerBettings() {
