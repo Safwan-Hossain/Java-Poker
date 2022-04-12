@@ -6,6 +6,7 @@ import java.util.Iterator;
 
 public class Game implements Serializable {
     private final int MAX_HAND_SIZE;
+    private final int MAX_TABLE_CARDS;
 
     private int playerWithTurnIndex;
     private int dealerIndex;
@@ -37,6 +38,7 @@ public class Game implements Serializable {
 
     public Game(ArrayList<Player> players, int smallBlind) {
         this.MAX_HAND_SIZE = 2;
+        this.MAX_TABLE_CARDS = 5;
 
         //Sets up cards and players
         this.deck = new Deck();
@@ -214,7 +216,7 @@ public class Game implements Serializable {
                 }
             }
             prevPlayer = currPlayer;
-            }
+        }
         return true;
     }
 
@@ -411,6 +413,9 @@ public class Game implements Serializable {
         return tableCards;
     }
     public void setTableCards(ArrayList<Card> tableCards) {
+        if (tableCards.size() > MAX_TABLE_CARDS) {
+            throw new IllegalArgumentException("Too many table cards");
+        }
         this.tableCards = new ArrayList<>(tableCards);
     }
 
@@ -428,8 +433,7 @@ public class Game implements Serializable {
         if (player.getHand().size() < MAX_HAND_SIZE) {
             throw new RuntimeException("Hand not setup for player: " + player.getName());
         }
-        //ArrayList<Card> totalHand = this.tableCards;
-        //totalHand.addAll(player.getHand());
+
         int[] playerScore = new HandEval().evaluate(player.getHand(), this.tableCards);
         return HandEval.getHandName(playerScore);
     }
@@ -576,4 +580,9 @@ public class Game implements Serializable {
         }
         return numOfUnfolded <= 1;
     }
+
+    public HashMap<Player, Integer> getPlayerBettings() {
+        return new HashMap<Player, Integer>(playerBettings);
+    }
+
 }

@@ -6,6 +6,15 @@ public class Card implements Serializable, Comparable<Card>
 	public int suit;
 	public int rank;
 
+	public Card() {
+
+	}
+
+	public Card(int suit, int rank) {
+		this.suit = suit;
+		this.rank = rank;
+	}
+
 	public int getSuit() {
 		return suit;
 	}
