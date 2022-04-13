@@ -307,16 +307,16 @@ public class Server {
         }
     }
 
-    public static void main(String[] args) throws IOException{
-        ServerSocket serverSocket = new ServerSocket(101);
-        Server server = new Server(serverSocket);
-        System.out.println(InetAddress.getLocalHost());
-        new Thread(() -> {
-            Scanner scanner = new Scanner(System.in); //what's going on here?
-            if (scanner.nextLine().equalsIgnoreCase("start")) {
-                server.localHostIsReady = true;
-            }
-        }).start();
-        server.startServer();
-    }
+//    public static void main(String[] args) throws IOException{
+//        ServerSocket serverSocket = new ServerSocket(101);
+//        Server server = new Server(serverSocket);
+//        System.out.println(InetAddress.getLocalHost());
+//        new Thread(() -> {
+//            Scanner scanner = new Scanner(System.in); //what's going on here?
+//            if (scanner.nextLine().equalsIgnoreCase("start")) {
+//                server.localHostIsReady = true;
+//            }
+//        }).start();
+//        server.startServer();
+//    }
 }
