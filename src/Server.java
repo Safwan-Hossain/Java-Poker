@@ -12,10 +12,15 @@ public class Server {
     private ServerGame serverGame;
     private ArrayList<String> clientIDs = new ArrayList<>();
     private ServerSocket serverSocket;
+    private volatile int numOfConnectedClients;
 
     public Server (ServerSocket serverSocket) {
         this.serverSocket = serverSocket;
         this.localHostIsReady = false;
+    }
+
+    public int getNumberOfClients() {
+        return numOfConnectedClients;
     }
 
     public boolean isClosed() {
@@ -23,6 +28,7 @@ public class Server {
     }
 
     public void startServer() {
+        this.numOfConnectedClients = 0;
         serverGame = new ServerGame();
         new Thread(this::listenForNewClients).start(); // listen for new clients in a new thread
 
@@ -264,6 +270,7 @@ public class Server {
                 ClientHandler clientHandler = new ClientHandler(socket, generateClientID(), serverGame);
                 Thread thread = new Thread(clientHandler);
                 thread.start();
+                numOfConnectedClients++;
             }
         } catch (IOException e) {
             closeServer();
