@@ -6,7 +6,7 @@ import java.util.Scanner;
 
 public class MainController {
     //TODO - might want to change back to 3. Last 2 options are debugs.
-    private static final int MAX_NUM_OPTIONS = 5;
+    private static final int MAX_NUM_OPTIONS = 3;
     private static String username;
 
     private static ClientController clientController;
