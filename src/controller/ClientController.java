@@ -1,8 +1,9 @@
 package controller;
 
-import enumeration.PlayerAction;
-import enumeration.PokerRole;
-import enumeration.RoundState;
+import enumeration.game.PlayerAction;
+import enumeration.game.PokerRole;
+import enumeration.game.RoundState;
+import game.Game;
 import model.*;
 import view.GameView;
 
@@ -13,7 +14,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Scanner;
 
-import static enumeration.UpdateType.*;
+import static enumeration.servercommunication.UpdateType.*;
 
 public class ClientController {
     private Player myPlayer;
@@ -29,7 +30,7 @@ public class ClientController {
     private final String START_GAME_COMMAND = "START";
 
     // Multiply coefficients by the small blinds to determine max and min buy in.
-    // Generally casinos use 20-50 big blinds for minimum buy in and 100-250 for maximum.
+    // Generally casinos use 20-50 big blinds for minimum buy in and 100-250 for maximum buy in.
     private final int MIN_BUY_IN_COEFFICIENT = 40 * 2;
     private final int MAX_BUY_IN_COEFFICIENT = 250 * 2;
 

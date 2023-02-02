@@ -108,7 +108,7 @@ Fit Criterion: Poker chips will be rewarded equally to all players for any game,
 
     \begin{figure}
         \includegraphics[width=14cm]{implementation_environment (1).jpg}
-        \caption{model.Server Architecture}
+        \caption{server.Server Architecture}
     \end{figure}
 
 \bigskip
@@ -289,11 +289,11 @@ There are currently no costs, but once a global server is implemented (waiting r
 N/A.
 \subsection{Waiting Room}
 \begin{enumerate}
-    \item model.Game Settings - Right now the game has a default setting preset used when running. This means things such as maximum number of players, minimum number of players and maximum turn timer are set to preset values (which is set to its least restrictive form e.g. infinite turn timer). In the future the host will be allowed to set these settings before starting the game
+    \item game.Game Settings - Right now the game has a default setting preset used when running. This means things such as maximum number of players, minimum number of players and maximum turn timer are set to preset values (which is set to its least restrictive form e.g. infinite turn timer). In the future the host will be allowed to set these settings before starting the game
     
     \item GUI - Right now the game uses Java console to display its properties. In the future there will be a GUI for the game that will display the elements of the game visually instead of printing text to a console. 
     
-    \item Global model.Server - Currently the game can only connect through LAN servers (every device must be connected to the same network). In the future the game will have the ability to connect through any network using a global network.
+    \item Global server.Server - Currently the game can only connect through LAN servers (every device must be connected to the same network). In the future the game will have the ability to connect through any network using a global network.
     
     \item Spectator - Currently if you lose, you will be kicked out of the game. In the future you will be allowed to spectate the match.
 

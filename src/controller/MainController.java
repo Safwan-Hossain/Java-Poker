@@ -1,6 +1,6 @@
 package controller;
 
-import model.Server;
+import server.Server;
 import view.MainMenuView;
 
 import java.io.IOException;

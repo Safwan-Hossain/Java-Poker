@@ -307,9 +307,9 @@ model.Deck is suggested to be implemented as a stack, but the choice is ultimate
 \item returns: model.Card [n]
 \end{itemize}
 
-\section*{model.Game}
+\section*{game.Game}
 
-model.Game
+game.Game
 
 \subsection* {Uses}
 
@@ -335,7 +335,7 @@ model.Deck
 \hline
 \textbf{Routine name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions}\\
 \hline
-new model.Game & model.Player [ ], $\mathbb{I}$ & &\\
+new game.Game & model.Player [ ], $\mathbb{I}$ & &\\
 \hline
 startGame & $\mathbb{I}$ & &\\
 \hline 
@@ -387,7 +387,7 @@ Implementing players and unfoldedPlayers as dynamic arrays seems ideal.
 
 \subsubsection* {Access Routine Semantics}
 
-\noindent new model.Game(p\verb|_|list, x):
+\noindent new game.Game(p\verb|_|list, x):
 \begin{itemize}
 \item transition:
     \begin{itemize}
@@ -557,13 +557,13 @@ None
 
 \section* {controller.MainController Module}
     \subsection* {Uses}
-        model.Client, model.Game, Gameview, view.MainMenuView, model.Server
+        model.Client, game.Game, Gameview, view.MainMenuView, server.Server
     \subsection* {Syntax}
     
         \subsubsection* {Imported Constants}
             None
         \subsubsection* {Imported Types}
-            model.Client, model.Game, model.Server
+            model.Client, game.Game, server.Server
         \subsubsection* {Exported Access Programs}
         
         \begin{tabular}{| l | l | l | p{5cm} |}
@@ -656,13 +656,13 @@ None
         
 \section* {controller.ClientController Module}
     \subsection* {Uses}
-        model.Client, model.Game, Gameview, enumeration.PlayerAction, model.GameInfo
+        model.Client, game.Game, Gameview, enumeration.game.PlayerAction, model.GameInfo
     \subsection* {Syntax}
     
         \subsubsection* {Imported Constants}
             None
         \subsubsection* {Imported Types}
-            model.Client, model.Game, enumeration.PlayerAction, model.GameInfo
+            model.Client, game.Game, enumeration.game.PlayerAction, model.GameInfo
         \subsubsection* {Exported Access Programs}
         
         \begin{tabular}{| l | l | l | p{4cm} |}
@@ -673,11 +673,11 @@ None
             \hline
             performGameAction & Scanner &  & IOException\\
             \hline 
-            getValidPlayerAction & Scanner & enumeration.PlayerAction &\\
+            getValidPlayerAction & Scanner & enumeration.game.PlayerAction &\\
             \hline 
             getValidBet & Scanner & $\mathbb{Z}$ &\\
             \hline 
-            CreateGameInfo & enumeration.PlayerAction, $\mathbb{Z}$ & model.GameInfo &\\
+            CreateGameInfo & enumeration.game.PlayerAction, $\mathbb{Z}$ & model.GameInfo &\\
             \hline 
         \end{tabular}
         
@@ -686,7 +686,7 @@ None
     \subsubsection* {State Variables}
         $\mathit{player}: model.Player$\\
         $\mathit{client}: model.Client$\\
-        $\mathit{game} : model.Game$\\
+        $\mathit{game} : game.Game$\\
     
     \subsubsection* {State Invariant}
         None
@@ -712,8 +712,8 @@ None
         
         \noindent getValidPlayerAction(scanner):
         \begin{itemize}
-        \item return : $playerAction : enumeration.PlayerAction$
-        \item description: Asks the user for a valid player action. If the user input matches a enumeration.PlayerAction enumerator then return the enumeration.PlayerAction enmerator. Otherwise ask again.
+        \item return : $playerAction : enumeration.game.PlayerAction$
+        \item description: Asks the user for a valid player action. If the user input matches a enumeration.game.PlayerAction enumerator then return the enumeration.game.PlayerAction enmerator. Otherwise ask again.
         \end{itemize}
         
         \noindent getValidBet(scanner):
@@ -824,11 +824,11 @@ None
                 
 % ============ CLIENT HANDLER ============ % 
         
-\section* {handler.ClientHandler ADT Module}
+\section* {server.ClientHandler ADT Module}
     \subsection* {Template Module implements Runnable Interface}
     model.Client Handler
     \subsection* {Uses}
-    Runnable, model.GameInfo, model.Game
+    Runnable, model.GameInfo, game.Game
     \subsection* {Syntax}
     
         \subsubsection* {Imported Constants}
@@ -841,7 +841,7 @@ None
             \hline
             \textbf{Routine name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions}\\
             \hline
-            new handler.ClientHandler & Socket & handler.ClientHandler & \\
+            new server.ClientHandler & Socket & server.ClientHandler & \\
             \hline
             run &  &  & \\
             \hline 
@@ -855,8 +855,8 @@ None
     
     \subsubsection* {State Variables}
         $\mathit{clientUsername}: String$\\
-        $\mathit{clientHandlers}:$ static sequence of $handler.ClientHandler$\\
-        $\mathit{game}:$ static $model.Game$\\
+        $\mathit{clientHandlers}:$ static sequence of $server.ClientHandler$\\
+        $\mathit{game}:$ static $game.Game$\\
         $\mathit{socket}: Socket$\\
         $\mathit{inputStream}: ObjectInputStream$\\
         $\mathit{outputStream} : ObjectOutputStream$\\
@@ -872,7 +872,7 @@ None
     
     \subsubsection* {Access Routine Semantics}
     
-        \noindent new handler.ClientHandler(socket):
+        \noindent new server.ClientHandler(socket):
         \begin{itemize}
         \item return : $self$
         \item transition : $self.socket, inputStream, outputStream, clientHandlers := \\
@@ -883,7 +883,7 @@ None
         \noindent run():
         \begin{itemize}
         \item transition : Get any commands coming from $outputStream$, input that command into $game$ then send new game information to all clients.
-        \item description : Each handler.ClientHandler is responsible for taking in input from a single client connected to a server. Everytime a client sends a command (their game move) to the server, their designated handler.ClientHandler will receive that command and input that command into the game on the server on behalf of the client's name (as if the client had inputted the command directly to the game). Then the handler.ClientHandler will forward the resulting state of the game after the input, synchronizing the game for all clients.
+        \item description : Each server.ClientHandler is responsible for taking in input from a single client connected to a server. Everytime a client sends a command (their game move) to the server, their designated server.ClientHandler will receive that command and input that command into the game on the server on behalf of the client's name (as if the client had inputted the command directly to the game). Then the server.ClientHandler will forward the resulting state of the game after the input, synchronizing the game for all clients.
         \end{itemize}
         
         \noindent updateClients(gameInfo):
@@ -901,9 +901,9 @@ None
                         
 % ============ SERVER ============ % 
         
-\section* {model.Server ADT Module}
+\section* {server.Server ADT Module}
     \subsection* {Uses}
-    handler.ClientHandler
+    server.ClientHandler
     \subsection* {Syntax}
     
         \subsubsection* {Imported Constants}
@@ -916,7 +916,7 @@ None
             \hline
             \textbf{Routine name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions}\\
             \hline
-            new model.Server & ServerSocket &  & \\
+            new server.Server & ServerSocket &  & \\
             \hline
             startServer &  &  & \\
             \hline 
@@ -940,7 +940,7 @@ None
     
     \subsubsection* {Access Routine Semantics}
     
-        \noindent new model.Server(serverSocket):
+        \noindent new server.Server(serverSocket):
         \begin{itemize}
         \item return : $self$
         \item transition : $self.serverSocket := serverSocket$
@@ -948,8 +948,8 @@ None
         
         \noindent startServer():
         \begin{itemize}
-        \item transition : Listen for any attempts to connect to $serverSocket$ by a model.Client. If an attempt is made, try to get the client's socket and create a new handler.ClientHandler (using the client's socket) on a new thread and start the thread.
-        \item description : The handler.ClientHandler is responsible for taking in input from a single model.Client connected to a server. Everytime a model.Client connects to the server, a new handler.ClientHandler will be created on a new Thread to listen for input from that specific model.Client.
+        \item transition : Listen for any attempts to connect to $serverSocket$ by a model.Client. If an attempt is made, try to get the client's socket and create a new server.ClientHandler (using the client's socket) on a new thread and start the thread.
+        \item description : The server.ClientHandler is responsible for taking in input from a single model.Client connected to a server. Everytime a model.Client connects to the server, a new server.ClientHandler will be created on a new Thread to listen for input from that specific model.Client.
         \end{itemize}
         
         \noindent closeServer():
@@ -966,7 +966,7 @@ None
     \subsection* {Template Module implements Serializable}
     model.GameInfo
     \subsection* {Uses}
-    enumeration.PlayerAction
+    enumeration.game.PlayerAction
     \subsection* {Syntax}
     
         \subsubsection* {Imported Constants}
@@ -979,7 +979,7 @@ None
             \hline
             \textbf{Routine name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions}\\
             \hline
-            new model.GameInfo & String, String, enumeration.PlayerAction, $\mathbb{Z}$ & model.GameInfo & \\
+            new model.GameInfo & String, String, enumeration.game.PlayerAction, $\mathbb{Z}$ & model.GameInfo & \\
             \hline
             getClientID &  & String & \\
             \hline
@@ -996,7 +996,7 @@ None
     \subsubsection* {State Variables}
         $\mathit{clientID}: String$\\
         $\mathit{playerName}: String$\\
-        $\mathit{playerAction}: enumeration.PlayerAction$\\
+        $\mathit{playerAction}: enumeration.game.PlayerAction$\\
         $\mathit{amount}: \mathbb{Z}$\\
 
     \subsubsection* {State Invariant}
@@ -1014,7 +1014,7 @@ None
         \begin{itemize}
         \item return : $self$
         \item transition : $self.clientID, self.playerName, self.playerAction, self.amount := clientID, playerName, playerAction, amount$
-        \item description : model.GameInfo is essentially a data structure that model.Client and model.Server will use to communicate.
+        \item description : model.GameInfo is essentially a data structure that model.Client and server.Server will use to communicate.
         \end{itemize}
         
         \noindent getClientID():
@@ -1043,17 +1043,17 @@ None
         \end{itemize}        
                 
                       
-% ============ enumeration.PlayerAction ============ %
+% ============ enumeration.game.PlayerAction ============ %
         
-\section* {enumeration.PlayerAction Module}
+\section* {enumeration.game.PlayerAction Module}
     \subsection* {Uses}
-    enumeration.PlayerAction
+    enumeration.game.PlayerAction
     \subsection* {Syntax}
     
         \subsubsection* {Exported Constants}
             None
         \subsubsection* {Exported Types}
-            enumeration.PlayerAction = \{ \\
+            enumeration.game.PlayerAction = \{ \\
             FOLD, \#model.Player wants to fold \\
             CHECK, \#model.Player wants to check \\
             CALL, \#model.Player wants to call \\
@@ -1067,11 +1067,11 @@ None
             \hline
             \textbf{Routine name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions}\\
             \hline
-            isABet & enumeration.PlayerAction & $\mathbb{B}$ & \\
+            isABet & enumeration.game.PlayerAction & $\mathbb{B}$ & \\
             \hline
             actionIsValid & String & $\mathbb{B}$ & \\
             \hline
-            getActionByString & String & enumeration.PlayerAction &  IllegalArgumentException\\
+            getActionByString & String & enumeration.game.PlayerAction &  IllegalArgumentException\\
             \hline 
         \end{tabular}
         
@@ -1087,7 +1087,7 @@ None
         None
     
     \subsubsection* {Considerations}
-        enumeration.PlayerAction is an enum class that represent the possible actions a player can make
+        enumeration.game.PlayerAction is an enum class that represent the possible actions a player can make
     
     \subsubsection* {Access Routine Semantics}
     
@@ -1098,13 +1098,13 @@ None
         
         \noindent actionIsValid(action):
         \begin{itemize}
-        \item return : True if the String $action$ is a enumeration.PlayerAction. False if not.
+        \item return : True if the String $action$ is a enumeration.game.PlayerAction. False if not.
         \end{itemize}
         
         \noindent getActionByString(action):
         \begin{itemize}
-        \item return : Corresponding enumeration.PlayerAction that matches $action$
-        \item exception : Throw IllegalArgumentException if there is no  string value for enumeration.PlayerAction that matches $action$
+        \item return : Corresponding enumeration.game.PlayerAction that matches $action$
+        \item exception : Throw IllegalArgumentException if there is no  string value for enumeration.game.PlayerAction that matches $action$
         \end{itemize}
          
         

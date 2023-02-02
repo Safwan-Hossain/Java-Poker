@@ -1,8 +1,11 @@
-package model;
+package server;
 
-import enumeration.RoundState;
-import enumeration.UpdateType;
-import handler.ClientHandler;
+import enumeration.game.RoundState;
+import enumeration.servercommunication.UpdateType;
+import model.Card;
+import model.GameInfo;
+import model.Player;
+import game.ServerGame;
 import util.HandEval;
 
 import java.io.IOException;
@@ -95,7 +98,7 @@ public class Server {
     }
 
     private GameInfo getAllOtherPlayersFoldedInfo() {
-        GameInfo gameInfo = new GameInfo("model.Server", "model.Server");
+        GameInfo gameInfo = new GameInfo("server.Server", "server.Server");
         gameInfo.setUpdateType(UpdateType.LAST_UNFOLDED_PLAYER_WINS);
         gameInfo.setLosingPlayers(serverGame.getPlayersWithNoChips());
         for (Player player: serverGame.getPlayers()) {
@@ -107,7 +110,6 @@ public class Server {
             }
         }
         return gameInfo;
-
     }
 
     private void waitForNumOfSeconds(double numOfSeconds) {
@@ -145,14 +147,14 @@ public class Server {
     }
 
     private GameInfo getGameEndedInfo() {
-        GameInfo gameInfo = new GameInfo("model.Server", "model.Server");
+        GameInfo gameInfo = new GameInfo("server.Server", "server.Server");
         gameInfo.setUpdateType(UpdateType.GAME_ENDED);
         gameInfo.setWinningPlayers(serverGame.getPlayers());
         return gameInfo;
     }
 
     private GameInfo getNewRoundStateInfo() {
-        GameInfo gameInfo = new GameInfo("model.Server", "model.Server");
+        GameInfo gameInfo = new GameInfo("server.Server", "server.Server");
         gameInfo.setRoundState(serverGame.getRoundState());
         gameInfo.setGame(serverGame.getMainGame());
         gameInfo.setTableCards(serverGame.getTableCards());
@@ -216,7 +218,7 @@ public class Server {
     }
 
     private GameInfo getTurnInfo() {
-        GameInfo gameInfo = new GameInfo("model.Server", "model.Server");
+        GameInfo gameInfo = new GameInfo("server.Server", "server.Server");
         gameInfo.setUpdateType(UpdateType.PLAYER_TURN);
         gameInfo.setPlayerWithTurn(serverGame.getPlayerWithTurn());
         return gameInfo;
@@ -224,7 +226,7 @@ public class Server {
 
 
     private GameInfo getStartGameInfo() {
-        GameInfo gameInfo = new GameInfo("model.Server", "model.Server");
+        GameInfo gameInfo = new GameInfo("server.Server", "server.Server");
         gameInfo.setGame(serverGame.getMainGame());
         gameInfo.setUpdateType(UpdateType.GAME_STARTED);
         gameInfo.setGameHasStarted(true);
@@ -241,7 +243,7 @@ public class Server {
     }
 
     private GameInfo getNewRoundInfo() {
-        GameInfo gameInfo = new GameInfo("model.Server", "model.Server");
+        GameInfo gameInfo = new GameInfo("server.Server", "server.Server");
         gameInfo.setUpdateType(UpdateType.NEW_ROUND_STATE);
         gameInfo.setRoundState(RoundState.PRE_FLOP);
         gameInfo.setGame(serverGame.getMainGame());
@@ -314,7 +316,7 @@ public class Server {
 
 //    public static void main(String[] args) throws IOException{
 //        ServerSocket serverSocket = new ServerSocket(101);
-//        model.Server server = new model.Server(serverSocket);
+//        server.Server server = new server.Server(serverSocket);
 //        System.out.println(InetAddress.getLocalHost());
 //        new Thread(() -> {
 //            Scanner scanner = new Scanner(System.in); //what's going on here?

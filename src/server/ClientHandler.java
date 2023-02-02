@@ -1,9 +1,9 @@
-package handler;
+package server;
 
-import enumeration.ConnectionStatus;
-import enumeration.UpdateType;
+import enumeration.servercommunication.ConnectionStatus;
+import enumeration.servercommunication.UpdateType;
 import model.GameInfo;
-import model.ServerGame;
+import game.ServerGame;
 
 import java.io.*;
 import java.net.Socket;

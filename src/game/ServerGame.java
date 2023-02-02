@@ -1,7 +1,11 @@
-package model;
+package game;
 
-import enumeration.PokerRole;
-import enumeration.RoundState;
+import enumeration.game.PokerRole;
+import enumeration.game.RoundState;
+import model.Card;
+import model.Client;
+import model.GameInfo;
+import model.Player;
 
 import java.util.ArrayList;
 import java.util.HashMap;

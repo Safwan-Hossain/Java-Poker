@@ -1,4 +1,4 @@
-package enumeration;
+package enumeration.servercommunication;
 
 public enum ConnectionStatus {
     JOINED,

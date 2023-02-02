@@ -1,6 +1,6 @@
 package model;
 
-import enumeration.PokerRole;
+import enumeration.game.PokerRole;
 
 import java.io.Serializable;
 import java.util.ArrayList;

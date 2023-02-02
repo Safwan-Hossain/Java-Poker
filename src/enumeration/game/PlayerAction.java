@@ -1,4 +1,4 @@
-package enumeration;
+package enumeration.game;
 
 public enum PlayerAction {
     FOLD,

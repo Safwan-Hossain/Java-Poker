@@ -1,10 +1,4 @@
-package util; /***********************
- *  Assignment 4
- *  Andreas Hadjigeorgiou
- *  ahh2131
- *  model.Game class
- */
-///
+package util;
 import model.Card;
 
 import java.util.ArrayList;

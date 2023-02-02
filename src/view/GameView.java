@@ -1,9 +1,9 @@
 package view;
 
-import enumeration.ConnectionStatus;
-import enumeration.PlayerAction;
-import enumeration.PokerRole;
-import enumeration.RoundState;
+import enumeration.servercommunication.ConnectionStatus;
+import enumeration.game.PlayerAction;
+import enumeration.game.PokerRole;
+import enumeration.game.RoundState;
 import model.Card;
 import model.Client;
 import model.Player;

@@ -1,8 +1,11 @@
 package model;
 
-import enumeration.*;
-import model.Card;
-import model.Player;
+import enumeration.game.PlayerAction;
+import enumeration.game.PokerRole;
+import enumeration.game.RoundState;
+import enumeration.servercommunication.ConnectionStatus;
+import enumeration.servercommunication.UpdateType;
+import game.Game;
 
 import java.io.Serializable;
 import java.util.ArrayList;

@@ -1,8 +1,11 @@
-package model;
+package game;
 
-import enumeration.PlayerAction;
-import enumeration.PokerRole;
-import enumeration.RoundState;
+import enumeration.game.PlayerAction;
+import enumeration.game.PokerRole;
+import enumeration.game.RoundState;
+import model.Card;
+import model.Deck;
+import model.Player;
 import util.HandEval;
 
 import java.io.Serializable;
@@ -10,6 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+
 
 public class Game implements Serializable {
     private final int MAX_HAND_SIZE;

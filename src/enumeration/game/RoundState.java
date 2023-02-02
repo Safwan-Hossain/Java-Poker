@@ -1,4 +1,4 @@
-package enumeration;
+package enumeration.game;
 
 public enum RoundState {
     PRE_FLOP,

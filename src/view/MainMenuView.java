@@ -58,6 +58,6 @@ public class MainMenuView {
     }
 
     public static void displayExitingProgram() {
-        System.out.println("Closing model.Game...");
+        System.out.println("Closing game.Game...");
     }
 }
