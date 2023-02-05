@@ -30,9 +30,8 @@ public class Deck implements Serializable
 		{
 			for (int rank = 1; rank <= 13; rank++)
 			{
-				deck[counter] = new Card();
-				deck[counter].suit = suit;
-				deck[counter].rank = rank;
+				Card card = new Card(suit, rank);
+				deck[counter] = card;
 				counter++;
 			}
 		}
