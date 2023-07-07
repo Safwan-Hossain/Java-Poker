@@ -7,73 +7,73 @@ public class View {
 	public void display(Card card)
 	{
 		
-		if (card.rank == 2)
+		if (card.getRank() == 2)
 		{
 			System.out.print("Two of ");
 		}
-		if (card.rank == 3)
+		if (card.getRank() == 3)
 		{
 			System.out.print("Three of ");
 		}
-		if (card.rank == 4)
+		if (card.getRank() == 4)
 		{
 			System.out.print("Four of ");
 		}
-		if (card.rank == 5)
+		if (card.getRank() == 5)
 		{
 			System.out.print("Five of ");
 		}
-		if (card.rank == 6)
+		if (card.getRank() == 6)
 		{
 			System.out.print("Six of ");
 		}
-		if (card.rank == 7)
+		if (card.getRank() == 7)
 		{
 			System.out.print("Seven of ");
 		}
-		if (card.rank == 8)
+		if (card.getRank() == 8)
 		{
 			System.out.print("Eight of ");
 		}
-		if (card.rank == 9)
+		if (card.getRank() == 9)
 		{
 			System.out.print("Nine of ");
 		}
-		if (card.rank == 10)
+		if (card.getRank() == 10)
 		{
 			System.out.print("Ten of ");
 		}
-		if (card.rank == 11)
+		if (card.getRank() == 11)
 		{
 			System.out.print("Jack of ");
 		}
-		if (card.rank == 12)
+		if (card.getRank() == 12)
 		{
 			System.out.print("Queen of ");
 		}
-		if (card.rank == 13)
+		if (card.getRank() == 13)
 		{
 			System.out.print("King of ");
 		}
-		if (card.rank == 14){
+		if (card.getRank() == 14){
 			System.out.print("Ace of ");
 		}
-		if (card.suit == 1)
+		if (card.getSuit() == 1)
 		{
 			System.out.print("Spades");
 			System.out.println();
 		}
-		if (card.suit == 2)
+		if (card.getSuit() == 2)
 		{
 			System.out.print("Hearts");
 			System.out.println();
 		}
-		if (card.suit == 3)
+		if (card.getSuit() == 3)
 		{
 			System.out.print("Diamonds");
 			System.out.println();
 		}
-		if (card.suit == 4)
+		if (card.getSuit() == 4)
 		{
 			System.out.print("Clubs");
 			System.out.println();

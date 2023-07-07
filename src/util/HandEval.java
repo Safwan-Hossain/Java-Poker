@@ -83,7 +83,7 @@ public class HandEval {
 		if (fl > 0) {
 			ArrayList<Card> fland = a; //modifies a but its safe
 			for(int i = fland.size() - 1; i >= 0 ; i--){
-				if(fland.get(i).suit != fl){
+				if(fland.get(i).getSuit() != fl){
 					fland.remove(i);
 				}
 			}
@@ -161,9 +161,9 @@ public class HandEval {
 			int count = 0;
 			//int high = 0;
 			for (int j = a.size() - 1 ; j >= 0 ; j--) {
-				if (a.get(j).suit == i) {
+				if (a.get(j).getSuit() == i) {
 					count++;
-					int r = a.get(j).rank;
+					int r = a.get(j).getRank();
 					//if (r >= high) {
 					//	high = r;
 					//}
@@ -187,12 +187,12 @@ public class HandEval {
 
 		ArrayList<Card> temp1 = new ArrayList<Card>();
 		for (Card c : a) {
-			if (c.rank == 14) {
+			if (c.getRank() == 14) {
 				temp1.add(c);
 			}
 		}
 		for (Card c : a) {
-			if (c.rank != 14) {
+			if (c.getRank() != 14) {
 				temp1.add(c);
 			}
 		}
@@ -202,7 +202,7 @@ public class HandEval {
 		if (suit != 0) {
 
 			for (int j = temp.size() - 1; j >= 0; j--) {
-				if (temp.get(j).suit != suit) {
+				if (temp.get(j).getSuit() != suit) {
 					temp.remove(j);
 				}
 			}
@@ -210,7 +210,7 @@ public class HandEval {
 		}
 		else{
 			for(int j = temp.size() - 1 ; j >= 1 ; j--){
-				if(temp.get(j).rank == 14){
+				if(temp.get(j).getRank() == 14){
 					temp.remove(j);
 				}
 			}
@@ -229,14 +229,14 @@ public class HandEval {
 
 				for (int i = 0; i < temp.size() - 1; i++) {
 
-					if (current + 1 == temp.get(i + 1).rank) {
+					if (current + 1 == temp.get(i + 1).getRank()) {
 						count++;
 						current++;
 						if (count >= 5){
 							return 14;
 						}
 						//System.out.println("Hi!");
-					} else if (temp.get(i).rank == temp.get(i + 1).rank) {
+					} else if (temp.get(i).getRank() == temp.get(i + 1).getRank()) {
 						continue;
 					} else {
 						return 0;
@@ -258,7 +258,7 @@ public class HandEval {
 		if (suit != 0) {
 
 			for (int j = a.size() - 1; j >= 0; j--) {
-				if (a.get(j).suit == suit) {
+				if (a.get(j).getSuit() == suit) {
 					temp.add(a.get(j));
 				}
 			}
@@ -270,22 +270,22 @@ public class HandEval {
 		}
 
 		int count = 1;
-		int high = temp.get(temp.size() - 1).rank;
+		int high = temp.get(temp.size() - 1).getRank();
 		for (int i = temp.size() - 1; i > 0; i--) {
-			int r = temp.get(i).rank;
+			int r = temp.get(i).getRank();
 
-			if (r == temp.get(i - 1).rank + 1) {
+			if (r == temp.get(i - 1).getRank() + 1) {
 				count++;
 				//System.out.println("HI" + Integer.toString(i));
 				if(count >= 5){
 					return high;
 				}
-			} else if (r == temp.get(i - 1).rank) {
+			} else if (r == temp.get(i - 1).getRank()) {
 				continue;
 			} else {
 				//System.out.println("HIGH" + Integer.toString(i));
 				count = 1;
-				high = temp.get(i-1).rank;
+				high = temp.get(i-1).getRank();
 			}
 		}
 
@@ -295,7 +295,7 @@ public class HandEval {
 
 	//fine
 	public static int highCard(ArrayList<Card> a) {
-		return a.get(a.size() - 1).rank;
+		return a.get(a.size() - 1).getRank();
 	}
 
 	/*
@@ -354,10 +354,10 @@ public class HandEval {
 	public static int fourOfaKind(ArrayList<Card> a) {
 		int count = 1;
 		for (int i = 0; i < a.size() - 1; i++) {
-			if (a.get(i).rank == a.get(i + 1).rank) {
+			if (a.get(i).getRank() == a.get(i + 1).getRank()) {
 				count++;
 				if (count == 4) {
-					return a.get(i).rank;
+					return a.get(i).getRank();
 				}
 			} else {
 				count = 1;
@@ -374,7 +374,7 @@ public class HandEval {
 			ArrayList<Card> temp = new ArrayList<Card>();
 
 			for (int i = a.size() - 1; i >= 0; i--) {
-				if (a.get(i).rank != t) {
+				if (a.get(i).getRank() != t) {
 					temp.add(a.get(i));
 				}
 			}
@@ -396,12 +396,12 @@ public class HandEval {
 		int count = 1;
 		for (int i = 0; i < a.size() - 1; i++) {
 
-			if (a.get(i).rank == a.get(i + 1).rank) {
+			if (a.get(i).getRank() == a.get(i + 1).getRank()) {
 				count++;
 
 				if (count == 3) {
 					//System.out.println("Here!");
-					Max = a.get(i).rank;
+					Max = a.get(i).getRank();
 				}
 			} else {
 				count = 1;
@@ -418,7 +418,7 @@ public class HandEval {
 			ArrayList<Card> temp = new ArrayList<Card>();
 			for (int i = a.size() - 1; i >= 0; i--) {
 				//System.out.println("temp:");
-				if (a.get(i).rank != p1) {
+				if (a.get(i).getRank() != p1) {
 					temp.add(a.get(i));
 					//System.out.print(Integer.toString(a.get(i).rank));
 				}
@@ -441,11 +441,11 @@ public class HandEval {
 		int Max = 0;
 		int count = 1;
 		for (int i = 0; i < a.size() - 1; i++) {
-			if (a.get(i).rank == a.get(i + 1).rank) {
+			if (a.get(i).getRank() == a.get(i + 1).getRank()) {
 				count++;
 				if (count == 2) {
-					if (Max <= a.get(i).rank){ //shouldn't need this
-						Max = a.get(i).rank;
+					if (Max <= a.get(i).getRank()){ //shouldn't need this
+						Max = a.get(i).getRank();
 					}
 				}
 			} else {

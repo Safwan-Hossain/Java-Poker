@@ -39,7 +39,7 @@ public class Services {
         }
         else{
             for(int i = 0 ; i < a.size() - 1 ; i++){
-                if ((new_c.rank >= a.get(i).rank) && a.get(i+1).rank >= new_c.rank){
+                if ((new_c.getRank() >= a.get(i).getRank()) && a.get(i+1).getRank() >= new_c.getRank()){
                     a.add(i+1, new_c);
                     return a;
                 }

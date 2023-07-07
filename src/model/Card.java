@@ -5,8 +5,8 @@ import java.io.Serializable;
 public class Card implements Serializable, Comparable<Card>
 {
   // I.V.s are suit and rank
-	public int suit;
-	public int rank;
+	private int suit;
+	private int rank;
 
 	public Card() {
 
