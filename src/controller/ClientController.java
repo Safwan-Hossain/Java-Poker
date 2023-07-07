@@ -75,12 +75,12 @@ public class ClientController {
     }
 
     private void setUpClient() throws IOException {
-        GameInfo clientSetUpInfo = new GameInfo("", client.getClientName());
-        clientSetUpInfo.setIsHost(isHost);
-        client.sendMessage(clientSetUpInfo);
+        GameInfo clientInfo = new GameInfo("", client.getClientName());
+        clientInfo.setIsHost(isHost);
+        client.sendMessage(clientInfo);
         try {
-            clientSetUpInfo = (GameInfo) client.listenForMessage();
-            client.setClientID(clientSetUpInfo.getClientID());
+            clientInfo = (GameInfo) client.listenForMessage();
+            client.setClientID(clientInfo.getClientID());
         } catch (ClassNotFoundException ignored) {
         }
     }
@@ -339,7 +339,7 @@ public class ClientController {
 
     private void updatePlayers(GameInfo gameInfo) {
         ArrayList<Player> players = new ArrayList<>(gameInfo.getPlayers());
-        // TODO - FIND BETTER WAY TO HANDLE THIS -- CURRENTLY TRIES TO AVOID DIFFERENT THREAD CHECKIGN IF PLAYER HAS TURN
+        // TODO - FIND BETTER WAY TO HANDLE THIS -- CURRENTLY TRIES TO AVOID DIFFERENT THREAD CHECKING IF PLAYER HAS TURN
         // IF player is removed then there is null exception
         if (!players.contains(myPlayer)) {
             players.add(myPlayer);
