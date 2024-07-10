@@ -40,7 +40,7 @@ public class RoundWinnerEvaluator {
             }
         }
 
-        List<HandEvaluation> winningHands = HandEvaluator.determineWinners(handEvaluations);
+        List<HandEvaluation> winningHands = determineWinners(handEvaluations);
 
         List<Player> winners = new ArrayList<>();
         for (HandEvaluation winningHand : winningHands) {
@@ -48,5 +48,23 @@ public class RoundWinnerEvaluator {
         }
 
         return winners;
+    }
+
+    public static List<HandEvaluation> determineWinners(List<HandEvaluation> handEvaluations) {
+        List<HandEvaluation> winningHands = new ArrayList<>();
+        HandEvaluation bestHand = handEvaluations.get(0);
+
+        for (HandEvaluation handEvaluation : handEvaluations) {
+            int comparison = handEvaluation.compareTo(bestHand);
+            if (comparison > 0) {
+                bestHand = handEvaluation;
+                winningHands.clear();
+                winningHands.add(handEvaluation);
+            } else if (comparison == 0) {
+                winningHands.add(handEvaluation);
+            }
+        }
+
+        return winningHands;
     }
 }

@@ -13,8 +13,9 @@ public class HandEvaluatorTestUtil {
     private static final List<Card.Suit> SUITS = List.of(Card.Suit.values());
     private static final List<Card.Rank> RANKS = List.of(Card.Rank.values());
     private static final List<Card> ALL_CARDS = createAllCards();
+    private static final Random RANDOM = new Random(12345); // Fixed seed for reproducibility
 
-    private static final Random RANDOM = new Random();
+
     private static List<Card> createAllCards() {
         List<Card> allCards = new ArrayList<>();
         for (Card.Suit suit : SUITS) {
@@ -25,6 +26,9 @@ public class HandEvaluatorTestUtil {
         return allCards;
     }
 
+    public static void resetSeed() {
+        RANDOM.setSeed(12345);
+    }
 
     public static List<Card> createFourOfAKind(Card.Rank rank) {
         return SUITS.stream()

@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: util.HandEvaluatorTest
 -------------------------------------------------------------------------------
-Tests run: 53048, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 27.438 s - in util.HandEvaluatorTest
+Tests run: 53048, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 25.59 s - in util.HandEvaluatorTest

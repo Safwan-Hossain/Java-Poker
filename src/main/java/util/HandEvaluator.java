@@ -33,7 +33,6 @@ public class HandEvaluator {
 
 		boolean isFlush = isFlush(suitCount);
 		boolean isStraight = isStraight(rankCount);
-//		boolean isRoyal = isRoyal(cards);
 
 		if (isFlush && isStraight && isStraightFlush(cards)) {
 			if (isRoyal(cards)) {
@@ -42,8 +41,6 @@ public class HandEvaluator {
 			return HandRank.STRAIGHT_FLUSH;
 		}
 
-//		if (isFlush && isStraight && isRoyal) return HandRank.ROYAL_FLUSH;
-//		if (isFlush && isStraight) return HandRank.STRAIGHT_FLUSH;
 		if (isFourOfAKind(rankCount)) return HandRank.FOUR_OF_A_KIND;
 		if (isFullHouse(rankCount)) return HandRank.FULL_HOUSE;
 		if (isFlush) return HandRank.FLUSH;
@@ -217,7 +214,7 @@ public class HandEvaluator {
 				.collect(Collectors.toList());
 
 		// Check for ace low straight (A, 2, 3, 4, 5)
-		if (ranks.contains(14) && ranks.containsAll(Arrays.asList(2, 3, 4, 5))) {
+		if (ranks.contains(14) && new HashSet<>(ranks).containsAll(Arrays.asList(2, 3, 4, 5))) {
 			return true;
 		}
 
@@ -304,21 +301,4 @@ public class HandEvaluator {
 		return rankCount.containsValue(2L);
 	}
 
-	public static List<HandEvaluation> determineWinners(List<HandEvaluation> handEvaluations) {
-		List<HandEvaluation> winningHands = new ArrayList<>();
-		HandEvaluation bestHand = handEvaluations.get(0);
-
-		for (HandEvaluation handEvaluation : handEvaluations) {
-			int comparison = handEvaluation.compareTo(bestHand);
-			if (comparison > 0) {
-				bestHand = handEvaluation;
-				winningHands.clear();
-				winningHands.add(handEvaluation);
-			} else if (comparison == 0) {
-				winningHands.add(handEvaluation);
-			}
-		}
-
-		return winningHands;
-	}
 }
