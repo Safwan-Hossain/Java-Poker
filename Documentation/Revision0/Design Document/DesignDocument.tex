@@ -71,21 +71,21 @@ March 18, 2022 & 1.1 & Revised Draft\\
 
 \subsection{Summary of Project}
 
-Our Poker Project is aptly named; we aim to build upon a relatively primitive base code for evaluating poker hand states and create a fully playable online poker experience. Our main motivation behind developing this software is to remove the barriers that other similar products have neglected to in the past, namely the requirement of financial commitment from the user. We firmly believe in the educational and developmental value of a strategic, high-stakes game like poker, but we also believe that losing money and promoting detrimental habits and addiction are not inherent to that high-stakes feeling. Our project will make this game accessible to students and other young people who are not in the financial situation to regularly go to a casino or use a monetary gambling app, and will give them the opportunity to develop valuable risk analysis skills and have fun with their friends, without the chance of harming their future. 
+Our Poker Project is aptly named; we aim to build upon a relatively primitive base code for evaluating poker hand states and create a fully playable online poker experience. Our main motivation behind developing this software is to remove the barriers that other similar products have neglected to in the past, namely the requirement of financial commitment from the user. We firmly believe in the educational and developmental value of a strategic, high-stakes main.model.game like poker, but we also believe that losing money and promoting detrimental habits and addiction are not inherent to that high-stakes feeling. Our project will make this main.model.game accessible to students and other young people who are not in the financial situation to regularly go to a casino or use a monetary gambling app, and will give them the opportunity to develop valuable risk analysis skills and have fun with their friends, without the chance of harming their future.
 
 \subsection{Context of Module Guide}
 
 This document underlines the distinctions made using the information gathered from the requirements document, and how they will go on to partition the elements of the software into distinct modules, which are described in detail in the MIS below (Section 8). We have also developed traceability matrices to ensure that we have both encapsulated all of our required behaviour somewhere within the specification of the current architecture, and that our anticipated changes will have a "future home" as well. This document will provide various views on where we are currently at in the development process, where we were and where we intend on going, such that it will have some inherent value to each stakeholder involved. These include:
 
 \begin{itemize}
-    \item Designers: This document will act as an oracle for the design and dependencies of the programs to be written by the development team, showing both what is expected and likely areas of faults or stress, so that the designers can reinforce the importance of those areas and ensure that the developers are implementing them correctly. It also acts as information hiding, so when verifying the final product the design team can simply refer to the overarching hierarchy and behaviour described by the MIS, as opposed to reading through the code or its associated documentation. Additionally, as designing for generality is a specific property that we have prioritized given the possible application of the software to additional card game simulations, and we have already begun the process of considering anticipated changes, it allows the designers to freely consider what areas of the program may have the flexibility to accommodate for these heuristics.
+    \item Designers: This document will act as an oracle for the design and dependencies of the programs to be written by the development team, showing both what is expected and likely areas of faults or stress, so that the designers can reinforce the importance of those areas and ensure that the developers are implementing them correctly. It also acts as information hiding, so when verifying the final product the design team can simply refer to the overarching hierarchy and behaviour described by the MIS, as opposed to reading through the code or its associated documentation. Additionally, as designing for generality is a specific property that we have prioritized given the possible application of the software to additional card main.model.game simulations, and we have already begun the process of considering anticipated changes, it allows the designers to freely consider what areas of the program may have the flexibility to accommodate for these heuristics.
     \item Developers: The viewpoint of this document that is most applicable to the developers is that of the MIS; the technical specification of what each module and their encapsulated routines must achieve. If the designers are vigilant and the requirements are fully and unambiguously specified, the developer should not have to consider anything else. Regardless, the abstraction of the architecture is there for their consideration, and interfacing directly with the source code may also give them unique insight into areas for achieving the previously discussed heuristics of generality and modifiability.
     \item Clients: The clients can use this document as a metric of the degree to which their business requirements are being met, specifically with Sections 4 and 6. They can also validate whether or not any anticipated changes conflict with any of their prior expectations, or if any unlikely changes highlight new behaviour that they may want to reconsider. However, it must be acknowledged that prioritizing a change after it has already been deemed unlikely may inherently cause some code overhaul and some setback in the lifetime of the development.  
 \end{itemize}
 
 \subsection{Design Principles}
 
-As previously discussed, the main principles we are hoping to achieve with our design are generality and modifiability / designing for change. This is based off of the principle that the lifespan of our project is relatively small and consequently so is the scope, and as such there is very likely to be further development on this code in the future with the addition of further features and game modes, just as this project was based and developed on top of some previous source code; such is the nature and the beauty of open source projects. These principles encapsulate other ones, however, which can be seen throughout our design. Modularity is a principle that boils down parts of the functional source code into the smallest, distinct sections, which we have designed to have high internal coupling and low cohesion with other such modules. This allows for a module to be swapped out with another in the future, with minimal effects on the rest of the program. We also designed our program following the MVC (Model-view.View-Controller) architecture, which inherently partitions the program into three main sections, such that concerns can be separated when working in each distinct region. It also distinguishes areas of the code that are most important to different stakeholders and for different purposes. The data model will be used as a base for the current game mode and all future game modes, while the view is the most important section when considering the user. The controllers act as individual scripts for each game mode, and the server.Server works to trigger the controllers and link communication between multiple clients. All of these abstracted sections connect with the rest of the system minimally, ensuring that changes to the system can be made easily.
+As previously discussed, the main principles we are hoping to achieve with our design are generality and modifiability / designing for change. This is based off of the principle that the lifespan of our project is relatively small and consequently so is the scope, and as such there is very likely to be further development on this code in the future with the addition of further features and main.model.game modes, just as this project was based and developed on top of some previous source code; such is the nature and the beauty of open source projects. These principles encapsulate other ones, however, which can be seen throughout our design. Modularity is a principle that boils down parts of the functional source code into the smallest, distinct sections, which we have designed to have high internal coupling and low cohesion with other such modules. This allows for a module to be swapped out with another in the future, with minimal effects on the rest of the program. We also designed our program following the MVC (Model-main.view.View-Controller) architecture, which inherently partitions the program into three main sections, such that concerns can be separated when working in each distinct region. It also distinguishes areas of the code that are most important to different stakeholders and for different purposes. The data main.model will be used as a base for the current main.model.game mode and all future main.model.game modes, while the main.view is the most important section when considering the user. The controllers act as individual scripts for each main.model.game mode, and the main.server.Server works to trigger the controllers and link communication between multiple clients. All of these abstracted sections connect with the rest of the system minimally, ensuring that changes to the system can be made easily.
 
 \subsection{Outline}
 
@@ -116,12 +116,12 @@ adapted here is called design for
 change.
 
 \begin{description}
-\item[\refstepcounter{acnum} \actheacnum \label{acHardware}:] Using a higher fidelity server.
+\item[\refstepcounter{acnum} \actheacnum \label{acHardware}:] Using a higher fidelity main.server.
 \item[\refstepcounter{acnum} \actheacnum \label{acInput}:] Implementing the chip betting system with preset chip values (5, 10, 20, 100, etc.)
-\item[\refstepcounter{acnum} \actheacnum \label{acData}:] The format of the data that is exchanged between the clients and the server.
+\item[\refstepcounter{acnum} \actheacnum \label{acData}:] The format of the data that is exchanged between the clients and the main.server.
 \item[\refstepcounter{acnum} \actheacnum \label{acSync}:] The method of how all clients synchronize gameplay.
-\item[\refstepcounter{acnum} \actheacnum \label{acSync}:] The addition of a controller template, that all controller classes will implement, to make running various game modes from the same starting menu easier.
-\item[\refstepcounter{acnum} \actheacnum \label{acSync}:] view.GameView will be developed to have more useful display functionality, to relieve some complication of scripting gameplay in the controller, improving readability and fixing some cohesion issues.
+\item[\refstepcounter{acnum} \actheacnum \label{acSync}:] The addition of a main.controller template, that all main.controller classes will implement, to make running various main.model.game modes from the same starting menu easier.
+\item[\refstepcounter{acnum} \actheacnum \label{acSync}:] main.view.GameView will be developed to have more useful display functionality, to relieve some complication of scripting gameplay in the main.controller, improving readability and fixing some cohesion issues.
 \end{description}
 
 \subsection{Unlikely Changes} \label{SecUchange}
@@ -137,8 +137,8 @@ decisions will be changed.
 \begin{description}
 \item[\refstepcounter{ucnum} \uctheucnum \label{ucIO}:] Input/Output devices (Input: File and/or Keyboard, Output: File, Memory, and/or Screen).
 \item[\refstepcounter{ucnum} \uctheucnum \label{ucInput}:] There will always be a source of input data external to the software.
-\item[\refstepcounter{ucnum} \uctheucnum:] A server will always be used for every game.
-\item[\refstepcounter{ucnum} \uctheucnum:] The model for the deck will not change.
+\item[\refstepcounter{ucnum} \uctheucnum:] A main.server will always be used for every main.model.game.
+\item[\refstepcounter{ucnum} \uctheucnum:] The main.model for the deck will not change.
 \end{description}
 
 \section{Module Hierarchy} \label{SecMH}
@@ -151,7 +151,7 @@ actually be implemented.
 \begin{description}
 \item [\refstepcounter{mnum} \mthemnum \label{mHH}:] Hardware-Hiding Module
 \item [\refstepcounter{mnum} \mthemnum \label{mModel}:] Model Module
-\item [\refstepcounter{mnum} \mthemnum \label{mView}:] view.View Module
+\item [\refstepcounter{mnum} \mthemnum \label{mView}:] main.view.View Module
 \item [\refstepcounter{mnum} \mthemnum \label{mController}:] Controller Module
 \end{description}
 
@@ -167,26 +167,26 @@ actually be implemented.
 \midrule
 
 \multirow{12}{0.3\textwidth}{Model Module} 
-& model.Client\\
-& model.GameInfo\\
-& server.Server\\
-& game.Game\\
-& model.Card\\
-& model.Player\\
-& util.HandEval\\
-& model.Deck\\
-& enumeration.game.PlayerAction\\
+& main.model.player.Client\\
+& main.model.player.GameInfo\\
+& main.server.Server\\
+& main.model.game.Game\\
+& main.model.player.Card\\
+& main.model.player.Player\\
+& main.util.HandEvaluator\\
+& main.model.player.Deck\\
+& main.enumeration.main.model.game.PlayerAction\\
 \midrule
 
-\multirow{2}{0.3\textwidth}{view.View Module}
-& view.MainMenuView\\
-& view.GameView\\
+\multirow{2}{0.3\textwidth}{main.view.View Module}
+& main.view.MainMenuView\\
+& main.view.GameView\\
 \midrule 
 
 \multirow{3}{0.3\textwidth}{Controller Module} 
-& controller.MainController\\
-& controller.ClientController\\
-& server.ClientHandler\\
+& main.controller.MainController\\
+& main.controller.ClientController\\
+& main.server.ClientHandler\\
 \bottomrule
 
 \end{tabular}
@@ -204,7 +204,7 @@ The design for this system is intended to meet all the requirements established 
 Modules are decomposed according to the principle of ``information hiding''
 proposed by \citet{ParnasEtAl1984}. The \emph{Secrets} field in a module
 decomposition is a brief statement of the design decision hidden by the
-module. The \emph{util.Services} field specifies \emph{what} the module will do
+module. The \emph{main.util.Services} field specifies \emph{what} the module will do
 without documenting \emph{how} to do it. For each module, a suggestion for the
 implementing software is given under the \emph{Implemented By} title. If the
 entry is \emph{OS}, this means that the module is provided by the operating
@@ -223,7 +223,7 @@ selected.
 \begin{description}
 \item[Secrets:]The data structure and algorithm used to implement the virtual
   hardware.
-\item[util.Services:]Serves as a virtual hardware used by the rest of the
+\item[main.util.Services:]Serves as a virtual hardware used by the rest of the
   system. This module provides the interface between the hardware and the
   software. So, the system can use it to display outputs or to accept inputs.
 \item[Implemented By:] OS
@@ -233,94 +233,94 @@ selected.
 
 \subsection{Model Module}
     \begin{description}
-    \item[Secrets:] Decides how elements of game data will stored and updated.
-    \item[util.Services:] This module will determine the structure of majority of the system. It will consist of all the data elements that will need to be stored in order to run the program and modules that will implement functions that determine how the data can be updated.
+    \item[Secrets:] Decides how elements of main.model.game data will stored and updated.
+    \item[main.util.Services:] This module will determine the structure of majority of the system. It will consist of all the data elements that will need to be stored in order to run the program and modules that will implement functions that determine how the data can be updated.
     \item[Implemented By:] --
     \end{description}
 
-\subsubsection{ model.Client Module (\mref{mModel})}
+\subsubsection{ main.model.player.Client Module (\mref{mModel})}
     \begin{description}
-    \item[Secrets:] The information and components for a user to interact with the server.
-    \item[util.Services:] Stores information about the user that is needed by the server to identify and manipulate each unique client.
-    \item[Implemented By:] controller.ClientController
+    \item[Secrets:] The information and components for a user to interact with the main.server.
+    \item[main.util.Services:] Stores information about the user that is needed by the main.server to identify and manipulate each unique client.
+    \item[Implemented By:] main.controller.ClientController
     \end{description}
 
-\subsubsection{ model.GameInfo Module (\mref{mModel})}
+\subsubsection{ main.model.player.GameInfo Module (\mref{mModel})}
     \begin{description}
-    \item[Secrets:] Decides how to store game data.
-    \item[util.Services:] Stores important game data that will be communicated between a server and client.
-    \item[Implemented By:] model.Client, controller.ClientController, server.ClientHandler
+    \item[Secrets:] Decides how to store main.model.game data.
+    \item[main.util.Services:] Stores important main.model.game data that will be communicated between a main.server and client.
+    \item[Implemented By:] main.model.player.Client, main.controller.ClientController, main.server.ClientHandler
     \end{description}
 
-\subsubsection{ server.Server Module (\mref{mModel})}
+\subsubsection{ main.server.Server Module (\mref{mModel})}
     \begin{description}
-    \item[Secrets:] Decides how to store and manage client and server data.
-    \item[util.Services:] Stores server and client data, allowing users to establish a connection to the server.
-    \item[Implemented By:] controller.MainController
+    \item[Secrets:] Decides how to store and manage client and main.server data.
+    \item[main.util.Services:] Stores main.server and client data, allowing users to establish a connection to the main.server.
+    \item[Implemented By:] main.controller.MainController
     \end{description}
 
-\subsubsection{ game.Game Module (\mref{mModel})}
+\subsubsection{ main.model.game.Game Module (\mref{mModel})}
     \begin{description}
-    \item[Secrets:] Decides to store important elements of the game.
-    \item[util.Services:] Provides a system to store and manage elements of the game that will keep track of the game's progress.
-    \item[Implemented By:] controller.ClientController
+    \item[Secrets:] Decides to store important elements of the main.model.game.
+    \item[main.util.Services:] Provides a system to store and manage elements of the main.model.game that will keep track of the main.model.game's progress.
+    \item[Implemented By:] main.controller.ClientController
     \end{description}
 
-\subsubsection{ model.Card Module (\mref{mModel})}
+\subsubsection{ main.model.player.Card Module (\mref{mModel})}
     \begin{description}
     \item[Secrets:] Stores information about a card.
-    \item[util.Services:] Provides a way to store a card suite and rank in a single data type.
-    \item[Implemented By:] game.Game, model.Deck
+    \item[main.util.Services:] Provides a way to store a card suite and rank in a single data type.
+    \item[Implemented By:] main.model.game.Game, main.model.player.Deck
     \end{description}
 
-\subsubsection{ model.Player Module (\mref{mModel})}
+\subsubsection{ main.model.player.Player Module (\mref{mModel})}
     \begin{description}
     \item[Secrets:] Stores information about a player.
-    \item[util.Services:] Provides a way to store and represent each player of the game.
-    \item[Implemented By:] game.Game
+    \item[main.util.Services:] Provides a way to store and represent each player of the main.model.game.
+    \item[Implemented By:] main.model.game.Game
     \end{description}
 
-\subsubsection{ util.HandEval Module (\mref{mModel})}
+\subsubsection{ main.util.HandEvaluator Module (\mref{mModel})}
     \begin{description}
     \item[Secrets:] Decides the card rankings of each player's hand.
-    \item[util.Services:] Provides a way to assign each player a hand ranking for comparison.
-    \item[Implemented By:] game.Game
+    \item[main.util.Services:] Provides a way to assign each player a hand ranking for comparison.
+    \item[Implemented By:] main.model.game.Game
     \end{description}
 
-\subsubsection{ model.Deck Module (\mref{mModel})}
+\subsubsection{ main.model.player.Deck Module (\mref{mModel})}
     \begin{description}
     \item[Secrets:] Stores information about a deck of cards
-    \item[util.Services:] Provides functions and storage for a collection of cards.
-    \item[Implemented By:] game.Game
+    \item[main.util.Services:] Provides functions and storage for a collection of cards.
+    \item[Implemented By:] main.model.game.Game
     \end{description}
     
-\subsubsection{ enumeration.game.PlayerAction Module (\mref{mModel})}
+\subsubsection{ main.enumeration.main.model.game.PlayerAction Module (\mref{mModel})}
     \begin{description}
-    \item[Secrets:] Stores information about valid game moves.
-    \item[util.Services:] Provides a way to validate user inputs by confirming if their input is a valid game move.
-    \item[Implemented By:] game.Game, model.GameInfo, server.ClientHandler, model.Client
+    \item[Secrets:] Stores information about valid main.model.game moves.
+    \item[main.util.Services:] Provides a way to validate user inputs by confirming if their input is a valid main.model.game move.
+    \item[Implemented By:] main.model.game.Game, main.model.player.GameInfo, main.server.ClientHandler, main.model.player.Client
     \end{description}
 % ========== VIEW ========== %
 
-\subsection{view.View Module}
+\subsection{main.view.View Module}
     \begin{description}
-    \item[Secrets:] Decides how elements of game data will be displayed to the user.
-    \item[util.Services:] This module will provide the visual aspect of the program, providing modules that will allow the data in the program to be displayed to the user in a meaningful way. Almost all elements of the view module will be easily modifiable with minimal collateral to other code.
+    \item[Secrets:] Decides how elements of main.model.game data will be displayed to the user.
+    \item[main.util.Services:] This module will provide the visual aspect of the program, providing modules that will allow the data in the program to be displayed to the user in a meaningful way. Almost all elements of the main.view module will be easily modifiable with minimal collateral to other code.
     \item[Implemented By:] --
     \end{description}
 
-\subsubsection{ view.MainMenuView Module (\mref{mView})}
+\subsubsection{ main.view.MainMenuView Module (\mref{mView})}
     \begin{description}
     \item[Secrets:] Decides how the main menu of the program will be displayed.
-    \item[util.Services:] Provides a way to display and navigate the main menu. Also contains error and success messages.
-    \item[Implemented By:] controller.MainController
+    \item[main.util.Services:] Provides a way to display and navigate the main menu. Also contains error and success messages.
+    \item[Implemented By:] main.controller.MainController
     \end{description}
     
-\subsubsection{ view.GameView Module (\mref{mView})}
+\subsubsection{ main.view.GameView Module (\mref{mView})}
     \begin{description}
-    \item[Secrets:] Decides how the game will be visually represented to the user.
-    \item[util.Services:] Provides a way to display all the elements of the game to the user in a meaningful way. Also contains error and success messages.
-    \item[Implemented By:] controller.ClientController
+    \item[Secrets:] Decides how the main.model.game will be visually represented to the user.
+    \item[main.util.Services:] Provides a way to display all the elements of the main.model.game to the user in a meaningful way. Also contains error and success messages.
+    \item[Implemented By:] main.controller.ClientController
     \end{description}
 
 % ========== CONTROLLER ========== %
@@ -329,28 +329,28 @@ selected.
 
 \begin{description}
 \item[Secrets:] Decides and handles the software decision making process. When and what data will be manipulated by user input.
-\item[util.Services:] This module will act as a mediator between the view, model and the user. It will utilize the view and the model to display data to the user and take in user input and decide how the user input will manipulate the data.
+\item[main.util.Services:] This module will act as a mediator between the main.view, main.model and the user. It will utilize the main.view and the main.model to display data to the user and take in user input and decide how the user input will manipulate the data.
 \item[Implemented By:] --
 \end{description}
 
-\subsubsection{ controller.MainController Module (\mref{mController})}
+\subsubsection{ main.controller.MainController Module (\mref{mController})}
     \begin{description}
-    \item[Secrets:] Decides how to enter and setup the game.
-    \item[util.Services:] Provides an interface to users on how to set up and join a game.
+    \item[Secrets:] Decides how to enter and setup the main.model.game.
+    \item[main.util.Services:] Provides an interface to users on how to set up and join a main.model.game.
     \item[Implemented By:] Hardware-Hiding Module
     \end{description}
 
-\subsubsection{ controller.ClientController Module (\mref{mController})}
+\subsubsection{ main.controller.ClientController Module (\mref{mController})}
     \begin{description}
-    \item[Secrets:] Decides how the user can manipulate game data according to a central server consisting of multiple players.
-    \item[util.Services:] Acts as the "brain" of the program by providing a synchronous way to play the game with other online players.
+    \item[Secrets:] Decides how the user can manipulate main.model.game data according to a central main.server consisting of multiple players.
+    \item[main.util.Services:] Acts as the "brain" of the program by providing a synchronous way to play the main.model.game with other online players.
     \item[Implemented By:] Hardware-Hiding Module
     \end{description}
 
-\subsubsection{ server.ClientHandler Module (\mref{mController})}
+\subsubsection{ main.server.ClientHandler Module (\mref{mController})}
     \begin{description}
-    \item[Secrets:] Decides how the server should respond to user input.
-    \item[util.Services:] Provides a way for users to communicate with the server behind the scenes
+    \item[Secrets:] Decides how the main.server should respond to user input.
+    \item[main.util.Services:] Provides a way for users to communicate with the main.server behind the scenes
     \item[Implemented By:] Hardware-Hiding Module
     \end{description}
 
@@ -465,9 +465,9 @@ the modules for this program. It can be seen that the graph is a directed acycli
 
 \section{MIS}
 
-\section* {model.Card (ADT)}
+\section* {main.model.player.Card (ADT)}
 
-model.Card
+main.model.player.Card
 
 \subsection* {Uses}
 
@@ -489,7 +489,7 @@ None
 \hline
 \textbf{Routine name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions}\\
 \hline
-greater\verb|_|than & model.Card & $\mathbb{B}$ &\\
+greater\verb|_|than & main.model.player.Card & $\mathbb{B}$ &\\
 \hline
 \end{tabular}
 
@@ -521,13 +521,13 @@ None
 
 \end{itemize}
 
-\section* {model.Player (ADT)}
+\section* {main.model.player.Player (ADT)}
 
-model.Player
+main.model.player.Player
 
 \subsection* {Uses}
 
-model.Card
+main.model.player.Card
 
 \subsection* {Syntax}
 
@@ -537,7 +537,7 @@ None
 
 \subsubsection* {Imported Types}
 
-model.Card
+main.model.player.Card
 
 \subsubsection* {Exported Access Programs}
 
@@ -545,7 +545,7 @@ model.Card
 \hline
 \textbf{Routine name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions}\\
 \hline 
-new model.Player & String, $\mathbb{I}$ & &\\
+new main.model.player.Player & String, $\mathbb{I}$ & &\\
 \hline
 clear\verb|_|hand & & &\\
 \hline
@@ -561,9 +561,9 @@ get\verb|_|chips & & $\mathbb{I}$ &\\
 \hline 
 take\verb|_|chips & $\mathbb{I}$ & & IllegalArgumentException\\
 \hline 
-insert & model.Card & &\\
+insert & main.model.player.Card & &\\
 \hline 
-get\verb|_|hand & & model.Card [ ] &\\
+get\verb|_|hand & & main.model.player.Card [ ] &\\
 \hline 
 \end{tabular}
 
@@ -573,7 +573,7 @@ get\verb|_|hand & & model.Card [ ] &\\
 
 $\mathit{name}: String$\\
 $\mathit{chips}: \mathbb{I}$ \\
-$\mathit{hand} : \verb|model.Card [ ]|$\\
+$\mathit{hand} : \verb|main.model.player.Card [ ]|$\\
 $has\verb|_|turn : \mathbb{B}$
 
 \subsubsection* {State Invariant}
@@ -590,7 +590,7 @@ None
 
 \subsubsection* {Access Routine Semantics}
 
-\noindent new model.Player(s, c):
+\noindent new main.model.player.Player(s, c):
 \begin{itemize}
 \item transition : $hand, name, chips, has\verb|_|turn := \epsilon, s, c, False$ 
 \end{itemize}
@@ -643,14 +643,14 @@ None
 \item return : $hand$ 
 \end{itemize}
 
-\section* {model.Deck (ADT)}
+\section* {main.model.player.Deck (ADT)}
 
-model.Deck
+main.model.player.Deck
 
 \subsection* {Uses}
 
-model.Card
-model.Player
+main.model.player.Card
+main.model.player.Player
 
 \subsection* {Syntax}
 
@@ -660,8 +660,8 @@ None
 
 \subsubsection* {Imported Types}
 
-model.Card
-model.Player
+main.model.player.Card
+main.model.player.Player
 
 \subsubsection* {Exported Access Programs}
 
@@ -675,7 +675,7 @@ shuffle & & &\\
 \hline 
 reset & & &\\
 \hline 
-draw & $\mathbb{I}$& model.Card [ ] & StackOverflowException\\
+draw & $\mathbb{I}$& main.model.player.Card [ ] & StackOverflowException\\
 \hline 
 \end{tabular}
 
@@ -683,8 +683,8 @@ draw & $\mathbb{I}$& model.Card [ ] & StackOverflowException\\
 
 \subsubsection* {State Variables}
 
-$\mathit{deck} : \verb|model.Card [52]|$\\
-$\mathit{flop} : \verb|model.Card [ ]|$\\
+$\mathit{deck} : \verb|main.model.player.Card [52]|$\\
+$\mathit{flop} : \verb|main.model.player.Card [ ]|$\\
 $stack\verb|_|p : \mathbb{I}$
 
 \subsubsection* {State Invariant}
@@ -697,13 +697,13 @@ None
 
 \subsubsection* {Considerations}
 
-model.Deck is suggested to be implemented as a stack, but the choice is ultimately up to the development team. If it is not implemented as such, the stack\verb|_|p state variable will not be needed and its associated invariant can be disregarded.
+main.model.player.Deck is suggested to be implemented as a stack, but the choice is ultimately up to the development team. If it is not implemented as such, the stack\verb|_|p state variable will not be needed and its associated invariant can be disregarded.
 
 \subsubsection* {Access Routine Semantics}
 
 \noindent fill\verb|_|deck():
 \begin{itemize}
-\item transition : fills the deck stack with all 52 unique playing cards (of type model.Card)
+\item transition : fills the deck stack with all 52 unique playing cards (of type main.model.player.Card)
 \end{itemize}
 
 \noindent shuffle():
@@ -720,18 +720,18 @@ model.Deck is suggested to be implemented as a stack, but the choice is ultimate
 \begin{itemize}
 \item transition: removes the top n cards from the deck, and places them into a list 
 \item exception: $n >$ remaining cards in the deck $\Longrightarrow StackOverflowException$
-\item returns: model.Card [n]
+\item returns: main.model.player.Card [n]
 \end{itemize}
 
-\section*{game.Game}
+\section*{main.model.game.Game}
 
-game.Game
+main.model.game.Game
 
 \subsection* {Uses}
 
-model.Card
-model.Player
-model.Deck
+main.model.player.Card
+main.model.player.Player
+main.model.player.Deck
 
 \subsection* {Syntax}
 
@@ -741,9 +741,9 @@ None
 
 \subsubsection* {Imported Types}
 
-model.Card
-model.Player
-model.Deck
+main.model.player.Card
+main.model.player.Player
+main.model.player.Deck
 
 \subsubsection* {Exported Access Programs}
 
@@ -751,21 +751,21 @@ model.Deck
 \hline
 \textbf{Routine name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions}\\
 \hline
-new game.Game & model.Player [ ], $\mathbb{I}$ & &\\
+new main.model.game.Game & main.model.player.Player [ ], $\mathbb{I}$ & &\\
 \hline
 startGame & $\mathbb{I}$ & &\\
 \hline 
-removePlayer & model.Player & &\\
+removePlayer & main.model.player.Player & &\\
 \hline 
-foldPlayer & model.Player & &\\
+foldPlayer & main.model.player.Player & &\\
 \hline 
 is\verb|_|round\verb|_|over & & $\mathbb{B}$ &\\
 \hline 
 dealCards & $\mathbb{I}$ & &\\
 \hline
-getNextPlayer & & model.Player & RuntimeException\\
+getNextPlayer & & main.model.player.Player & RuntimeException\\
 \hline 
-getCurrentPlayer & & model.Player & RuntimeException\\
+getCurrentPlayer & & main.model.player.Player & RuntimeException\\
 \hline 
 giveNextTurn & & &\\
 \hline
@@ -776,9 +776,9 @@ giveNextTurn & & &\\
 \subsubsection* {State Variables}
 
 \begin{itemize}
-    \item deck : model.Deck
-    \item players: model.Player [ ]
-    \item unfoldedPlayers: model.Player [ ]
+    \item deck : main.model.player.Deck
+    \item players: main.model.player.Player [ ]
+    \item unfoldedPlayers: main.model.player.Player [ ]
     \item currentPlayerIndex: $\mathbb{I}$
     \item nextPlayerIndex: $\mathbb{I}$
     \item minimumCallAmount: $\mathbb{I}$
@@ -803,11 +803,11 @@ Implementing players and unfoldedPlayers as dynamic arrays seems ideal.
 
 \subsubsection* {Access Routine Semantics}
 
-\noindent new game.Game(p\verb|_|list, x):
+\noindent new main.model.game.Game(p\verb|_|list, x):
 \begin{itemize}
 \item transition:
     \begin{itemize}
-        \item deck := new model.Deck()
+        \item deck := new main.model.player.Deck()
         \item players := p\verb|_|list
         \item minimumCallAmount := x
         \item currentPlayerIndex := 0
@@ -839,7 +839,7 @@ Implementing players and unfoldedPlayers as dynamic arrays seems ideal.
 
 \noindent dealCards(c):
 \begin{itemize}
-    \item transition: insert c cards into each players hand using model.Player.insert()
+    \item transition: insert c cards into each players hand using main.model.player.Player.insert()
 \end{itemize}
 
 \noindent getNextPlayer():
@@ -863,11 +863,11 @@ Implementing players and unfoldedPlayers as dynamic arrays seems ideal.
 
 \section*{Hand Evaluator}
 
-util.HandEval
+main.util.HandEvaluator
 
 \subsection* {Uses}
 
-model.Card
+main.model.player.Card
 
 \subsection* {Syntax}
 
@@ -877,7 +877,7 @@ None
 
 \subsubsection* {Imported Types}
 
-model.Card
+main.model.player.Card
 
 \subsubsection* {Exported Access Programs}
 
@@ -885,7 +885,7 @@ model.Card
 \hline
 \textbf{Routine name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions}\\
 \hline
-evaluate & model.Card & &\\
+evaluate & main.model.player.Card & &\\
 \hline
 \end{tabular}
 
@@ -916,13 +916,13 @@ It might make sense to use auxiliary functions to evaluate hand states, as diffe
 
 % ============ VIEW ============== %
 
-\section* {view.GameView}
+\section* {main.view.GameView}
 
-view.GameView
+main.view.GameView
 
 \subsection* {Uses}
 
-model.Card
+main.model.player.Card
 
 \subsection* {Syntax}
 
@@ -932,7 +932,7 @@ None
 
 \subsubsection* {Imported Types}
 
-model.Card
+main.model.player.Card
 
 \subsubsection* {Exported Access Programs}
 
@@ -940,7 +940,7 @@ model.Card
 \hline
 \textbf{Routine name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions}\\
 \hline
-display & model.Card & &\\
+display & main.model.player.Card & &\\
 \hline  
 \end{tabular}
 
@@ -971,15 +971,15 @@ None
 
 % ============ MAIN CONTROLLER ============ % 
 
-\section* {controller.MainController Module}
+\section* {main.controller.MainController Module}
     \subsection* {Uses}
-        model.Client, game.Game, Gameview, view.MainMenuView, server.Server
+        main.model.player.Client, main.model.game.Game, Gameview, main.view.MainMenuView, main.server.Server
     \subsection* {Syntax}
     
         \subsubsection* {Imported Constants}
             None
         \subsubsection* {Imported Types}
-            model.Client, game.Game, server.Server
+            main.model.player.Client, main.model.game.Game, main.server.Server
         \subsubsection* {Exported Access Programs}
         
         \begin{tabular}{| l | l | l | p{5cm} |}
@@ -1012,7 +1012,7 @@ None
     \subsubsection* {State Variables}
         $\mathit{username}: String$\\
         $\mathit{socket}: Socket$\\
-        $\mathit{client} : model.Client$\\
+        $\mathit{client} : main.model.player.Client$\\
     
     \subsubsection* {State Invariant}
         None
@@ -1038,18 +1038,18 @@ None
         
         \noindent getValidSocketForServer(scanner):
         \begin{itemize}
-        \item return : A socket that has successfully established a connection with a server.
+        \item return : A socket that has successfully established a connection with a main.server.
         \end{itemize}
         
         \noindent hostServer():
         \begin{itemize}
-        \item transition : Creates a new server using the user's current IP address.
+        \item transition : Creates a new main.server using the user's current IP address.
         \item exception : IO Exception. Can be caused by thousands of issues (IP address, ports, connectivity issues).
         \end{itemize}
         
         \noindent joinServer(scanner):
         \begin{itemize}
-        \item transition : Joins an existing server given a server IP address.
+        \item transition : Joins an existing main.server given a main.server IP address.
         \item exception : IO Exception. Can be caused by thousands of issues (IP address, ports, connectivity issues).
         \end{itemize}
 
@@ -1060,7 +1060,7 @@ None
         
         \noindent performMainMenuOperation(scanner):
         \begin{itemize}
-        \item transition : Perform a main menu task, given a number that represents the task to perform. For example, user inputs the number 2 and according to the main menu, number 2 represents the task join a server, so user will join a server.
+        \item transition : Perform a main menu task, given a number that represents the task to perform. For example, user inputs the number 2 and according to the main menu, number 2 represents the task join a main.server, so user will join a main.server.
         \end{itemize}
         
         \noindent enterProgram:
@@ -1070,15 +1070,15 @@ None
         
 % ============ CLIENT CONTROLLER ============ % 
         
-\section* {controller.ClientController Module}
+\section* {main.controller.ClientController Module}
     \subsection* {Uses}
-        model.Client, game.Game, Gameview, enumeration.game.PlayerAction, model.GameInfo
+        main.model.player.Client, main.model.game.Game, Gameview, main.enumeration.main.model.game.PlayerAction, main.model.player.GameInfo
     \subsection* {Syntax}
     
         \subsubsection* {Imported Constants}
             None
         \subsubsection* {Imported Types}
-            model.Client, game.Game, enumeration.game.PlayerAction, model.GameInfo
+            main.model.player.Client, main.model.game.Game, main.enumeration.main.model.game.PlayerAction, main.model.player.GameInfo
         \subsubsection* {Exported Access Programs}
         
         \begin{tabular}{| l | l | l | p{4cm} |}
@@ -1089,20 +1089,20 @@ None
             \hline
             performGameAction & Scanner &  & IOException\\
             \hline 
-            getValidPlayerAction & Scanner & enumeration.game.PlayerAction &\\
+            getValidPlayerAction & Scanner & main.enumeration.main.model.game.PlayerAction &\\
             \hline 
             getValidBet & Scanner & $\mathbb{Z}$ &\\
             \hline 
-            CreateGameInfo & enumeration.game.PlayerAction, $\mathbb{Z}$ & model.GameInfo &\\
+            CreateGameInfo & main.enumeration.main.model.game.PlayerAction, $\mathbb{Z}$ & main.model.player.GameInfo &\\
             \hline 
         \end{tabular}
         
     \subsection* {Semantics}
     
     \subsubsection* {State Variables}
-        $\mathit{player}: model.Player$\\
-        $\mathit{client}: model.Client$\\
-        $\mathit{game} : game.Game$\\
+        $\mathit{player}: main.model.player.Player$\\
+        $\mathit{client}: main.model.player.Client$\\
+        $\mathit{main.model.game} : main.model.game.Game$\\
     
     \subsubsection* {State Invariant}
         None
@@ -1117,19 +1117,19 @@ None
     
         \noindent listenForIncomingMessages():
         \begin{itemize}
-        \item transition : On a separate thread, continuously listens for messages received by $\mathit{client}$ from the server.
+        \item transition : On a separate thread, continuously listens for messages received by $\mathit{client}$ from the main.server.
         \end{itemize}
         
         \noindent performGameAction(scanner):
         \begin{itemize}
-        \item transition : Uses getValidPlayerAction() and getValidBet() to ask the user to make their next move, then stores that information in a new model.GameInfo object and sends the object to the server from $client$.
+        \item transition : Uses getValidPlayerAction() and getValidBet() to ask the user to make their next move, then stores that information in a new main.model.player.GameInfo object and sends the object to the main.server from $client$.
         \item exception : Throw IO Exception if there are connectivity issues. Can be caused by thousands of issues (IP address, ports, connectivity issues).
         \end{itemize}
         
         \noindent getValidPlayerAction(scanner):
         \begin{itemize}
-        \item return : $playerAction : enumeration.game.PlayerAction$
-        \item description: Asks the user for a valid player action. If the user input matches a enumeration.game.PlayerAction enumerator then return the enumeration.game.PlayerAction enmerator. Otherwise ask again.
+        \item return : $playerAction : main.enumeration.main.model.game.PlayerAction$
+        \item description: Asks the user for a valid player action. If the user input matches a main.enumeration.main.model.game.PlayerAction enumerator then return the main.enumeration.main.model.game.PlayerAction enmerator. Otherwise ask again.
         \end{itemize}
         
         \noindent getValidBet(scanner):
@@ -1140,14 +1140,14 @@ None
         
         \noindent CreateGameInfo(playerAction, amount):
         \begin{itemize}
-        \item return : model.GameInfo($client.clientID$, $player.name$, playerAction, amount)
-        \item description : Creates a model.GameInfo object with the current player's information (clientID and name) and the move the player wants to make (playerAction and amount).
+        \item return : main.model.player.GameInfo($client.clientID$, $player.name$, playerAction, amount)
+        \item description : Creates a main.model.player.GameInfo object with the current player's information (clientID and name) and the move the player wants to make (playerAction and amount).
         \end{itemize}
         
                 
 % ============ CLIENT ============ % 
         
-\section* {model.Client ADT Module}
+\section* {main.model.player.Client ADT Module}
     \subsection* {Uses}
     \subsection* {Syntax}
     
@@ -1161,7 +1161,7 @@ None
             \hline
             \textbf{Routine name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions}\\
             \hline
-            new model.Client & Socket, String &  & IOException\\
+            new main.model.player.Client & Socket, String &  & IOException\\
             \hline
             getClientID &  & String & \\
             \hline 
@@ -1197,7 +1197,7 @@ None
     
     \subsubsection* {Access Routine Semantics}
     
-        \noindent new model.Client(socket, name):
+        \noindent new main.model.player.Client(socket, name):
         \begin{itemize}
         \item transition : $self.socket, playerName, inputStream, outputstream := \\ socket, name, new \hspace{3px} ObjectInputStream, new \hspace{3px} ObjectOutputStream$
         \item exception : Throw IO Exception if there are connectivity issues. Can be caused by thousands of issues (IP address, ports, connectivity issues).
@@ -1240,28 +1240,28 @@ None
                 
 % ============ CLIENT HANDLER ============ % 
         
-\section* {server.ClientHandler ADT Module}
+\section* {main.server.ClientHandler ADT Module}
     \subsection* {Template Module implements Runnable Interface}
-    model.Client Handler
+    main.model.player.Client Handler
     \subsection* {Uses}
-    Runnable, model.GameInfo, game.Game
+    Runnable, main.model.player.GameInfo, main.model.game.Game
     \subsection* {Syntax}
     
         \subsubsection* {Imported Constants}
             None
         \subsubsection* {Imported Types}
-            model.GameInfo
+            main.model.player.GameInfo
         \subsubsection* {Exported Access Programs}
         
         \begin{tabular}{| l | l | l | p{6cm} |}
             \hline
             \textbf{Routine name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions}\\
             \hline
-            new server.ClientHandler & Socket & server.ClientHandler & \\
+            new main.server.ClientHandler & Socket & main.server.ClientHandler & \\
             \hline
             run &  &  & \\
             \hline 
-            updateClients & model.GameInfo &  &\\
+            updateClients & main.model.player.GameInfo &  &\\
             \hline 
             closeEverything & & &\\
             \hline
@@ -1271,8 +1271,8 @@ None
     
     \subsubsection* {State Variables}
         $\mathit{clientUsername}: String$\\
-        $\mathit{clientHandlers}:$ static sequence of $server.ClientHandler$\\
-        $\mathit{game}:$ static $game.Game$\\
+        $\mathit{clientHandlers}:$ static sequence of $main.server.ClientHandler$\\
+        $\mathit{main.model.game}:$ static $main.model.game.Game$\\
         $\mathit{socket}: Socket$\\
         $\mathit{inputStream}: ObjectInputStream$\\
         $\mathit{outputStream} : ObjectOutputStream$\\
@@ -1288,7 +1288,7 @@ None
     
     \subsubsection* {Access Routine Semantics}
     
-        \noindent new server.ClientHandler(socket):
+        \noindent new main.server.ClientHandler(socket):
         \begin{itemize}
         \item return : $self$
         \item transition : $self.socket, inputStream, outputStream, clientHandlers := \\
@@ -1298,8 +1298,8 @@ None
         
         \noindent run():
         \begin{itemize}
-        \item transition : Get any commands coming from $outputStream$, input that command into $game$ then send new game information to all clients.
-        \item description : Each server.ClientHandler is responsible for taking in input from a single client connected to a server. Everytime a client sends a command (their game move) to the server, their designated server.ClientHandler will receive that command and input that command into the game on the server on behalf of the client's name (as if the client had inputted the command directly to the game). Then the server.ClientHandler will forward the resulting state of the game after the input, synchronizing the game for all clients.
+        \item transition : Get any commands coming from $outputStream$, input that command into $main.model.game$ then send new main.model.game information to all clients.
+        \item description : Each main.server.ClientHandler is responsible for taking in input from a single client connected to a main.server. Everytime a client sends a command (their main.model.game move) to the main.server, their designated main.server.ClientHandler will receive that command and input that command into the main.model.game on the main.server on behalf of the client's name (as if the client had inputted the command directly to the main.model.game). Then the main.server.ClientHandler will forward the resulting state of the main.model.game after the input, synchronizing the main.model.game for all clients.
         \end{itemize}
         
         \noindent updateClients(gameInfo):
@@ -1317,9 +1317,9 @@ None
                         
 % ============ SERVER ============ % 
         
-\section* {server.Server ADT Module}
+\section* {main.server.Server ADT Module}
     \subsection* {Uses}
-    server.ClientHandler
+    main.server.ClientHandler
     \subsection* {Syntax}
     
         \subsubsection* {Imported Constants}
@@ -1332,7 +1332,7 @@ None
             \hline
             \textbf{Routine name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions}\\
             \hline
-            new server.Server & ServerSocket &  & \\
+            new main.server.Server & ServerSocket &  & \\
             \hline
             startServer &  &  & \\
             \hline 
@@ -1356,7 +1356,7 @@ None
     
     \subsubsection* {Access Routine Semantics}
     
-        \noindent new server.Server(serverSocket):
+        \noindent new main.server.Server(serverSocket):
         \begin{itemize}
         \item return : $self$
         \item transition : $self.serverSocket := serverSocket$
@@ -1364,8 +1364,8 @@ None
         
         \noindent startServer():
         \begin{itemize}
-        \item transition : Listen for any attempts to connect to $serverSocket$ by a model.Client. If an attempt is made, try to get the client's socket and create a new server.ClientHandler (using the client's socket) on a new thread and start the thread.
-        \item description : The server.ClientHandler is responsible for taking in input from a single model.Client connected to a server. Everytime a model.Client connects to the server, a new server.ClientHandler will be created on a new Thread to listen for input from that specific model.Client.
+        \item transition : Listen for any attempts to connect to $serverSocket$ by a main.model.player.Client. If an attempt is made, try to get the client's socket and create a new main.server.ClientHandler (using the client's socket) on a new thread and start the thread.
+        \item description : The main.server.ClientHandler is responsible for taking in input from a single main.model.player.Client connected to a main.server. Everytime a main.model.player.Client connects to the main.server, a new main.server.ClientHandler will be created on a new Thread to listen for input from that specific main.model.player.Client.
         \end{itemize}
         
         \noindent closeServer():
@@ -1376,13 +1376,13 @@ None
         
                 
                         
-% ============ model.GameInfo ============ %
+% ============ main.model.player.GameInfo ============ %
         
-\section* {model.GameInfo ADT Module}
+\section* {main.model.player.GameInfo ADT Module}
     \subsection* {Template Module implements Serializable}
-    model.GameInfo
+    main.model.player.GameInfo
     \subsection* {Uses}
-    enumeration.game.PlayerAction
+    main.enumeration.main.model.game.PlayerAction
     \subsection* {Syntax}
     
         \subsubsection* {Imported Constants}
@@ -1395,7 +1395,7 @@ None
             \hline
             \textbf{Routine name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions}\\
             \hline
-            new model.GameInfo & String, String, enumeration.game.PlayerAction, $\mathbb{Z}$ & model.GameInfo & \\
+            new main.model.player.GameInfo & String, String, main.enumeration.main.model.game.PlayerAction, $\mathbb{Z}$ & main.model.player.GameInfo & \\
             \hline
             getClientID &  & String & \\
             \hline
@@ -1412,7 +1412,7 @@ None
     \subsubsection* {State Variables}
         $\mathit{clientID}: String$\\
         $\mathit{playerName}: String$\\
-        $\mathit{playerAction}: enumeration.game.PlayerAction$\\
+        $\mathit{playerAction}: main.enumeration.main.model.game.PlayerAction$\\
         $\mathit{amount}: \mathbb{Z}$\\
 
     \subsubsection* {State Invariant}
@@ -1426,11 +1426,11 @@ None
     
     \subsubsection* {Access Routine Semantics}
     
-        \noindent new model.GameInfo(serverSocket):
+        \noindent new main.model.player.GameInfo(serverSocket):
         \begin{itemize}
         \item return : $self$
         \item transition : $self.clientID, self.playerName, self.playerAction, self.amount := clientID, playerName, playerAction, amount$
-        \item description : model.GameInfo is essentially a data structure that model.Client and server.Server will use to communicate.
+        \item description : main.model.player.GameInfo is essentially a data structure that main.model.player.Client and main.server.Server will use to communicate.
         \end{itemize}
         
         \noindent getClientID():
@@ -1459,22 +1459,22 @@ None
         \end{itemize}        
                 
                       
-% ============ enumeration.game.PlayerAction ============ %
+% ============ main.enumeration.main.model.game.PlayerAction ============ %
         
-\section* {enumeration.game.PlayerAction Module}
+\section* {main.enumeration.main.model.game.PlayerAction Module}
     \subsection* {Uses}
-    enumeration.game.PlayerAction
+    main.enumeration.main.model.game.PlayerAction
     \subsection* {Syntax}
     
         \subsubsection* {Exported Constants}
             None
         \subsubsection* {Exported Types}
-            enumeration.game.PlayerAction = \{ \\
-            FOLD, \#model.Player wants to fold \\
-            CHECK, \#model.Player wants to check \\
-            CALL, \#model.Player wants to call \\
-            RAISE, \#model.Player wants to raise \\
-            BET \#model.Player wants to bet \\
+            main.enumeration.main.model.game.PlayerAction = \{ \\
+            FOLD, \#main.model.player.Player wants to fold \\
+            CHECK, \#main.model.player.Player wants to check \\
+            CALL, \#main.model.player.Player wants to call \\
+            RAISE, \#main.model.player.Player wants to raise \\
+            BET \#main.model.player.Player wants to bet \\
             \}
 
         \subsubsection* {Exported Access Programs}
@@ -1483,11 +1483,11 @@ None
             \hline
             \textbf{Routine name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions}\\
             \hline
-            isABet & enumeration.game.PlayerAction & $\mathbb{B}$ & \\
+            isABet & main.enumeration.main.model.game.PlayerAction & $\mathbb{B}$ & \\
             \hline
             actionIsValid & String & $\mathbb{B}$ & \\
             \hline
-            getActionByString & String & enumeration.game.PlayerAction &  IllegalArgumentException\\
+            getActionByString & String & main.enumeration.main.model.game.PlayerAction &  IllegalArgumentException\\
             \hline 
         \end{tabular}
         
@@ -1503,7 +1503,7 @@ None
         None
     
     \subsubsection* {Considerations}
-        enumeration.game.PlayerAction is an enum class that represent the possible actions a player can make
+        main.enumeration.main.model.game.PlayerAction is an enum class that represent the possible actions a player can make
     
     \subsubsection* {Access Routine Semantics}
     
@@ -1514,20 +1514,20 @@ None
         
         \noindent actionIsValid(action):
         \begin{itemize}
-        \item return : True if the String $action$ is a enumeration.game.PlayerAction. False if not.
+        \item return : True if the String $action$ is a main.enumeration.main.model.game.PlayerAction. False if not.
         \end{itemize}
         
         \noindent getActionByString(action):
         \begin{itemize}
-        \item return : Corresponding enumeration.game.PlayerAction that matches $action$
-        \item exception : Throw IllegalArgumentException if there is no  string value for enumeration.game.PlayerAction that matches $action$
+        \item return : Corresponding main.enumeration.main.model.game.PlayerAction that matches $action$
+        \item exception : Throw IllegalArgumentException if there is no  string value for main.enumeration.main.model.game.PlayerAction that matches $action$
         \end{itemize}
          
         
         
-% ============ view.MainMenuView ============ %
+% ============ main.view.MainMenuView ============ %
         
-\section* {view.MainMenuView Module}
+\section* {main.view.MainMenuView Module}
     \subsection* {Uses}
     \subsection* {Syntax}
     
@@ -1617,37 +1617,37 @@ None
         
         \noindent displayServerIPAddress(serverIP):
         \begin{itemize}
-        \item output : out := Display a message saying that the IP address of the server is $serverIP$.
+        \item output : out := Display a message saying that the IP address of the main.server is $serverIP$.
         \end{itemize}
         
         \noindent displayServerJoinMenu():
         \begin{itemize}
-        \item output : out := Display a join to server menu.
+        \item output : out := Display a join to main.server menu.
         \end{itemize}
         
         \noindent displayFailedToConnectToServer():
         \begin{itemize}
-        \item output : out := Display an error message saying the user failed to connect to the server.
+        \item output : out := Display an error message saying the user failed to connect to the main.server.
         \end{itemize}
         
         \noindent displaySuccessfullyStartedServer():
         \begin{itemize}
-        \item output : out := Display a success message saying the user successfully started the server.
+        \item output : out := Display a success message saying the user successfully started the main.server.
         \end{itemize}
         
         \noindent displaySuccessfulConnection():
         \begin{itemize}
-        \item output : out := Display a success message saying the user successfully connected to the server.
+        \item output : out := Display a success message saying the user successfully connected to the main.server.
         \end{itemize}
         
         \noindent displayWaitingForHost():
         \begin{itemize}
-        \item output : out := Display a message saying that the server is waiting for the host to start the game.
+        \item output : out := Display a message saying that the main.server is waiting for the host to start the main.model.game.
         \end{itemize}
         
         \noindent displayExitingProgram():
         \begin{itemize}
-        \item output : out := Display an exit game message.
+        \item output : out := Display an exit main.model.game message.
         \end{itemize}
         
 %\section*{References}

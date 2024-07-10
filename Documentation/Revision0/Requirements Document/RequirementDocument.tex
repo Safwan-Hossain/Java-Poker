@@ -51,14 +51,14 @@ April 12, 2022 & 2.0 & Revision 1\\
 \pagenumbering{arabic}
 
 \section{Introduction}
-This document describes the requirements for a client-server Poker project that will be programmed using Java.
+This document describes the requirements for a client-main.server Poker project that will be programmed using Java.
 
 \section{Project Drivers}
 
 \subsection{The Purpose of the Project}
-Poker is a world renowned card game in which players must use their understanding of probability,
+Poker is a world renowned card main.model.game in which players must use their understanding of probability,
 wit and deceptive strategy to best their opponents and win money. While poker is very commonly
-played face-to-face on a table, the goal of this project is to make a variety of poker game-types easily
+played face-to-face on a table, the goal of this project is to make a variety of poker main.model.game-types easily
 accessible from anywhere, without betting, and for all ages. The current software we begin with sets the framework for randomizing
 poker hands and analyzing them, and by expanding upon this foundation we will be able to develop a complete poker
 experience.
@@ -80,7 +80,7 @@ Description: Our software will be able to run on any machine that is capable of 
 
 Rationale: Any semi-modern local computing device has the capability to run java programs, and as such we will be keeping our demographic of eligible customers as large as possible.
 
-Fit Criterion: Our program will be entirely enclosed within java software and architecture, including the server implementation. Our UI will be text based and represented in the console. 
+Fit Criterion: Our program will be entirely enclosed within java software and architecture, including the main.server implementation. Our UI will be text based and represented in the console.
 
 \bigskip
 
@@ -88,12 +88,12 @@ Description: Our program will not involve gambling using real-world currency.
 
 Rationale: Including this feature would conflict with the constraints specified by our publishers, and would greatly extend the scope of this project, to a degree that would require far more resources to complete.
 
-Fit Criterion: Poker chips will be rewarded equally to all players for any game, and will merely be represented in data; we wish to focus on the practical and mental benefits of the game of poker, not the financial deficits.  
+Fit Criterion: Poker chips will be rewarded equally to all players for any main.model.game, and will merely be represented in data; we wish to focus on the practical and mental benefits of the main.model.game of poker, not the financial deficits.
 
 \subsection{Naming Conventions and Terminology}
 \subsubsection{Definitions}
 \begin{itemize}
-    \item \textbf{Chips} - The currency of the game.
+    \item \textbf{Chips} - The currency of the main.model.game.
     \item \textbf{Pot} - The collective pool of chips that all the players bet on.
     \item \textbf{Hand} - A combination of a player's pair of cards and the cards on a table.
     \item \textbf{Bet} - To increase the amount of chips needed for the round to end.
@@ -108,16 +108,16 @@ Fit Criterion: Poker chips will be rewarded equally to all players for any game,
 
     \begin{figure}
         \includegraphics[width=14cm]{implementation_environment (1).jpg}
-        \caption{server.Server Architecture}
+        \caption{main.server.Server Architecture}
     \end{figure}
 
 \bigskip
 
-Above, we see the general architecture of the online aspect of the game, where each user will access a shared server via their respective internet connections. Once again, this server will be low fidelity and will be created entirely within Java. 
+Above, we see the general architecture of the online aspect of the main.model.game, where each user will access a shared main.server via their respective internet connections. Once again, this main.server will be low fidelity and will be created entirely within Java.
 
 \subsection{Architecture}
 
-Model-view.View-Controller (MVC) architecture will be employed for this project, as it is well geared towards playable games. It also gears itself towards designing for change in the sense of the generality required to implement other game modes in the future; they would use easily use the same model, as they are all played with one deck of cards and one hand per player, and would only require a specific controller to script the game (and possibly some additional methods in the view). This allows future developers to leave the entirety of the data untouched - an exceptionally valuable trait for developing pre-existing software.
+Model-main.view.View-Controller (MVC) architecture will be employed for this project, as it is well geared towards playable games. It also gears itself towards designing for change in the sense of the generality required to implement other main.model.game modes in the future; they would use easily use the same main.model, as they are all played with one deck of cards and one hand per player, and would only require a specific main.controller to script the main.model.game (and possibly some additional methods in the main.view). This allows future developers to leave the entirety of the data untouched - an exceptionally valuable trait for developing pre-existing software.
 
 \begin{figure}
     \centering
@@ -128,7 +128,7 @@ Model-view.View-Controller (MVC) architecture will be employed for this project,
 \section{Functional Requirements}
 
 \subsection{The Scope of the Work and the Product}
-    This project is contained to being held within java framework, and is limited by the deadlines and relatively tight schedules of the students who take the roles of developers. We will implement one main poker game mode, and do so in such a way that adding more in future iterations of the project would be straightforward, and would not require reconfiguration of the existing architecture, merely additional controllers; thus designing for generality. As we will be implementing "Texas Hold'em" as the initial game mode, the program will be inherently a multiplayer experience, with offline local multiplayer and online multiplayer as well. The servers for online multiplayer will be implemented with low fidelity and bandwidth, as it is known by the project managers that at this point we are not designing for a large player base, and the project is not due to hit markets during the current project life cycle.
+    This project is contained to being held within java framework, and is limited by the deadlines and relatively tight schedules of the students who take the roles of developers. We will implement one main poker main.model.game mode, and do so in such a way that adding more in future iterations of the project would be straightforward, and would not require reconfiguration of the existing architecture, merely additional controllers; thus designing for generality. As we will be implementing "Texas Hold'em" as the initial main.model.game mode, the program will be inherently a multiplayer experience, with offline local multiplayer and online multiplayer as well. The servers for online multiplayer will be implemented with low fidelity and bandwidth, as it is known by the project managers that at this point we are not designing for a large player base, and the project is not due to hit markets during the current project life cycle.
     
     As previously discussed, using real currency for the betting process is outside of the scope of this project.
     
@@ -139,19 +139,19 @@ Model-view.View-Controller (MVC) architecture will be employed for this project,
         \item The user shall be able to join lobbies by entering in a valid alphanumeric code.
         \item The user shall be able to perform at most one of the following actions during their turn: fold, check, call, bet, raise.
         \item The system shall automatically fold any player that does not make a move within the allotted period of time during their turn.
-        \item A game shall have a specified maximum amount of players.
-        \item A game shall have a specified minimum amount of players.
+        \item A main.model.game shall have a specified maximum amount of players.
+        \item A main.model.game shall have a specified minimum amount of players.
         \item The system shall be able to identify the correct card ranking for a player's hand.
         \item The system shall carry a virtual standard deck of cards, consisting of 52 unique cards.
-        \item The system shall shuffle its deck of cards before every game.
-        \item At the start of the game, the system shall give a random player the role of the dealer. Note that this is just a title and the system will deal the cards, not the player.
+        \item The system shall shuffle its deck of cards before every main.model.game.
+        \item At the start of the main.model.game, the system shall give a random player the role of the dealer. Note that this is just a title and the system will deal the cards, not the player.
         \item Each round, the first player to the immediate left of the dealer shall be given the role of small blind.
         \item Each round, the first player to the immediate left of the small blind shall be given the role of big blind.
         \item The system shall take half of a specified amount of money from the small blind and add it to the money pool in the beginning of the round.
         \item The system shall take a specified amount of money from the big blind as it did from the small blind and add it to the money pool in the beginning of the round.
         \item The system shall give each player on the table 2 cards in the beginning of the first round.
         \item The player to the immediate left of the big blind shall be given the first turn.
-        \item The system shall allow at most one user to have a turn any time during a game.
+        \item The system shall allow at most one user to have a turn any time during a main.model.game.
         \item After a player is done their turn, the player to the immediate left of them shall be given a turn.
         \item Once every player has either bet the same amount or decided to fold the round ends.
         \item After the first round, the system shall present three cards from its deck face up to all of the players.
@@ -160,7 +160,7 @@ Model-view.View-Controller (MVC) architecture will be employed for this project,
         \item After the fourth round, each player shall be forced to present their cards face up to all the other players.
         \item During the fifth round, the player with the highest hand ranking will win the pot.
         \item If the highest hand ranking belongs to more than one player, then the pot will be split among the highest ranking players.
-        \item After the fifth round, all cards will be collected and the game will start again from round one.
+        \item After the fifth round, all cards will be collected and the main.model.game will start again from round one.
         \item The system shall give each player a specified amount of money when they join.
         \item If a player loses all their money they will be kicked from the table.
         \item If a player does not have enough money to call a bet they will be allowed to go all in.
@@ -184,7 +184,7 @@ Model-view.View-Controller (MVC) architecture will be employed for this project,
     \subsubsection{Speed and Latency Requirements}
     \begin{enumerate}[label=PR\arabic*.]
         \item Any interface between a user and the system shall have a maximum response time of $X$ ms.
-        \item The maximum time to boot the game on any system shall be less than $t$ minutes.
+        \item The maximum time to boot the main.model.game on any system shall be less than $t$ minutes.
     \end{enumerate}
     \subsubsection{Reliability and Availability Requirements}
     \begin{enumerate}[label=PR\arabic*.]
@@ -196,7 +196,7 @@ Model-view.View-Controller (MVC) architecture will be employed for this project,
     \end{enumerate}
     \subsubsection{Capacity Requirements}
     \begin{enumerate}[label=PR\arabic*.]
-        \item Each lobby / local game can have at most 6 individual players. 
+        \item Each lobby / local main.model.game can have at most 6 individual players.
     \end{enumerate}
     \subsubsection{Scalability or Extensibility Requirements}
     \begin{enumerate}[label=PR\arabic*.]
@@ -251,7 +251,7 @@ Model-view.View-Controller (MVC) architecture will be employed for this project,
     \label{ssub:privacy_requirements}
     % Begin SubSubSection
     \begin{enumerate}[label=SR\arabic*.]
-        \item The lobby creators will have the option to kick players out of a lobby before the game commences.
+        \item The lobby creators will have the option to kick players out of a lobby before the main.model.game commences.
     \end{enumerate}
     % End SubSubSection
 \subsection{Cultural Requirements}
@@ -268,34 +268,34 @@ N/A.
 Some of these off the shelf solutions for the risks may include:
 
 \begin{enumerate}
-    \item Hostinger - a cheap cloud based virtual server with varying payment plans for different requirements
-    \item InterServer - a fairly priced server for hosting powerful Java applications (could be more sophisticated than we need) 
-    \item Hostwinds - requires more knowledgeable server developer, but grants more in-depth control and customization, with great service almost internationally
+    \item Hostinger - a cheap cloud based virtual main.server with varying payment plans for different requirements
+    \item InterServer - a fairly priced main.server for hosting powerful Java applications (could be more sophisticated than we need)
+    \item Hostwinds - requires more knowledgeable main.server developer, but grants more in-depth control and customization, with great service almost internationally
 \end{enumerate}
 
 \subsection{New Problems}
 N/A.
 \subsection{Tasks}
-To view the tasks and scheduling see our schedule: \href{run:../Documentation/Development Plan/ProjectSchedule.pdf}{Gantt Chart}
+To main.view the tasks and scheduling see our schedule: \href{run:../Documentation/Development Plan/ProjectSchedule.pdf}{Gantt Chart}
 \subsection{Migration to the New Product}
 N/A.
 \subsection{Risks}
-Some technical risks that need to be weighed out are the implications of running a low fidelity java server off of one of the developer's local machines. This will be something that needs to be tested during the proof of concept such that we can see if our intended number of concurrent online players is feasible under such conditions, else we may wish to consider some off-the-shelf solutions for our server. 
+Some technical risks that need to be weighed out are the implications of running a low fidelity java main.server off of one of the developer's local machines. This will be something that needs to be tested during the proof of concept such that we can see if our intended number of concurrent online players is feasible under such conditions, else we may wish to consider some off-the-shelf solutions for our main.server.
 
 \subsection{Costs}
-There are currently no costs, but once a global server is implemented (waiting room) there will be the cost of keeping the server running through an online service.
+There are currently no costs, but once a global main.server is implemented (waiting room) there will be the cost of keeping the main.server running through an online service.
 
 \subsection{User Documentation and Training}
 N/A.
 \subsection{Waiting Room}
 \begin{enumerate}
-    \item game.Game Settings - Right now the game has a default setting preset used when running. This means things such as maximum number of players, minimum number of players and maximum turn timer are set to preset values (which is set to its least restrictive form e.g. infinite turn timer). In the future the host will be allowed to set these settings before starting the game
+    \item main.model.game.Game Settings - Right now the main.model.game has a default setting preset used when running. This means things such as maximum number of players, minimum number of players and maximum turn timer are set to preset values (which is set to its least restrictive form e.g. infinite turn timer). In the future the host will be allowed to set these settings before starting the main.model.game
     
-    \item GUI - Right now the game uses Java console to display its properties. In the future there will be a GUI for the game that will display the elements of the game visually instead of printing text to a console. 
+    \item GUI - Right now the main.model.game uses Java console to display its properties. In the future there will be a GUI for the main.model.game that will display the elements of the main.model.game visually instead of printing text to a console.
     
-    \item Global server.Server - Currently the game can only connect through LAN servers (every device must be connected to the same network). In the future the game will have the ability to connect through any network using a global network.
+    \item Global main.server.Server - Currently the main.model.game can only connect through LAN servers (every device must be connected to the same network). In the future the main.model.game will have the ability to connect through any network using a global network.
     
-    \item Spectator - Currently if you lose, you will be kicked out of the game. In the future you will be allowed to spectate the match.
+    \item Spectator - Currently if you lose, you will be kicked out of the main.model.game. In the future you will be allowed to spectate the match.
 
 \end{enumerate}
     

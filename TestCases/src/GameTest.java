@@ -2,15 +2,15 @@
 //import org.junit.Before;
 //import org.junit.Test;
 //
-//import java.util.ArrayList;
-//import java.util.Arrays;
-//import java.util.HashMap;
-//import java.util.HashSet;
+//import java.main.util.ArrayList;
+//import java.main.util.Arrays;
+//import java.main.util.HashMap;
+//import java.main.util.HashSet;
 //
 //public class GameTest {
 //
 //
-//    private static Game game;
+//    private static Game main.model.game;
 //    private static ArrayList<Player> players;
 //    private static int buyIn;
 //    private static int smallBlind;
@@ -32,18 +32,18 @@
 //            player.set_chips(buyIn);
 //        }
 //
-//        game = new Game(players, smallBlind);
+//        main.model.game = new Game(players, smallBlind);
 //    }
 //
 //
 //    @Test
 //    public void assignRolesTest() {
-//        game.assignRoles();
+//        main.model.game.assignRoles();
 //        boolean isDealerSet = false;
 //        boolean isSmallBlindSet = false;
 //        boolean isBigBlindSet = false;
 //
-//        for (Player player: game.getPlayers()) {
+//        for (Player player: main.model.game.getPlayers()) {
 //            if (player.getRole() == PokerRole.DEALER) {
 //                isDealerSet = true;
 //            }
@@ -60,8 +60,8 @@
 //
 //    @Test
 //    public void assignCardsTest() {
-//        game.assignCards();
-//        for (Player player : game.getPlayers()) {
+//        main.model.game.assignCards();
+//        for (Player player : main.model.game.getPlayers()) {
 //            assert player.getHand().size() == 2;
 //        }
 //        assert (true);
@@ -69,12 +69,12 @@
 //
 //    @Test
 //    public void assignFirstTurnTest() {
-//        game.assignRoles();
-//        game.assignFirstTurn();
+//        main.model.game.assignRoles();
+//        main.model.game.assignFirstTurn();
 //        int index = 0;
 //        int turnIndex = 0;
 //        int numOfPlayersWithTurn = 0;
-//        for (Player player : game.getPlayers()) {
+//        for (Player player : main.model.game.getPlayers()) {
 //            if (player.hasTurn()) {
 //                turnIndex = index;
 //                numOfPlayersWithTurn++;
@@ -87,19 +87,19 @@
 //
 //        // asserts if the player with first turn is on the right of the big blind
 //        if (turnIndex <= 0) {
-//            assert (game.getPlayers().get(players.size() - 1).getRole() == PokerRole.BIG_BLIND);
+//            assert (main.model.game.getPlayers().get(players.size() - 1).getRole() == PokerRole.BIG_BLIND);
 //        }
 //        else {
-//            assert (game.getPlayers().get(turnIndex - 1).getRole() == PokerRole.BIG_BLIND);
+//            assert (main.model.game.getPlayers().get(turnIndex - 1).getRole() == PokerRole.BIG_BLIND);
 //        }
 //    }
 //
 //    @Test
 //    public void takeChipsFromBlindsTest() {
-//        game.assignRoles();
-//        game.takeChipsFromBlinds();
+//        main.model.game.assignRoles();
+//        main.model.game.takeChipsFromBlinds();
 //
-//        for (Player player : game.getPlayers()) {
+//        for (Player player : main.model.game.getPlayers()) {
 //            int playerChips = player.getChips();
 //            if (player.getRole() == PokerRole.SMALL_BLIND) {
 //                assert (playerChips == buyIn - smallBlind);
@@ -117,12 +117,12 @@
 //    // total pot is updated
 //    @Test
 //    public void performBetByPlayerTest() {
-//        game.startGame();
-//        game.initializeRound();
+//        main.model.game.startGame();
+//        main.model.game.initializeRound();
 //        int raiseAmount = smallBlind * 5;
 //        Player better = players.get(1);
-//        game.performBetByPlayer(players.get(1), raiseAmount);
-//        HashMap<Player, Integer> playerBettings = game.getPlayerBettings();
+//        main.model.game.performBetByPlayer(players.get(1), raiseAmount);
+//        HashMap<Player, Integer> playerBettings = main.model.game.getPlayerBettings();
 //
 //        assert (playerBettings.containsKey(better));
 //
@@ -144,17 +144,17 @@
 //                assert (playerBettings.get(player) == 0);
 //            }
 //        }
-//        assert (game.getTotalPot() == smallBlind + bigBlind + raiseAmount);
+//        assert (main.model.game.getTotalPot() == smallBlind + bigBlind + raiseAmount);
 //    }
 //
 //    @Test
 //    public void performCallByPlayerTest() {
-//        game.startGame();
-//        game.initializeRound();
-//        Player smallBlindPlayer = game.getPlayersWithRoles().get(PokerRole.SMALL_BLIND);
-//        game.performCallByPlayer(smallBlindPlayer);
+//        main.model.game.startGame();
+//        main.model.game.initializeRound();
+//        Player smallBlindPlayer = main.model.game.getPlayersWithRoles().get(PokerRole.SMALL_BLIND);
+//        main.model.game.performCallByPlayer(smallBlindPlayer);
 //
-//        HashMap<Player, Integer> playerBettings = game.getPlayerBettings();
+//        HashMap<Player, Integer> playerBettings = main.model.game.getPlayerBettings();
 //        assert (playerBettings.containsKey(smallBlindPlayer));
 //
 //        for (Player player: playerBettings.keySet()) {
@@ -175,7 +175,7 @@
 //                assert (playerBettings.get(player) == 0);
 //            }
 //        }
-//        assert (game.getTotalPot() == 2 * bigBlind);
+//        assert (main.model.game.getTotalPot() == 2 * bigBlind);
 //    }
 //
 //    private Game getNewGameWithLosers() {
@@ -203,89 +203,89 @@
 //    }
 //    @Test
 //    public void removeLosersTest() {
-//        game = getNewGameWithLosers();
-//        game.removeLosers();
+//        main.model.game = getNewGameWithLosers();
+//        main.model.game.removeLosers();
 //
 //        ArrayList<Player> expectedPlayers = new ArrayList<>();
-//        for (Player player: game.getPlayers()) {
+//        for (Player player: main.model.game.getPlayers()) {
 //            if (player.getChips() > 0) {
 //                expectedPlayers.add(player);
 //            }
 //        }
 //
-//        ArrayList<Player> actualPlayers = game.getPlayers();
+//        ArrayList<Player> actualPlayers = main.model.game.getPlayers();
 //        assertEquals(actualPlayers, expectedPlayers);
 //    }
 //
 //    @Test
 //    public void getPlayersWithNoChipsTest() {
-//        game = getNewGameWithLosers();
+//        main.model.game = getNewGameWithLosers();
 //
 //        ArrayList<Player> expectedPlayers = new ArrayList<>();
-//        for (Player player: game.getPlayers()) {
+//        for (Player player: main.model.game.getPlayers()) {
 //            if (player.getChips() <= 0) {
 //                expectedPlayers.add(player);
 //            }
 //        }
-//        ArrayList<Player> actualPlayers = game.getPlayersWithNoChips();
+//        ArrayList<Player> actualPlayers = main.model.game.getPlayersWithNoChips();
 //        assertEquals(actualPlayers, expectedPlayers);
 //    }
 //
 //    @Test
 //    public void endRoundTest() {
-//        game.startGame();
-//        game.initializeRound();
-//        game.endRound();
+//        main.model.game.startGame();
+//        main.model.game.initializeRound();
+//        main.model.game.endRound();
 //
-//        for (Player player: game.getPlayers()) {
+//        for (Player player: main.model.game.getPlayers()) {
 //            assertFalse(player.isFolded());
 //        }
 //
-//        HashMap<Player, Integer> playerBettings = game.getPlayerBettings();
+//        HashMap<Player, Integer> playerBettings = main.model.game.getPlayerBettings();
 //        for (Player player: playerBettings.keySet()) {
 //            assertEquals(0, (int) playerBettings.get(player));
 //        }
 //
-//        assertEquals(0, game.getTableCards().size());
-//        assertEquals(0, game.getTotalPot());
+//        assertEquals(0, main.model.game.getTableCards().size());
+//        assertEquals(0, main.model.game.getTotalPot());
 //
-//        for (Player player: game.getPlayers()) {
+//        for (Player player: main.model.game.getPlayers()) {
 //            assertEquals(0, player.getHand().size());
 //        }
 //    }
 //
 //    @Test
 //    public void isEveryBetTheSameTest() {
-//        game.startGame();
-//        game.initializeRound();
-//        assertFalse(game.isEveryBetTheSame());
+//        main.model.game.startGame();
+//        main.model.game.initializeRound();
+//        assertFalse(main.model.game.isEveryBetTheSame());
 //
-//        for (Player player: game.getPlayers()) {
-//            game.performCallByPlayer(player);
+//        for (Player player: main.model.game.getPlayers()) {
+//            main.model.game.performCallByPlayer(player);
 //        }
-//        assertTrue(game.isEveryBetTheSame());
+//        assertTrue(main.model.game.isEveryBetTheSame());
 //
-//        game.performBetByPlayer(players.get(0), game.getMinimumBetAmount());
-//        assertFalse(game.isEveryBetTheSame());
+//        main.model.game.performBetByPlayer(players.get(0), main.model.game.getMinimumBetAmount());
+//        assertFalse(main.model.game.isEveryBetTheSame());
 //    }
 //
 //    @Test
 //    public void applyPlayerAction() {
-//        game.startGame();
-//        game.initializeRound();
-//        Player folder = game.getPlayer(players.get(0));
-//        Player better = game.getPlayer(players.get(1));
-//        Player caller = game.getPlayer(players.get(2));
+//        main.model.game.startGame();
+//        main.model.game.initializeRound();
+//        Player folder = main.model.game.getPlayer(players.get(0));
+//        Player better = main.model.game.getPlayer(players.get(1));
+//        Player caller = main.model.game.getPlayer(players.get(2));
 //
-//        game.applyPlayerAction(folder, PlayerAction.FOLD, 0);
+//        main.model.game.applyPlayerAction(folder, PlayerAction.FOLD, 0);
 //
-//        int raiseToAmount = game.getMinimumBetAmount();
-//        game.applyPlayerAction(better, PlayerAction.BET, raiseToAmount);
+//        int raiseToAmount = main.model.game.getMinimumBetAmount();
+//        main.model.game.applyPlayerAction(better, PlayerAction.BET, raiseToAmount);
 //
-//        int callAmount = game.getMinimumCallAmount();
-//        game.applyPlayerAction(caller, PlayerAction.CALL, callAmount);
+//        int callAmount = main.model.game.getMinimumCallAmount();
+//        main.model.game.applyPlayerAction(caller, PlayerAction.CALL, callAmount);
 //
-//        HashMap<Player, Integer> playerBettings = game.getPlayerBettings();
+//        HashMap<Player, Integer> playerBettings = main.model.game.getPlayerBettings();
 //
 //        assertTrue(folder.isFolded());
 //        assertEquals(raiseToAmount, (int) playerBettings.get(better));
@@ -294,77 +294,77 @@
 //
 //    @Test
 //    public void hasEveryoneHadATurnTest() {
-//        game.startGame();
-//        game.initializeRound();
+//        main.model.game.startGame();
+//        main.model.game.initializeRound();
 //
-//        assertFalse(game.hasEveryoneHadATurn());
+//        assertFalse(main.model.game.hasEveryoneHadATurn());
 //        for (Player player: players) {
-//            game.applyPlayerAction(player, PlayerAction.FOLD, 0);
+//            main.model.game.applyPlayerAction(player, PlayerAction.FOLD, 0);
 //        }
-//        assertTrue(game.hasEveryoneHadATurn());
+//        assertTrue(main.model.game.hasEveryoneHadATurn());
 //    }
 //
 //    @Test
 //    public void isRoundStateOverTest() {
-//        game.startGame();
-//        game.initializeRound();
+//        main.model.game.startGame();
+//        main.model.game.initializeRound();
 //
-//        assertFalse(game.isRoundStateOver());
+//        assertFalse(main.model.game.isRoundStateOver());
 //        for (Player player: players) {
-//            game.applyPlayerAction(player, PlayerAction.CALL, 0);
+//            main.model.game.applyPlayerAction(player, PlayerAction.CALL, 0);
 //        }
-//        assertTrue(game.isRoundStateOver());
+//        assertTrue(main.model.game.isRoundStateOver());
 //
-//        game.applyPlayerAction(players.get(0), PlayerAction.BET, game.getMinimumBetAmount());
-//        assertFalse(game.isRoundStateOver());
+//        main.model.game.applyPlayerAction(players.get(0), PlayerAction.BET, main.model.game.getMinimumBetAmount());
+//        assertFalse(main.model.game.isRoundStateOver());
 //    }
 //
 //    @Test
 //    public void everyoneIsAllInTest() {
-//        game.startGame();
-//        game.initializeRound();
-//        assertFalse(game.everyoneIsAllIn());
-//        game.performBetByPlayer(players.get(0), buyIn);
+//        main.model.game.startGame();
+//        main.model.game.initializeRound();
+//        assertFalse(main.model.game.everyoneIsAllIn());
+//        main.model.game.performBetByPlayer(players.get(0), buyIn);
 //        for (Player player: players) {
-//            game.performCallByPlayer(player);
+//            main.model.game.performCallByPlayer(player);
 //        }
-//        assertTrue(game.everyoneIsAllIn());
+//        assertTrue(main.model.game.everyoneIsAllIn());
 //    }
 //
 //    @Test
 //    public void getPlayerWithTurnTest() {
-//        game.startGame();
-//        game.initializeRound();
-//        Player bigBlindPlayer = game.getPlayersWithRoles().get(PokerRole.BIG_BLIND);
-//        ArrayList<Player> players = game.getPlayers();
+//        main.model.game.startGame();
+//        main.model.game.initializeRound();
+//        Player bigBlindPlayer = main.model.game.getPlayersWithRoles().get(PokerRole.BIG_BLIND);
+//        ArrayList<Player> players = main.model.game.getPlayers();
 //
 //        int expectedPlayerWithTurnIndex = (players.indexOf(bigBlindPlayer) + 1) % players.size();
 //        Player expectedPlayerWithTurn = players.get(expectedPlayerWithTurnIndex);
-//        Player actualPlayerWithTurn = game.getPlayerWithTurn();
+//        Player actualPlayerWithTurn = main.model.game.getPlayerWithTurn();
 //        assertEquals(expectedPlayerWithTurn, actualPlayerWithTurn);
 //
-//        game.giveNextPlayerTurn();
+//        main.model.game.giveNextPlayerTurn();
 //        expectedPlayerWithTurnIndex = (expectedPlayerWithTurnIndex+ 1) % players.size();
 //        expectedPlayerWithTurn = players.get(expectedPlayerWithTurnIndex);
-//        actualPlayerWithTurn = game.getPlayerWithTurn();
+//        actualPlayerWithTurn = main.model.game.getPlayerWithTurn();
 //        assertEquals(expectedPlayerWithTurn, actualPlayerWithTurn);
 //
 //    }
 //
 //    @Test
 //    public void giveNextPlayerTurnTest() {
-//        game.startGame();
-//        game.initializeRound();
-//        Player bigBlindPlayer = game.getPlayersWithRoles().get(PokerRole.BIG_BLIND);
-//        ArrayList<Player> players = game.getPlayers();
+//        main.model.game.startGame();
+//        main.model.game.initializeRound();
+//        Player bigBlindPlayer = main.model.game.getPlayersWithRoles().get(PokerRole.BIG_BLIND);
+//        ArrayList<Player> players = main.model.game.getPlayers();
 //
 //
 //        for (int i = 0; i < players.size(); i++) {
 //            int expectedPlayerWithTurnIndex = (players.indexOf(bigBlindPlayer) + 1 + i) % players.size();
 //            Player expectedPlayerWithTurn = players.get(expectedPlayerWithTurnIndex);
-//            Player actualPlayerWithTurn = game.getPlayerWithTurn();
+//            Player actualPlayerWithTurn = main.model.game.getPlayerWithTurn();
 //            assertEquals(expectedPlayerWithTurn, actualPlayerWithTurn);
-//            game.giveNextPlayerTurn();
+//            main.model.game.giveNextPlayerTurn();
 //        }
 //    }
 //
@@ -375,8 +375,8 @@
 //        expectedPlayerRoles.put(PokerRole.SMALL_BLIND, players.get(1));
 //        expectedPlayerRoles.put(PokerRole.BIG_BLIND, players.get(2));
 //
-//        game.setPlayerRoles(expectedPlayerRoles);
-//        HashMap<PokerRole, Player> actualPlayerRoles = game.getPlayersWithRoles();
+//        main.model.game.setPlayerRoles(expectedPlayerRoles);
+//        HashMap<PokerRole, Player> actualPlayerRoles = main.model.game.getPlayersWithRoles();
 //
 //        assertEquals(expectedPlayerRoles, actualPlayerRoles);
 //        for (PokerRole role: actualPlayerRoles.keySet()) {
@@ -387,13 +387,13 @@
 //
 //    @Test
 //    public void advanceRoundStateTest() {
-//        game.startGame();
-//        game.initializeRound();
+//        main.model.game.startGame();
+//        main.model.game.initializeRound();
 //
-//        while (!game.getRoundState().equals(RoundState.SHOWDOWN)) {
-//            RoundState expectedNextRoundState = RoundState.getNextRoundState(game.getRoundState());
-//            game.advanceRoundState();
-//            RoundState actualNextRoundState = game.getRoundState();
+//        while (!main.model.game.getRoundState().equals(RoundState.SHOWDOWN)) {
+//            RoundState expectedNextRoundState = RoundState.getNextRoundState(main.model.game.getRoundState());
+//            main.model.game.advanceRoundState();
+//            RoundState actualNextRoundState = main.model.game.getRoundState();
 //
 //            assertEquals(expectedNextRoundState, actualNextRoundState);
 //        }
@@ -401,15 +401,15 @@
 //
 //    @Test
 //    public void updateTableCardsTest() {
-//        game.startGame();
-//        game.initializeRound();
+//        main.model.game.startGame();
+//        main.model.game.initializeRound();
 //
 //        int expectedTableCards = 3;
-//        while (!game.getRoundState().equals(RoundState.SHOWDOWN)) {
-//            game.advanceRoundState();
-//            assertEquals(expectedTableCards, game.getTableCards().size());
+//        while (!main.model.game.getRoundState().equals(RoundState.SHOWDOWN)) {
+//            main.model.game.advanceRoundState();
+//            assertEquals(expectedTableCards, main.model.game.getTableCards().size());
 //
-//            if (!game.getRoundState().equals(RoundState.RIVER)) {
+//            if (!main.model.game.getRoundState().equals(RoundState.RIVER)) {
 //                expectedTableCards++;
 //            }
 //        }
@@ -433,10 +433,10 @@
 //        player.addToHand(new Card(3, 2));
 //
 //        ArrayList<Card> tableCards = getArbitraryTableCards();
-//        game.setTableCards(tableCards);
+//        main.model.game.setTableCards(tableCards);
 //
 //        int[] expectedScore = new HandEval().evaluate(player.getHand(), tableCards);
-//        int[] actualScore = game.getScore(player);
+//        int[] actualScore = main.model.game.getScore(player);
 //
 //        assertArrayEquals(expectedScore, actualScore);
 //    }
@@ -447,40 +447,40 @@
 //        Player player = new Player("Player", "123");
 //        player.addToHand(new Card(2, 2));
 //        player.addToHand(new Card(3, 2));
-//        game.setTableCards(getArbitraryTableCards());
+//        main.model.game.setTableCards(getArbitraryTableCards());
 //
-//        String expectedName = HandEval.getHandName(game.getScore(player));
-//        String actualName = game.getPlayerHandName(player);
+//        String expectedName = HandEval.getHandName(main.model.game.getScore(player));
+//        String actualName = main.model.game.getPlayerHandName(player);
 //
 //        assertEquals(expectedName, actualName);
 //    }
 //
 //    @Test
 //    public void getHighestScoreTest() {
-//        game.setTableCards(getArbitraryTableCards());
+//        main.model.game.setTableCards(getArbitraryTableCards());
 //
 //        int[] expectedHighestScore = {0, 0};
-//        for (Player player: game.getPlayers()) {
-//            int[] playerScore = game.getScore(player);
+//        for (Player player: main.model.game.getPlayers()) {
+//            int[] playerScore = main.model.game.getScore(player);
 //            if (Arrays.compare(playerScore, expectedHighestScore) > 0) {
 //                expectedHighestScore = playerScore;
 //            }
 //        }
-//        int[] actualHighestScore = game.getHighestScore();
+//        int[] actualHighestScore = main.model.game.getHighestScore();
 //
 //        assertArrayEquals(expectedHighestScore, actualHighestScore);
 //    }
 //
 //    @Test
 //    public void getWinningPlayersTest() {
-//        game.startGame();
-//        game.initializeRound();
-//        game.setTableCards(getArbitraryTableCards());
+//        main.model.game.startGame();
+//        main.model.game.initializeRound();
+//        main.model.game.setTableCards(getArbitraryTableCards());
 //
 //        ArrayList<Player> expectedWinningPlayers = new ArrayList<>();
-//        ArrayList<Player> actualWinningPlayers = game.getWinningPlayers();
-//        for (Player player: game.getPlayers()) {
-//            if (Arrays.equals(game.getScore(player), game.getHighestScore())) {
+//        ArrayList<Player> actualWinningPlayers = main.model.game.getWinningPlayers();
+//        for (Player player: main.model.game.getPlayers()) {
+//            if (Arrays.equals(main.model.game.getScore(player), main.model.game.getHighestScore())) {
 //                expectedWinningPlayers.add(player);
 //            }
 //        }
@@ -490,13 +490,13 @@
 //
 //    @Test
 //    public void giveChipsToWinnersTest() {
-//        game.startGame();
-//        game.initializeRound();
-//        game.setTableCards(getArbitraryTableCards());
-//        int totalPot = game.getTotalPot();
-//        ArrayList<Player> winners = game.getWinningPlayers();
+//        main.model.game.startGame();
+//        main.model.game.initializeRound();
+//        main.model.game.setTableCards(getArbitraryTableCards());
+//        int totalPot = main.model.game.getTotalPot();
+//        ArrayList<Player> winners = main.model.game.getWinningPlayers();
 //        int winningShare = totalPot/winners.size();
-//        game.giveChipsToWinners();
+//        main.model.game.giveChipsToWinners();
 //
 //        for (Player player: winners) {
 //            if (player.getRole() == PokerRole.SMALL_BLIND) {
@@ -513,28 +513,28 @@
 //
 //    @Test
 //    public void allOtherPlayersFoldedTest() {
-//        game.startGame();
-//        game.initializeRound();
+//        main.model.game.startGame();
+//        main.model.game.initializeRound();
 //
 //        for (int i = 0; i < players.size() - 1; i++) {
-//            game.applyPlayerAction(players.get(i), PlayerAction.FOLD, 0);
+//            main.model.game.applyPlayerAction(players.get(i), PlayerAction.FOLD, 0);
 //        }
 //
-//        assertTrue(game.allOtherPlayersFolded());
+//        assertTrue(main.model.game.allOtherPlayersFolded());
 //    }
 //
 //    @Test
 //    public void giveChipsToLastPlayerTest() {
-//        game.startGame();
-//        game.initializeRound();
-//        int totalPot = game.getTotalPot();
+//        main.model.game.startGame();
+//        main.model.game.initializeRound();
+//        int totalPot = main.model.game.getTotalPot();
 //
 //        for (int i = 0; i < players.size() - 1; i++) {
-//            game.applyPlayerAction(players.get(i), PlayerAction.FOLD, 0);
+//            main.model.game.applyPlayerAction(players.get(i), PlayerAction.FOLD, 0);
 //        }
-//        Player lastPlayer = game.getPlayer(players.get(players.size() - 1));
+//        Player lastPlayer = main.model.game.getPlayer(players.get(players.size() - 1));
 //
-//        game.giveChipsToLastPlayer();
+//        main.model.game.giveChipsToLastPlayer();
 //
 //        if (lastPlayer.getRole() == PokerRole.SMALL_BLIND) {
 //            assertEquals(buyIn - smallBlind + totalPot, lastPlayer.getChips());
@@ -549,23 +549,23 @@
 //
 //    @Test
 //    public void getValidActionsTest() {
-//        game.startGame();
-//        game.initializeRound();
+//        main.model.game.startGame();
+//        main.model.game.initializeRound();
 //
 //        HashSet<PlayerAction> expectedValidActions = new HashSet<>();
 //        expectedValidActions.add(PlayerAction.CALL);
 //        expectedValidActions.add(PlayerAction.RAISE);
 //        expectedValidActions.add(PlayerAction.FOLD);
 //
-//        HashSet<PlayerAction> actualValidActions = game.getValidActions(players.get(0));
+//        HashSet<PlayerAction> actualValidActions = main.model.game.getValidActions(players.get(0));
 //
 //        for (Player player: players) {
-//            game.performCallByPlayer(player);
+//            main.model.game.performCallByPlayer(player);
 //        }
 //
-//        game.endRoundState();
-//        game.advanceRoundState();
-//        actualValidActions = game.getValidActions(players.get(0));
+//        main.model.game.endRoundState();
+//        main.model.game.advanceRoundState();
+//        actualValidActions = main.model.game.getValidActions(players.get(0));
 //
 //        expectedValidActions = new HashSet<>();
 //        expectedValidActions.add(PlayerAction.CHECK);

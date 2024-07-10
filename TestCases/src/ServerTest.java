@@ -2,16 +2,16 @@
 //import java.net.InetAddress;
 //import java.net.ServerSocket;
 //import java.net.Socket;
-//import java.util.ConcurrentModificationException;
+//import java.main.util.ConcurrentModificationException;
 //
 //public class ServerTest {
-//    private static Server server;
+//    private static Server main.server;
 //
 //    public static void runServer()  {
 //        try {
 //            ServerSocket serverSocket = new ServerSocket(101);
-//            server = new Server(serverSocket);
-//            new Thread(server::startServer).start();
+//            main.server = new Server(serverSocket);
+//            new Thread(main.server::startServer).start();
 //
 //        } catch (IOException e) {
 //            e.printStackTrace();
@@ -32,7 +32,7 @@
 //                client.sendMessage(clientSetUpInfo);
 //                clientSetUpInfo = (GameInfo) client.listenForMessage();
 //                client.setClientID(clientSetUpInfo.getClientID());
-//                System.out.println("Number of connected clients: " + server.getNumberOfClients());
+//                System.out.println("Number of connected clients: " + main.server.getNumberOfClients());
 //                Thread.sleep(1000);
 //            }
 //        } catch (RuntimeException | IOException | InterruptedException | ClassNotFoundException ignored) {

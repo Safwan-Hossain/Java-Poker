@@ -49,9 +49,9 @@
 \pagenumbering{arabic}
 
 
-\section* {model.Card (ADT)}
+\section* {main.model.player.Card (ADT)}
 
-model.Card
+main.model.player.Card
 
 \subsection* {Uses}
 
@@ -73,7 +73,7 @@ None
 \hline
 \textbf{Routine name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions}\\
 \hline
-greater\verb|_|than & model.Card & $\mathbb{B}$ &\\
+greater\verb|_|than & main.model.player.Card & $\mathbb{B}$ &\\
 \hline
 \end{tabular}
 
@@ -105,13 +105,13 @@ None
 
 \end{itemize}
 
-\section* {model.Player (ADT)}
+\section* {main.model.player.Player (ADT)}
 
-model.Player
+main.model.player.Player
 
 \subsection* {Uses}
 
-model.Card
+main.model.player.Card
 
 \subsection* {Syntax}
 
@@ -121,7 +121,7 @@ None
 
 \subsubsection* {Imported Types}
 
-model.Card
+main.model.player.Card
 
 \subsubsection* {Exported Access Programs}
 
@@ -129,7 +129,7 @@ model.Card
 \hline
 \textbf{Routine name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions}\\
 \hline 
-new model.Player & String, $\mathbb{I}$ & &\\
+new main.model.player.Player & String, $\mathbb{I}$ & &\\
 \hline
 clear\verb|_|hand & & &\\
 \hline
@@ -145,9 +145,9 @@ get\verb|_|chips & & $\mathbb{I}$ &\\
 \hline 
 take\verb|_|chips & $\mathbb{I}$ & & IllegalArgumentException\\
 \hline 
-insert & model.Card & &\\
+insert & main.model.player.Card & &\\
 \hline 
-get\verb|_|hand & & model.Card [ ] &\\
+get\verb|_|hand & & main.model.player.Card [ ] &\\
 \hline 
 \end{tabular}
 
@@ -157,7 +157,7 @@ get\verb|_|hand & & model.Card [ ] &\\
 
 $\mathit{name}: String$\\
 $\mathit{chips}: \mathbb{I}$ \\
-$\mathit{hand} : \verb|model.Card [ ]|$\\
+$\mathit{hand} : \verb|main.model.player.Card [ ]|$\\
 $has\verb|_|turn : \mathbb{B}$
 
 \subsubsection* {State Invariant}
@@ -174,7 +174,7 @@ None
 
 \subsubsection* {Access Routine Semantics}
 
-\noindent new model.Player(s, c):
+\noindent new main.model.player.Player(s, c):
 \begin{itemize}
 \item transition : $hand, name, chips, has\verb|_|turn := \epsilon, s, c, False$ 
 \end{itemize}
@@ -227,14 +227,14 @@ None
 \item return : $hand$ 
 \end{itemize}
 
-\section* {model.Deck (ADT)}
+\section* {main.model.player.Deck (ADT)}
 
-model.Deck
+main.model.player.Deck
 
 \subsection* {Uses}
 
-model.Card
-model.Player
+main.model.player.Card
+main.model.player.Player
 
 \subsection* {Syntax}
 
@@ -244,8 +244,8 @@ None
 
 \subsubsection* {Imported Types}
 
-model.Card
-model.Player
+main.model.player.Card
+main.model.player.Player
 
 \subsubsection* {Exported Access Programs}
 
@@ -259,7 +259,7 @@ shuffle & & &\\
 \hline 
 reset & & &\\
 \hline 
-draw & $\mathbb{I}$& model.Card [ ] & StackOverflowException\\
+draw & $\mathbb{I}$& main.model.player.Card [ ] & StackOverflowException\\
 \hline 
 \end{tabular}
 
@@ -267,8 +267,8 @@ draw & $\mathbb{I}$& model.Card [ ] & StackOverflowException\\
 
 \subsubsection* {State Variables}
 
-$\mathit{deck} : \verb|model.Card [52]|$\\
-$\mathit{flop} : \verb|model.Card [ ]|$\\
+$\mathit{deck} : \verb|main.model.player.Card [52]|$\\
+$\mathit{flop} : \verb|main.model.player.Card [ ]|$\\
 $stack\verb|_|p : \mathbb{I}$
 
 \subsubsection* {State Invariant}
@@ -281,13 +281,13 @@ None
 
 \subsubsection* {Considerations}
 
-model.Deck is suggested to be implemented as a stack, but the choice is ultimately up to the development team. If it is not implemented as such, the stack\verb|_|p state variable will not be needed and its associated invariant can be disregarded.
+main.model.player.Deck is suggested to be implemented as a stack, but the choice is ultimately up to the development team. If it is not implemented as such, the stack\verb|_|p state variable will not be needed and its associated invariant can be disregarded.
 
 \subsubsection* {Access Routine Semantics}
 
 \noindent fill\verb|_|deck():
 \begin{itemize}
-\item transition : fills the deck stack with all 52 unique playing cards (of type model.Card)
+\item transition : fills the deck stack with all 52 unique playing cards (of type main.model.player.Card)
 \end{itemize}
 
 \noindent shuffle():
@@ -304,18 +304,18 @@ model.Deck is suggested to be implemented as a stack, but the choice is ultimate
 \begin{itemize}
 \item transition: removes the top n cards from the deck, and places them into a list 
 \item exception: $n >$ remaining cards in the deck $\Longrightarrow StackOverflowException$
-\item returns: model.Card [n]
+\item returns: main.model.player.Card [n]
 \end{itemize}
 
-\section*{game.Game}
+\section*{main.model.game.Game}
 
-game.Game
+main.model.game.Game
 
 \subsection* {Uses}
 
-model.Card
-model.Player
-model.Deck
+main.model.player.Card
+main.model.player.Player
+main.model.player.Deck
 
 \subsection* {Syntax}
 
@@ -325,9 +325,9 @@ None
 
 \subsubsection* {Imported Types}
 
-model.Card
-model.Player
-model.Deck
+main.model.player.Card
+main.model.player.Player
+main.model.player.Deck
 
 \subsubsection* {Exported Access Programs}
 
@@ -335,21 +335,21 @@ model.Deck
 \hline
 \textbf{Routine name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions}\\
 \hline
-new game.Game & model.Player [ ], $\mathbb{I}$ & &\\
+new main.model.game.Game & main.model.player.Player [ ], $\mathbb{I}$ & &\\
 \hline
 startGame & $\mathbb{I}$ & &\\
 \hline 
-removePlayer & model.Player & &\\
+removePlayer & main.model.player.Player & &\\
 \hline 
-foldPlayer & model.Player & &\\
+foldPlayer & main.model.player.Player & &\\
 \hline 
 is\verb|_|round\verb|_|over & & $\mathbb{B}$ &\\
 \hline 
 dealCards & $\mathbb{I}$ & &\\
 \hline
-getNextPlayer & & model.Player & RuntimeException\\
+getNextPlayer & & main.model.player.Player & RuntimeException\\
 \hline 
-getCurrentPlayer & & model.Player & RuntimeException\\
+getCurrentPlayer & & main.model.player.Player & RuntimeException\\
 \hline 
 giveNextTurn & & &\\
 \hline
@@ -360,9 +360,9 @@ giveNextTurn & & &\\
 \subsubsection* {State Variables}
 
 \begin{itemize}
-    \item deck : model.Deck
-    \item players: model.Player [ ]
-    \item unfoldedPlayers: model.Player [ ]
+    \item deck : main.model.player.Deck
+    \item players: main.model.player.Player [ ]
+    \item unfoldedPlayers: main.model.player.Player [ ]
     \item currentPlayerIndex: $\mathbb{I}$
     \item nextPlayerIndex: $\mathbb{I}$
     \item minimumCallAmount: $\mathbb{I}$
@@ -387,11 +387,11 @@ Implementing players and unfoldedPlayers as dynamic arrays seems ideal.
 
 \subsubsection* {Access Routine Semantics}
 
-\noindent new game.Game(p\verb|_|list, x):
+\noindent new main.model.game.Game(p\verb|_|list, x):
 \begin{itemize}
 \item transition:
     \begin{itemize}
-        \item deck := new model.Deck()
+        \item deck := new main.model.player.Deck()
         \item players := p\verb|_|list
         \item minimumCallAmount := x
         \item currentPlayerIndex := 0
@@ -423,7 +423,7 @@ Implementing players and unfoldedPlayers as dynamic arrays seems ideal.
 
 \noindent dealCards(c):
 \begin{itemize}
-    \item transition: insert c cards into each players hand using model.Player.insert()
+    \item transition: insert c cards into each players hand using main.model.player.Player.insert()
 \end{itemize}
 
 \noindent getNextPlayer():
@@ -447,11 +447,11 @@ Implementing players and unfoldedPlayers as dynamic arrays seems ideal.
 
 \section*{Hand Evaluator}
 
-util.HandEval
+main.util.HandEvaluator
 
 \subsection* {Uses}
 
-model.Card
+main.model.player.Card
 
 \subsection* {Syntax}
 
@@ -461,7 +461,7 @@ None
 
 \subsubsection* {Imported Types}
 
-model.Card
+main.model.player.Card
 
 \subsubsection* {Exported Access Programs}
 
@@ -469,7 +469,7 @@ model.Card
 \hline
 \textbf{Routine name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions}\\
 \hline
-evaluate & model.Card & &\\
+evaluate & main.model.player.Card & &\\
 \hline
 \end{tabular}
 
@@ -500,13 +500,13 @@ It might make sense to use auxiliary functions to evaluate hand states, as diffe
 
 % ============ VIEW ============== %
 
-\section* {view.GameView}
+\section* {main.view.GameView}
 
-view.GameView
+main.view.GameView
 
 \subsection* {Uses}
 
-model.Card
+main.model.player.Card
 
 \subsection* {Syntax}
 
@@ -516,7 +516,7 @@ None
 
 \subsubsection* {Imported Types}
 
-model.Card
+main.model.player.Card
 
 \subsubsection* {Exported Access Programs}
 
@@ -524,7 +524,7 @@ model.Card
 \hline
 \textbf{Routine name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions}\\
 \hline
-display & model.Card & &\\
+display & main.model.player.Card & &\\
 \hline  
 \end{tabular}
 
@@ -555,15 +555,15 @@ None
 
 % ============ MAIN CONTROLLER ============ % 
 
-\section* {controller.MainController Module}
+\section* {main.controller.MainController Module}
     \subsection* {Uses}
-        model.Client, game.Game, Gameview, view.MainMenuView, server.Server
+        main.model.player.Client, main.model.game.Game, Gameview, main.view.MainMenuView, main.server.Server
     \subsection* {Syntax}
     
         \subsubsection* {Imported Constants}
             None
         \subsubsection* {Imported Types}
-            model.Client, game.Game, server.Server
+            main.model.player.Client, main.model.game.Game, main.server.Server
         \subsubsection* {Exported Access Programs}
         
         \begin{tabular}{| l | l | l | p{5cm} |}
@@ -596,7 +596,7 @@ None
     \subsubsection* {State Variables}
         $\mathit{username}: String$\\
         $\mathit{socket}: Socket$\\
-        $\mathit{client} : model.Client$\\
+        $\mathit{client} : main.model.player.Client$\\
     
     \subsubsection* {State Invariant}
         None
@@ -622,18 +622,18 @@ None
         
         \noindent getValidSocketForServer(scanner):
         \begin{itemize}
-        \item return : A socket that has successfully established a connection with a server.
+        \item return : A socket that has successfully established a connection with a main.server.
         \end{itemize}
         
         \noindent hostServer():
         \begin{itemize}
-        \item transition : Creates a new server using the user's current IP address.
+        \item transition : Creates a new main.server using the user's current IP address.
         \item exception : IO Exception. Can be caused by thousands of issues (IP address, ports, connectivity issues).
         \end{itemize}
         
         \noindent joinServer(scanner):
         \begin{itemize}
-        \item transition : Joins an existing server given a server IP address.
+        \item transition : Joins an existing main.server given a main.server IP address.
         \item exception : IO Exception. Can be caused by thousands of issues (IP address, ports, connectivity issues).
         \end{itemize}
 
@@ -644,7 +644,7 @@ None
         
         \noindent performMainMenuOperation(scanner):
         \begin{itemize}
-        \item transition : Perform a main menu task, given a number that represents the task to perform. For example, user inputs the number 2 and according to the main menu, number 2 represents the task join a server, so user will join a server.
+        \item transition : Perform a main menu task, given a number that represents the task to perform. For example, user inputs the number 2 and according to the main menu, number 2 represents the task join a main.server, so user will join a main.server.
         \end{itemize}
         
         \noindent enterProgram:
@@ -654,15 +654,15 @@ None
         
 % ============ CLIENT CONTROLLER ============ % 
         
-\section* {controller.ClientController Module}
+\section* {main.controller.ClientController Module}
     \subsection* {Uses}
-        model.Client, game.Game, Gameview, enumeration.game.PlayerAction, model.GameInfo
+        main.model.player.Client, main.model.game.Game, Gameview, main.enumeration.main.model.game.PlayerAction, main.model.player.GameInfo
     \subsection* {Syntax}
     
         \subsubsection* {Imported Constants}
             None
         \subsubsection* {Imported Types}
-            model.Client, game.Game, enumeration.game.PlayerAction, model.GameInfo
+            main.model.player.Client, main.model.game.Game, main.enumeration.main.model.game.PlayerAction, main.model.player.GameInfo
         \subsubsection* {Exported Access Programs}
         
         \begin{tabular}{| l | l | l | p{4cm} |}
@@ -673,20 +673,20 @@ None
             \hline
             performGameAction & Scanner &  & IOException\\
             \hline 
-            getValidPlayerAction & Scanner & enumeration.game.PlayerAction &\\
+            getValidPlayerAction & Scanner & main.enumeration.main.model.game.PlayerAction &\\
             \hline 
             getValidBet & Scanner & $\mathbb{Z}$ &\\
             \hline 
-            CreateGameInfo & enumeration.game.PlayerAction, $\mathbb{Z}$ & model.GameInfo &\\
+            CreateGameInfo & main.enumeration.main.model.game.PlayerAction, $\mathbb{Z}$ & main.model.player.GameInfo &\\
             \hline 
         \end{tabular}
         
     \subsection* {Semantics}
     
     \subsubsection* {State Variables}
-        $\mathit{player}: model.Player$\\
-        $\mathit{client}: model.Client$\\
-        $\mathit{game} : game.Game$\\
+        $\mathit{player}: main.model.player.Player$\\
+        $\mathit{client}: main.model.player.Client$\\
+        $\mathit{main.model.game} : main.model.game.Game$\\
     
     \subsubsection* {State Invariant}
         None
@@ -701,19 +701,19 @@ None
     
         \noindent listenForIncomingMessages():
         \begin{itemize}
-        \item transition : On a separate thread, continuously listens for messages received by $\mathit{client}$ from the server.
+        \item transition : On a separate thread, continuously listens for messages received by $\mathit{client}$ from the main.server.
         \end{itemize}
         
         \noindent performGameAction(scanner):
         \begin{itemize}
-        \item transition : Uses getValidPlayerAction() and getValidBet() to ask the user to make their next move, then stores that information in a new model.GameInfo object and sends the object to the server from $client$.
+        \item transition : Uses getValidPlayerAction() and getValidBet() to ask the user to make their next move, then stores that information in a new main.model.player.GameInfo object and sends the object to the main.server from $client$.
         \item exception : Throw IO Exception if there are connectivity issues. Can be caused by thousands of issues (IP address, ports, connectivity issues).
         \end{itemize}
         
         \noindent getValidPlayerAction(scanner):
         \begin{itemize}
-        \item return : $playerAction : enumeration.game.PlayerAction$
-        \item description: Asks the user for a valid player action. If the user input matches a enumeration.game.PlayerAction enumerator then return the enumeration.game.PlayerAction enmerator. Otherwise ask again.
+        \item return : $playerAction : main.enumeration.main.model.game.PlayerAction$
+        \item description: Asks the user for a valid player action. If the user input matches a main.enumeration.main.model.game.PlayerAction enumerator then return the main.enumeration.main.model.game.PlayerAction enmerator. Otherwise ask again.
         \end{itemize}
         
         \noindent getValidBet(scanner):
@@ -724,14 +724,14 @@ None
         
         \noindent CreateGameInfo(playerAction, amount):
         \begin{itemize}
-        \item return : model.GameInfo($client.clientID$, $player.name$, playerAction, amount)
-        \item description : Creates a model.GameInfo object with the current player's information (clientID and name) and the move the player wants to make (playerAction and amount).
+        \item return : main.model.player.GameInfo($client.clientID$, $player.name$, playerAction, amount)
+        \item description : Creates a main.model.player.GameInfo object with the current player's information (clientID and name) and the move the player wants to make (playerAction and amount).
         \end{itemize}
         
                 
 % ============ CLIENT ============ % 
         
-\section* {model.Client ADT Module}
+\section* {main.model.player.Client ADT Module}
     \subsection* {Uses}
     \subsection* {Syntax}
     
@@ -745,7 +745,7 @@ None
             \hline
             \textbf{Routine name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions}\\
             \hline
-            new model.Client & Socket, String &  & IOException\\
+            new main.model.player.Client & Socket, String &  & IOException\\
             \hline
             getClientID &  & String & \\
             \hline 
@@ -781,7 +781,7 @@ None
     
     \subsubsection* {Access Routine Semantics}
     
-        \noindent new model.Client(socket, name):
+        \noindent new main.model.player.Client(socket, name):
         \begin{itemize}
         \item transition : $self.socket, playerName, inputStream, outputstream := \\ socket, name, new \hspace{3px} ObjectInputStream, new \hspace{3px} ObjectOutputStream$
         \item exception : Throw IO Exception if there are connectivity issues. Can be caused by thousands of issues (IP address, ports, connectivity issues).
@@ -824,28 +824,28 @@ None
                 
 % ============ CLIENT HANDLER ============ % 
         
-\section* {server.ClientHandler ADT Module}
+\section* {main.server.ClientHandler ADT Module}
     \subsection* {Template Module implements Runnable Interface}
-    model.Client Handler
+    main.model.player.Client Handler
     \subsection* {Uses}
-    Runnable, model.GameInfo, game.Game
+    Runnable, main.model.player.GameInfo, main.model.game.Game
     \subsection* {Syntax}
     
         \subsubsection* {Imported Constants}
             None
         \subsubsection* {Imported Types}
-            model.GameInfo
+            main.model.player.GameInfo
         \subsubsection* {Exported Access Programs}
         
         \begin{tabular}{| l | l | l | p{6cm} |}
             \hline
             \textbf{Routine name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions}\\
             \hline
-            new server.ClientHandler & Socket & server.ClientHandler & \\
+            new main.server.ClientHandler & Socket & main.server.ClientHandler & \\
             \hline
             run &  &  & \\
             \hline 
-            updateClients & model.GameInfo &  &\\
+            updateClients & main.model.player.GameInfo &  &\\
             \hline 
             closeEverything & & &\\
             \hline
@@ -855,8 +855,8 @@ None
     
     \subsubsection* {State Variables}
         $\mathit{clientUsername}: String$\\
-        $\mathit{clientHandlers}:$ static sequence of $server.ClientHandler$\\
-        $\mathit{game}:$ static $game.Game$\\
+        $\mathit{clientHandlers}:$ static sequence of $main.server.ClientHandler$\\
+        $\mathit{main.model.game}:$ static $main.model.game.Game$\\
         $\mathit{socket}: Socket$\\
         $\mathit{inputStream}: ObjectInputStream$\\
         $\mathit{outputStream} : ObjectOutputStream$\\
@@ -872,7 +872,7 @@ None
     
     \subsubsection* {Access Routine Semantics}
     
-        \noindent new server.ClientHandler(socket):
+        \noindent new main.server.ClientHandler(socket):
         \begin{itemize}
         \item return : $self$
         \item transition : $self.socket, inputStream, outputStream, clientHandlers := \\
@@ -882,8 +882,8 @@ None
         
         \noindent run():
         \begin{itemize}
-        \item transition : Get any commands coming from $outputStream$, input that command into $game$ then send new game information to all clients.
-        \item description : Each server.ClientHandler is responsible for taking in input from a single client connected to a server. Everytime a client sends a command (their game move) to the server, their designated server.ClientHandler will receive that command and input that command into the game on the server on behalf of the client's name (as if the client had inputted the command directly to the game). Then the server.ClientHandler will forward the resulting state of the game after the input, synchronizing the game for all clients.
+        \item transition : Get any commands coming from $outputStream$, input that command into $main.model.game$ then send new main.model.game information to all clients.
+        \item description : Each main.server.ClientHandler is responsible for taking in input from a single client connected to a main.server. Everytime a client sends a command (their main.model.game move) to the main.server, their designated main.server.ClientHandler will receive that command and input that command into the main.model.game on the main.server on behalf of the client's name (as if the client had inputted the command directly to the main.model.game). Then the main.server.ClientHandler will forward the resulting state of the main.model.game after the input, synchronizing the main.model.game for all clients.
         \end{itemize}
         
         \noindent updateClients(gameInfo):
@@ -901,9 +901,9 @@ None
                         
 % ============ SERVER ============ % 
         
-\section* {server.Server ADT Module}
+\section* {main.server.Server ADT Module}
     \subsection* {Uses}
-    server.ClientHandler
+    main.server.ClientHandler
     \subsection* {Syntax}
     
         \subsubsection* {Imported Constants}
@@ -916,7 +916,7 @@ None
             \hline
             \textbf{Routine name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions}\\
             \hline
-            new server.Server & ServerSocket &  & \\
+            new main.server.Server & ServerSocket &  & \\
             \hline
             startServer &  &  & \\
             \hline 
@@ -940,7 +940,7 @@ None
     
     \subsubsection* {Access Routine Semantics}
     
-        \noindent new server.Server(serverSocket):
+        \noindent new main.server.Server(serverSocket):
         \begin{itemize}
         \item return : $self$
         \item transition : $self.serverSocket := serverSocket$
@@ -948,8 +948,8 @@ None
         
         \noindent startServer():
         \begin{itemize}
-        \item transition : Listen for any attempts to connect to $serverSocket$ by a model.Client. If an attempt is made, try to get the client's socket and create a new server.ClientHandler (using the client's socket) on a new thread and start the thread.
-        \item description : The server.ClientHandler is responsible for taking in input from a single model.Client connected to a server. Everytime a model.Client connects to the server, a new server.ClientHandler will be created on a new Thread to listen for input from that specific model.Client.
+        \item transition : Listen for any attempts to connect to $serverSocket$ by a main.model.player.Client. If an attempt is made, try to get the client's socket and create a new main.server.ClientHandler (using the client's socket) on a new thread and start the thread.
+        \item description : The main.server.ClientHandler is responsible for taking in input from a single main.model.player.Client connected to a main.server. Everytime a main.model.player.Client connects to the main.server, a new main.server.ClientHandler will be created on a new Thread to listen for input from that specific main.model.player.Client.
         \end{itemize}
         
         \noindent closeServer():
@@ -960,13 +960,13 @@ None
         
                 
                         
-% ============ model.GameInfo ============ %
+% ============ main.model.player.GameInfo ============ %
         
-\section* {model.GameInfo ADT Module}
+\section* {main.model.player.GameInfo ADT Module}
     \subsection* {Template Module implements Serializable}
-    model.GameInfo
+    main.model.player.GameInfo
     \subsection* {Uses}
-    enumeration.game.PlayerAction
+    main.enumeration.main.model.game.PlayerAction
     \subsection* {Syntax}
     
         \subsubsection* {Imported Constants}
@@ -979,7 +979,7 @@ None
             \hline
             \textbf{Routine name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions}\\
             \hline
-            new model.GameInfo & String, String, enumeration.game.PlayerAction, $\mathbb{Z}$ & model.GameInfo & \\
+            new main.model.player.GameInfo & String, String, main.enumeration.main.model.game.PlayerAction, $\mathbb{Z}$ & main.model.player.GameInfo & \\
             \hline
             getClientID &  & String & \\
             \hline
@@ -996,7 +996,7 @@ None
     \subsubsection* {State Variables}
         $\mathit{clientID}: String$\\
         $\mathit{playerName}: String$\\
-        $\mathit{playerAction}: enumeration.game.PlayerAction$\\
+        $\mathit{playerAction}: main.enumeration.main.model.game.PlayerAction$\\
         $\mathit{amount}: \mathbb{Z}$\\
 
     \subsubsection* {State Invariant}
@@ -1010,11 +1010,11 @@ None
     
     \subsubsection* {Access Routine Semantics}
     
-        \noindent new model.GameInfo(serverSocket):
+        \noindent new main.model.player.GameInfo(serverSocket):
         \begin{itemize}
         \item return : $self$
         \item transition : $self.clientID, self.playerName, self.playerAction, self.amount := clientID, playerName, playerAction, amount$
-        \item description : model.GameInfo is essentially a data structure that model.Client and server.Server will use to communicate.
+        \item description : main.model.player.GameInfo is essentially a data structure that main.model.player.Client and main.server.Server will use to communicate.
         \end{itemize}
         
         \noindent getClientID():
@@ -1043,22 +1043,22 @@ None
         \end{itemize}        
                 
                       
-% ============ enumeration.game.PlayerAction ============ %
+% ============ main.enumeration.main.model.game.PlayerAction ============ %
         
-\section* {enumeration.game.PlayerAction Module}
+\section* {main.enumeration.main.model.game.PlayerAction Module}
     \subsection* {Uses}
-    enumeration.game.PlayerAction
+    main.enumeration.main.model.game.PlayerAction
     \subsection* {Syntax}
     
         \subsubsection* {Exported Constants}
             None
         \subsubsection* {Exported Types}
-            enumeration.game.PlayerAction = \{ \\
-            FOLD, \#model.Player wants to fold \\
-            CHECK, \#model.Player wants to check \\
-            CALL, \#model.Player wants to call \\
-            RAISE, \#model.Player wants to raise \\
-            BET \#model.Player wants to bet \\
+            main.enumeration.main.model.game.PlayerAction = \{ \\
+            FOLD, \#main.model.player.Player wants to fold \\
+            CHECK, \#main.model.player.Player wants to check \\
+            CALL, \#main.model.player.Player wants to call \\
+            RAISE, \#main.model.player.Player wants to raise \\
+            BET \#main.model.player.Player wants to bet \\
             \}
 
         \subsubsection* {Exported Access Programs}
@@ -1067,11 +1067,11 @@ None
             \hline
             \textbf{Routine name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions}\\
             \hline
-            isABet & enumeration.game.PlayerAction & $\mathbb{B}$ & \\
+            isABet & main.enumeration.main.model.game.PlayerAction & $\mathbb{B}$ & \\
             \hline
             actionIsValid & String & $\mathbb{B}$ & \\
             \hline
-            getActionByString & String & enumeration.game.PlayerAction &  IllegalArgumentException\\
+            getActionByString & String & main.enumeration.main.model.game.PlayerAction &  IllegalArgumentException\\
             \hline 
         \end{tabular}
         
@@ -1087,7 +1087,7 @@ None
         None
     
     \subsubsection* {Considerations}
-        enumeration.game.PlayerAction is an enum class that represent the possible actions a player can make
+        main.enumeration.main.model.game.PlayerAction is an enum class that represent the possible actions a player can make
     
     \subsubsection* {Access Routine Semantics}
     
@@ -1098,20 +1098,20 @@ None
         
         \noindent actionIsValid(action):
         \begin{itemize}
-        \item return : True if the String $action$ is a enumeration.game.PlayerAction. False if not.
+        \item return : True if the String $action$ is a main.enumeration.main.model.game.PlayerAction. False if not.
         \end{itemize}
         
         \noindent getActionByString(action):
         \begin{itemize}
-        \item return : Corresponding enumeration.game.PlayerAction that matches $action$
-        \item exception : Throw IllegalArgumentException if there is no  string value for enumeration.game.PlayerAction that matches $action$
+        \item return : Corresponding main.enumeration.main.model.game.PlayerAction that matches $action$
+        \item exception : Throw IllegalArgumentException if there is no  string value for main.enumeration.main.model.game.PlayerAction that matches $action$
         \end{itemize}
          
         
         
-% ============ view.MainMenuView ============ %
+% ============ main.view.MainMenuView ============ %
         
-\section* {view.MainMenuView Module}
+\section* {main.view.MainMenuView Module}
     \subsection* {Uses}
     \subsection* {Syntax}
     
@@ -1201,37 +1201,37 @@ None
         
         \noindent displayServerIPAddress(serverIP):
         \begin{itemize}
-        \item output : out := Display a message saying that the IP address of the server is $serverIP$.
+        \item output : out := Display a message saying that the IP address of the main.server is $serverIP$.
         \end{itemize}
         
         \noindent displayServerJoinMenu():
         \begin{itemize}
-        \item output : out := Display a join to server menu.
+        \item output : out := Display a join to main.server menu.
         \end{itemize}
         
         \noindent displayFailedToConnectToServer():
         \begin{itemize}
-        \item output : out := Display an error message saying the user failed to connect to the server.
+        \item output : out := Display an error message saying the user failed to connect to the main.server.
         \end{itemize}
         
         \noindent displaySuccessfullyStartedServer():
         \begin{itemize}
-        \item output : out := Display a success message saying the user successfully started the server.
+        \item output : out := Display a success message saying the user successfully started the main.server.
         \end{itemize}
         
         \noindent displaySuccessfulConnection():
         \begin{itemize}
-        \item output : out := Display a success message saying the user successfully connected to the server.
+        \item output : out := Display a success message saying the user successfully connected to the main.server.
         \end{itemize}
         
         \noindent displayWaitingForHost():
         \begin{itemize}
-        \item output : out := Display a message saying that the server is waiting for the host to start the game.
+        \item output : out := Display a message saying that the main.server is waiting for the host to start the main.model.game.
         \end{itemize}
         
         \noindent displayExitingProgram():
         \begin{itemize}
-        \item output : out := Display an exit game message.
+        \item output : out := Display an exit main.model.game message.
         \end{itemize}
         
 \bibliographystyle {plainnat}
