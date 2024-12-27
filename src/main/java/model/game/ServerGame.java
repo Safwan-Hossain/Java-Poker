@@ -3,18 +3,19 @@ package model.game;
 import enumeration.PokerRole;
 import enumeration.RoundState;
 import model.player.Card;
-import model.player.Client;
-import model.player.GameInfo;
+import model.client.Client;
+import model.update.GameInfo;
 import model.player.Player;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class ServerGame {
     private static Game mainGame;
 
-    private final ArrayList<Player> players;
+    private final List<Player> players;
 
     public void setHostReady(boolean hostReady) {
         this.isHostReady = hostReady;
@@ -92,15 +93,15 @@ public class ServerGame {
         mainGame.giveNextPlayerTurn();
     }
 
-    public ArrayList<Player> getPlayers() {
+    public List<Player> getPlayers() {
         return mainGame.getPlayers();
     }
 
-    public HashMap<PokerRole, Player> getPlayersWithRoles() {
+    public Map<PokerRole, Player> getPlayersWithRoles() {
         return mainGame.getPlayersWithRoles();
     }
 
-    public ArrayList<Card> getTableCards() {
+    public List<Card> getTableCards() {
         return mainGame.getTableCards();
     }
 
@@ -112,10 +113,10 @@ public class ServerGame {
         mainGame.removeLosers();
     }
 
-    public ArrayList<Player> getWinningPlayers() {
+    public List<Player> getWinningPlayers() {
         return mainGame.getWinningPlayers();
     }
-    public ArrayList<Player> getPlayersWithNoChips() {
+    public List<Player> getPlayersWithNoChips() {
         return mainGame.getPlayersWithNoChips();
     }
     // ======== Getters and Setters ========= //
@@ -198,7 +199,7 @@ public class ServerGame {
     }
 
     public boolean everyoneIsAllIn() {
-        return mainGame.everyoneIsAllIn();
+        return mainGame.isEveryoneAllIn();
     }
 
     public void setBuyIn(int buyIn) {

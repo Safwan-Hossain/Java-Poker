@@ -13,7 +13,7 @@ public class MainController {
     //TODO - might want to change back to 3. Last 2 options are debugs.
     private static final int MAX_NUM_OPTIONS = 3;
     private static String username;
-    private static ClientController clientController;
+    private static ClientControllerOld clientController;
     private static Socket socket;
     private static Server server;
 
@@ -96,14 +96,14 @@ public class MainController {
         socket = getValidSocketForServer(scanner);
         username = getValidUsername(scanner);
         final boolean isHost = server != null;
-        clientController = new ClientController(socket, username, isHost);
+        clientController = new ClientControllerOld(socket, username, isHost);
         clientController.startController(scanner);
     }
 
     private static void joinServer(Scanner scanner, InetAddress serverIP) throws IOException {
         socket = new Socket(serverIP, 101);
         username = getValidUsername(scanner);
-        clientController = new ClientController(socket, username, true);
+        clientController = new ClientControllerOld(socket, username, true);
         clientController.startController(scanner);
     }
 
@@ -143,14 +143,14 @@ public class MainController {
         hostServer();
         socket = new Socket(InetAddress.getLocalHost(), 101);
         username = "Host";
-        clientController = new ClientController(socket, username, true);
+        clientController = new ClientControllerOld(socket, username, true);
         clientController.startController(scanner);
     }
 
     private static void quickJoinLocalServer(Scanner scanner) throws IOException {
         socket = new Socket(InetAddress.getLocalHost(), 101);
         username = "main.model.player.Player " + (int) (Math.random() * 100 + 1);
-        clientController = new ClientController(socket, username, false);
+        clientController = new ClientControllerOld(socket, username, false);
         clientController.startController(scanner);
     }
 }

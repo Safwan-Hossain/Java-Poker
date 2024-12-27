@@ -37,6 +37,28 @@
             <version>3.11.2</version>
             <scope>test</scope>
         </dependency>
+
+        <!-- SLF4J logger -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.30</version>
+        </dependency>
+
+        <!-- Logback Classic Implementation -->
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.5.6</version>
+        </dependency>
+
+        <!-- Fail Safe -->
+        <dependency>
+            <groupId>net.jodah</groupId>
+            <artifactId>failsafe</artifactId>
+            <version>2.4.4</version>
+        </dependency>
+
     </dependencies>
 
     <build>

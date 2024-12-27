@@ -168,8 +168,8 @@ actually be implemented.
 \midrule
 
 \multirow{12}{0.3\textwidth}{Model Module} 
-& main.model.player.Client\\
-& main.model.player.GameInfo\\
+& main.model.client.Client\\
+& main.model.update.GameInfo\\
 & main.server.Server\\
 & main.model.game.Game\\
 & main.model.player.Card\\
@@ -186,7 +186,7 @@ actually be implemented.
 
 \multirow{3}{0.3\textwidth}{Controller Module} 
 & main.controller.MainController\\
-& main.controller.ClientController\\
+& main.controller.ClientControllerOld\\
 & main.server.ClientHandler\\
 \bottomrule
 
@@ -239,18 +239,18 @@ selected.
     \item[Implemented By:] --
     \end{description}
 
-\subsubsection{ main.model.player.Client Module (\mref{mModel})}
+\subsubsection{ main.model.client.Client Module (\mref{mModel})}
     \begin{description}
     \item[Secrets:] The information and components for a user to interact with the main.server.
     \item[main.util.Services:] Stores information about the user that is needed by the main.server to identify and manipulate each unique client.
-    \item[Implemented By:] main.controller.ClientController
+    \item[Implemented By:] main.controller.ClientControllerOld
     \end{description}
 
-\subsubsection{ main.model.player.GameInfo Module (\mref{mModel})}
+\subsubsection{ main.model.update.GameInfo Module (\mref{mModel})}
     \begin{description}
     \item[Secrets:] Decides how to store main.model.game data.
     \item[main.util.Services:] Stores important main.model.game data that will be communicated between a main.server and client.
-    \item[Implemented By:] main.model.player.Client, main.controller.ClientController, main.server.ClientHandler
+    \item[Implemented By:] main.model.client.Client, main.controller.ClientControllerOld, main.server.ClientHandler
     \end{description}
 
 \subsubsection{ main.server.Server Module (\mref{mModel})}
@@ -264,7 +264,7 @@ selected.
     \begin{description}
     \item[Secrets:] Decides to store important elements of the main.model.game.
     \item[main.util.Services:] Provides a system to store and manage elements of the main.model.game that will keep track of the main.model.game's progress.
-    \item[Implemented By:] main.controller.ClientController
+    \item[Implemented By:] main.controller.ClientControllerOld
     \end{description}
 
 \subsubsection{ main.model.player.Card Module (\mref{mModel})}
@@ -299,7 +299,7 @@ selected.
     \begin{description}
     \item[Secrets:] Stores information about valid main.model.game moves.
     \item[main.util.Services:] Provides a way to validate user inputs by confirming if their input is a valid main.model.game move.
-    \item[Implemented By:] main.model.game.Game, main.model.player.GameInfo, main.server.ClientHandler, main.model.player.Client
+    \item[Implemented By:] main.model.game.Game, main.model.update.GameInfo, main.server.ClientHandler, main.model.client.Client
     \end{description}
 % ========== VIEW ========== %
 
@@ -321,7 +321,7 @@ selected.
     \begin{description}
     \item[Secrets:] Decides how the main.model.game will be visually represented to the user.
     \item[main.util.Services:] Provides a way to display all the elements of the main.model.game to the user in a meaningful way. Also contains error and success messages.
-    \item[Implemented By:] main.controller.ClientController
+    \item[Implemented By:] main.controller.ClientControllerOld
     \end{description}
 
 % ========== CONTROLLER ========== %
@@ -341,7 +341,7 @@ selected.
     \item[Implemented By:] Hardware-Hiding Module
     \end{description}
 
-\subsubsection{ main.controller.ClientController Module (\mref{mController})}
+\subsubsection{ main.controller.ClientControllerOld Module (\mref{mController})}
     \begin{description}
     \item[Secrets:] Decides how the user can manipulate main.model.game data according to a central main.server consisting of multiple players.
     \item[main.util.Services:] Acts as the "brain" of the program by providing a synchronous way to play the main.model.game with other online players.

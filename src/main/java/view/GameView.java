@@ -5,17 +5,16 @@ import enumeration.PlayerAction;
 import enumeration.PokerRole;
 import enumeration.RoundState;
 import model.player.Card;
-import model.player.Client;
+import model.client.Client;
 import model.player.Player;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class GameView {
     public static void displayClientInformation(Client client){
-        System.out.println("main.model.player.Client Name: " + client.getClientName() + " | ID: " + client.getClientID());
+        System.out.println("main.model.client.Client Name: " + client.getClientName() + " | ID: " + client.getClientID());
     }
     public static void askHostToStart(String startGameCommand){
         System.out.println("Type in \"" + startGameCommand +"\" to start the main.model.game.");
@@ -50,7 +49,7 @@ public class GameView {
         System.out.println("All other players folded. \n" + lastPlayer.getName().toUpperCase() + " wins the round");
     }
 
-    public static void displayCurrentRoundWinners(ArrayList<Player> players, String winningHandRankName) {
+    public static void displayCurrentRoundWinners(List<Player> players, String winningHandRankName) {
         String message = "";
         for (int i = 0; i < players.size() - 1; i++) {
             String playerName = players.get(i).getName().toUpperCase();
@@ -113,7 +112,7 @@ public class GameView {
         String message =  horizontalDivider + "\n" + tableInfo + "\n" + playerInfo + "\n" + horizontalDivider;
         System.out.println(message);
     }
-    public static void displayRoles(HashMap<PokerRole, Player> roles) {
+    public static void displayRoles(Map<PokerRole, Player> roles) {
         String dealerName = roles.get(PokerRole.DEALER).getName().toUpperCase();
         String smallBlindName = roles.get(PokerRole.SMALL_BLIND).getName().toUpperCase();
         String bigBlindName = roles.get(PokerRole.BIG_BLIND).getName().toUpperCase();
@@ -162,7 +161,7 @@ public class GameView {
     public static void displayReceivedTurnMessage() {
         System.out.println("It is your turn!");
     }
-    public static void askForAnAction(HashSet<PlayerAction> validActions) {
+    public static void askForAnAction(Set<PlayerAction> validActions) {
         int i = 0;
         String availableActions = "(";
         for (PlayerAction playerAction: validActions) {

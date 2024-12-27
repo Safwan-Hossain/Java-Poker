@@ -57,6 +57,11 @@ public class Player implements Serializable {
 	public void addToHand(Card card) {
 		hand.add(card);
 	}
+	public void addToHand(List<Card> cards) {
+		for (Card card : cards) {
+			addToHand(card);
+		}
+	}
 
 	public String getName() {
 		return name;

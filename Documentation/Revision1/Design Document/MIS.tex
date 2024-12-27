@@ -557,13 +557,13 @@ None
 
 \section* {main.controller.MainController Module}
     \subsection* {Uses}
-        main.model.player.Client, main.model.game.Game, Gameview, main.view.MainMenuView, main.server.Server
+        main.model.client.Client, main.model.game.Game, Gameview, main.view.MainMenuView, main.server.Server
     \subsection* {Syntax}
     
         \subsubsection* {Imported Constants}
             None
         \subsubsection* {Imported Types}
-            main.model.player.Client, main.model.game.Game, main.server.Server
+            main.model.client.Client, main.model.game.Game, main.server.Server
         \subsubsection* {Exported Access Programs}
         
         \begin{tabular}{| l | l | l | p{5cm} |}
@@ -596,7 +596,7 @@ None
     \subsubsection* {State Variables}
         $\mathit{username}: String$\\
         $\mathit{socket}: Socket$\\
-        $\mathit{client} : main.model.player.Client$\\
+        $\mathit{client} : main.model.client.Client$\\
     
     \subsubsection* {State Invariant}
         None
@@ -654,15 +654,15 @@ None
         
 % ============ CLIENT CONTROLLER ============ % 
         
-\section* {main.controller.ClientController Module}
+\section* {main.controller.ClientControllerOld Module}
     \subsection* {Uses}
-        main.model.player.Client, main.model.game.Game, Gameview, main.enumeration.main.model.game.PlayerAction, main.model.player.GameInfo
+        main.model.client.Client, main.model.game.Game, Gameview, main.enumeration.main.model.game.PlayerAction, main.model.update.GameInfo
     \subsection* {Syntax}
     
         \subsubsection* {Imported Constants}
             None
         \subsubsection* {Imported Types}
-            main.model.player.Client, main.model.game.Game, main.enumeration.main.model.game.PlayerAction, main.model.player.GameInfo
+            main.model.client.Client, main.model.game.Game, main.enumeration.main.model.game.PlayerAction, main.model.update.GameInfo
         \subsubsection* {Exported Access Programs}
         
         \begin{tabular}{| l | l | l | p{4cm} |}
@@ -677,7 +677,7 @@ None
             \hline 
             getValidBet & Scanner & $\mathbb{Z}$ &\\
             \hline 
-            CreateGameInfo & main.enumeration.main.model.game.PlayerAction, $\mathbb{Z}$ & main.model.player.GameInfo &\\
+            CreateGameInfo & main.enumeration.main.model.game.PlayerAction, $\mathbb{Z}$ & main.model.update.GameInfo &\\
             \hline 
         \end{tabular}
         
@@ -685,7 +685,7 @@ None
     
     \subsubsection* {State Variables}
         $\mathit{player}: main.model.player.Player$\\
-        $\mathit{client}: main.model.player.Client$\\
+        $\mathit{client}: main.model.client.Client$\\
         $\mathit{main.model.game} : main.model.game.Game$\\
     
     \subsubsection* {State Invariant}
@@ -706,7 +706,7 @@ None
         
         \noindent performGameAction(scanner):
         \begin{itemize}
-        \item transition : Uses getValidPlayerAction() and getValidBet() to ask the user to make their next move, then stores that information in a new main.model.player.GameInfo object and sends the object to the main.server from $client$.
+        \item transition : Uses getValidPlayerAction() and getValidBet() to ask the user to make their next move, then stores that information in a new main.model.update.GameInfo object and sends the object to the main.server from $client$.
         \item exception : Throw IO Exception if there are connectivity issues. Can be caused by thousands of issues (IP address, ports, connectivity issues).
         \end{itemize}
         
@@ -724,14 +724,14 @@ None
         
         \noindent CreateGameInfo(playerAction, amount):
         \begin{itemize}
-        \item return : main.model.player.GameInfo($client.clientID$, $player.name$, playerAction, amount)
-        \item description : Creates a main.model.player.GameInfo object with the current player's information (clientID and name) and the move the player wants to make (playerAction and amount).
+        \item return : main.model.update.GameInfo($client.clientID$, $player.name$, playerAction, amount)
+        \item description : Creates a main.model.update.GameInfo object with the current player's information (clientID and name) and the move the player wants to make (playerAction and amount).
         \end{itemize}
         
                 
 % ============ CLIENT ============ % 
         
-\section* {main.model.player.Client ADT Module}
+\section* {main.model.client.Client ADT Module}
     \subsection* {Uses}
     \subsection* {Syntax}
     
@@ -745,7 +745,7 @@ None
             \hline
             \textbf{Routine name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions}\\
             \hline
-            new main.model.player.Client & Socket, String &  & IOException\\
+            new main.model.client.Client & Socket, String &  & IOException\\
             \hline
             getClientID &  & String & \\
             \hline 
@@ -781,7 +781,7 @@ None
     
     \subsubsection* {Access Routine Semantics}
     
-        \noindent new main.model.player.Client(socket, name):
+        \noindent new main.model.client.Client(socket, name):
         \begin{itemize}
         \item transition : $self.socket, playerName, inputStream, outputstream := \\ socket, name, new \hspace{3px} ObjectInputStream, new \hspace{3px} ObjectOutputStream$
         \item exception : Throw IO Exception if there are connectivity issues. Can be caused by thousands of issues (IP address, ports, connectivity issues).
@@ -826,15 +826,15 @@ None
         
 \section* {main.server.ClientHandler ADT Module}
     \subsection* {Template Module implements Runnable Interface}
-    main.model.player.Client Handler
+    main.model.client.Client Handler
     \subsection* {Uses}
-    Runnable, main.model.player.GameInfo, main.model.game.Game
+    Runnable, main.model.update.GameInfo, main.model.game.Game
     \subsection* {Syntax}
     
         \subsubsection* {Imported Constants}
             None
         \subsubsection* {Imported Types}
-            main.model.player.GameInfo
+            main.model.update.GameInfo
         \subsubsection* {Exported Access Programs}
         
         \begin{tabular}{| l | l | l | p{6cm} |}
@@ -845,7 +845,7 @@ None
             \hline
             run &  &  & \\
             \hline 
-            updateClients & main.model.player.GameInfo &  &\\
+            updateClients & main.model.update.GameInfo &  &\\
             \hline 
             closeEverything & & &\\
             \hline
@@ -948,8 +948,8 @@ None
         
         \noindent startServer():
         \begin{itemize}
-        \item transition : Listen for any attempts to connect to $serverSocket$ by a main.model.player.Client. If an attempt is made, try to get the client's socket and create a new main.server.ClientHandler (using the client's socket) on a new thread and start the thread.
-        \item description : The main.server.ClientHandler is responsible for taking in input from a single main.model.player.Client connected to a main.server. Everytime a main.model.player.Client connects to the main.server, a new main.server.ClientHandler will be created on a new Thread to listen for input from that specific main.model.player.Client.
+        \item transition : Listen for any attempts to connect to $serverSocket$ by a main.model.client.Client. If an attempt is made, try to get the client's socket and create a new main.server.ClientHandler (using the client's socket) on a new thread and start the thread.
+        \item description : The main.server.ClientHandler is responsible for taking in input from a single main.model.client.Client connected to a main.server. Everytime a main.model.client.Client connects to the main.server, a new main.server.ClientHandler will be created on a new Thread to listen for input from that specific main.model.client.Client.
         \end{itemize}
         
         \noindent closeServer():
@@ -960,11 +960,11 @@ None
         
                 
                         
-% ============ main.model.player.GameInfo ============ %
+% ============ main.model.update.GameInfo ============ %
         
-\section* {main.model.player.GameInfo ADT Module}
+\section* {main.model.update.GameInfo ADT Module}
     \subsection* {Template Module implements Serializable}
-    main.model.player.GameInfo
+    main.model.update.GameInfo
     \subsection* {Uses}
     main.enumeration.main.model.game.PlayerAction
     \subsection* {Syntax}
@@ -979,7 +979,7 @@ None
             \hline
             \textbf{Routine name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions}\\
             \hline
-            new main.model.player.GameInfo & String, String, main.enumeration.main.model.game.PlayerAction, $\mathbb{Z}$ & main.model.player.GameInfo & \\
+            new main.model.update.GameInfo & String, String, main.enumeration.main.model.game.PlayerAction, $\mathbb{Z}$ & main.model.update.GameInfo & \\
             \hline
             getClientID &  & String & \\
             \hline
@@ -1010,11 +1010,11 @@ None
     
     \subsubsection* {Access Routine Semantics}
     
-        \noindent new main.model.player.GameInfo(serverSocket):
+        \noindent new main.model.update.GameInfo(serverSocket):
         \begin{itemize}
         \item return : $self$
         \item transition : $self.clientID, self.playerName, self.playerAction, self.amount := clientID, playerName, playerAction, amount$
-        \item description : main.model.player.GameInfo is essentially a data structure that main.model.player.Client and main.server.Server will use to communicate.
+        \item description : main.model.update.GameInfo is essentially a data structure that main.model.client.Client and main.server.Server will use to communicate.
         \end{itemize}
         
         \noindent getClientID():

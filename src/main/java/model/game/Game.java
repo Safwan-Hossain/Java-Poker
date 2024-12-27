@@ -3,8 +3,10 @@ package model.game;
 import enumeration.PlayerAction;
 import enumeration.PokerRole;
 import enumeration.RoundState;
+import model.game.components.BettingManager;
+import model.game.components.DeckManager;
+import model.game.components.PlayerManager;
 import model.player.Card;
-import model.player.Deck;
 import model.player.HandEvaluation;
 import model.player.Player;
 import util.HandEvaluator;
@@ -18,304 +20,130 @@ public class Game implements Serializable {
     private final int MAX_HAND_SIZE;
     private final int MAX_TABLE_CARDS;
 
-    private int playerWithTurnIndex;
-    private int dealerIndex;
-    private int smallBlindIndex;
-    private int bigBlindIndex;
-
-    // counts how many players had a turn for the current round phase
-    private int turnCounter;
-    private int numOfFoldedPlayers;
-
-    private int smallBlind;
-    private int bigBlind;
-
-    private int minimumCallAmount;
-    private int minimumBetAmount;
-    private int totalPot;
-
-    private Deck deck;
-    private ArrayList<Player> players;
-    private ArrayList<Player> unfoldedPlayers; // players who haven't folded
-
-    private ArrayList<Card> tableCards;
-    private HashMap<Player, Integer> playerBettings;
-    private Player lastBetter;
+    private final DeckManager deckManager;
+    private final BettingManager bettingManager;
+    private final PlayerManager playerManager;
 
     private boolean hasGameStarted;
     private boolean hasGameEnded;
     private RoundState roundState;
 
-    public Game(ArrayList<Player> players, int smallBlind) {
+    public Game(List<Player> players, int smallBlind) {
         this.MAX_HAND_SIZE = 2;
         this.MAX_TABLE_CARDS = 5;
 
-        //Sets up cards and players
-        this.deck = new Deck();
-        this.tableCards = new ArrayList<>();
-        this.players = new ArrayList<>(players);
-        this.playerBettings = new HashMap<>();
-        for (Player player: players) {
-            playerBettings.put(player, 0);
-        }
-
-        //Sets up chip values
-        this.smallBlind = smallBlind;
-        this.bigBlind = smallBlind * 2;
-        this.totalPot = 0;
-
-        this.dealerIndex = 0;
+        this.deckManager = new DeckManager(this.MAX_TABLE_CARDS);
+        this.bettingManager = new BettingManager(smallBlind);
+        this.playerManager = new PlayerManager(players);
 
         this.hasGameStarted = false;
         this.hasGameEnded = false;
-
     }
 
     public boolean isGameOver() {
-        return players.size() <= 1;
+        return playerManager.getNumberOfTotalPlayers() <= 1;
     }
 
     public void startGame() {
-        deck.shuffleDrawPile();
+        deckManager.shuffleDeck();
         this.hasGameStarted = true;
     }
 
+
     public void initializeRound() {
-        this.turnCounter = 0;
-        this.totalPot = 0;
-        this.minimumCallAmount = bigBlind;
-        this.minimumBetAmount = bigBlind * 2;
-        this.roundState = RoundState.PRE_FLOP;
+        playerManager.resetTurnCounter();
+        roundState = RoundState.PRE_FLOP;
+        bettingManager.resetBettings();
 
         assignRoles();
-        assignCards();
+        assignPlayerHands();
         assignFirstTurn();
         takeChipsFromBlinds();
     }
 
     public void takeChipsFromBlinds() {
-        Player smallBlindPlayer = players.get(smallBlindIndex);
-        Player bigBlindPlayer = players.get(bigBlindIndex);
+        Player smallBlindPlayer = playerManager.getPlayerByRole(PokerRole.SMALL_BLIND);
+        Player bigBlindPlayer = playerManager.getPlayerByRole(PokerRole.BIG_BLIND);
 
-        performBetByPlayer(smallBlindPlayer, smallBlind);
-        performBetByPlayer(bigBlindPlayer, bigBlind);
+        bettingManager.takeChipsFromBlinds(smallBlindPlayer, bigBlindPlayer);
     }
 
     public void assignRoles() {
-        if (dealerIndex >= players.size()) {
-            dealerIndex = dealerIndex % players.size();
-        }
-
-        players.get(dealerIndex).setRole(PokerRole.NONE);
-
-        dealerIndex = (dealerIndex + 1) % players.size();
-        smallBlindIndex = (dealerIndex + 1) % players.size();
-        bigBlindIndex = (smallBlindIndex + 1) % players.size();
-
-        players.get(dealerIndex).setRole(PokerRole.DEALER);
-        players.get(smallBlindIndex).setRole(PokerRole.SMALL_BLIND);
-        players.get(bigBlindIndex).setRole(PokerRole.BIG_BLIND);
+        playerManager.assignRoles();
     }
 
-    public void assignCards() {
-        for (Player player : players) {
-            Card[] playerHand = deck.drawCard(2);
-            for (Card card: playerHand) {
-                player.addToHand(card);
-            }
-            if (player.getHand().size() > MAX_HAND_SIZE) {
-                throw new RuntimeException("main.model.player.Player has more than " + MAX_HAND_SIZE + " cards.");
-            }
-        }
+    public void assignPlayerHands() {
+        deckManager.assignCardsToPlayers(playerManager.getPlayers());
     }
 
     public void assignFirstTurn() {
-        playerWithTurnIndex = (bigBlindIndex + 1) % players.size();
-        players.get(playerWithTurnIndex).setTurn(true);
+        playerManager.assignFirstTurn();
     }
 
-    // accounts for bets and raises
     public void performBetByPlayer(Player player, int raiseToAmount) {
-        // Existing pool of chips player already put down (includes calls, raises, bets)
-        int existingBet = playerBettings.get(player);
-        int betAmount = raiseToAmount - existingBet;
-
-        if (betAmount > player.getChips()) {
-            betAmount = player.getChips();
-            raiseToAmount = betAmount + existingBet;
-        }
-
-        if (raiseToAmount > minimumCallAmount) {
-            minimumCallAmount = raiseToAmount;
-            minimumBetAmount = raiseToAmount * 2;
-        }
-
-        player.takeChips(betAmount);
-        totalPot += betAmount;
-        playerBettings.put(player, raiseToAmount);
-        lastBetter = player;
+        bettingManager.placeBet(player, raiseToAmount);
     }
 
-    // accounts for checks and calls
     public void performCallByPlayer(Player player) {
-        int actualCallAmount = minimumCallAmount - playerBettings.get(player);
-        if (actualCallAmount > player.getChips()) {
-            actualCallAmount = player.getChips();
-        }
-        player.takeChips(actualCallAmount);
-        totalPot += actualCallAmount;
-        int totalCallAmount = playerBettings.get(player) + actualCallAmount;
-        playerBettings.put(player, totalCallAmount);
+        bettingManager.placeCall(player);
     }
 
     public void removeLosers() {
-        for (Player player: getPlayersWithNoChips()) {
-            players.remove(player);
-        }
+        playerManager.removeLosers();
     }
 
     public void endRound() {
         endRoundState();
 
-        for (Player player: players) {
-            player.setFolded(false);
-        }
 
-        playerBettings.replaceAll((player, bet) -> 0); // replaces all player bet amounts with 0
-        tableCards.clear(); // empties table cards
-        deck.reset();
-        totalPot = 0;
-        numOfFoldedPlayers = 0;
-        for (Player player: players) {
-            player.resetHand();
-        }
+        playerManager.unfoldAllFoldedPlayers();
+        bettingManager.resetBettings();
+        deckManager.resetDeck();
+
+        playerManager.resetPlayerHands();
     }
 
-    // Determines if everyone put in the same amount of money
-    // Exception for players who went all-in below the call amount (due to insufficient funds).
-    public boolean isEveryBetTheSame() {
-        ArrayList<Player> players = new ArrayList<>(playerBettings.keySet());
-        players.removeIf(Player::isFolded);
-
-        if (players.size() <= 1) {
-            return true;
-        }
-
-        Player prevPlayer = players.get(0);
-
-        for (Player currPlayer: players) {
-            if (prevPlayer == currPlayer) {
-                continue;
-            }
-
-            int prevPlayerBet = playerBettings.get(prevPlayer);
-            int currPlayerBet = playerBettings.get(currPlayer);
-
-
-            // If the player who put in less chips is bankrupt, then they are all in and therefore the method should
-            // not return false. Since they cannot afford to match.
-            if (prevPlayerBet != currPlayerBet) {
-                if (prevPlayerBet < currPlayerBet) {
-                    if (!prevPlayer.isBankrupt()) {
-                        return false;
-                    }
-                }
-                else if (!currPlayer.isBankrupt()) {
-                    return false;
-                }
-            }
-            prevPlayer = currPlayer;
-        }
-        return true;
-    }
-
-    // Determines if everyone has had a turn during the current round phase
-    public boolean hasEveryoneHadATurn() {
-        return turnCounter >= players.size() - numOfFoldedPlayers;
+    public boolean isBettingEqualAmongActivePlayers() {
+        return bettingManager.isBettingEqualAmongActivePlayers();
     }
 
     public boolean isRoundStateOver() {
-        if (players.size() <= 1) {
-            return true;
+        if (playerManager.getNumberOfUnfoldedPlayers() <= 1) {
+            return true; // End the round if only one player is left
         }
-        return isEveryBetTheSame() && hasEveryoneHadATurn();
+        return isBettingEqualAmongActivePlayers() && playerManager.hasEveryoneHadATurn();
     }
 
-    public boolean everyoneIsAllIn() {
-        int numOfAllIn = 0;
-        for (Player player : players) {
-            if (player.isBankrupt()) {
-                numOfAllIn++;
-            }
-        }
-        return numOfAllIn >= players.size() - 1;
-    }
-
-    private void addToTableCards(int numOfCards) {
-        for (Card card: deck.drawCard(numOfCards)) {
-            tableCards.add(card);
-        }
+    public boolean isEveryoneAllIn() {
+        return playerManager.isEveryoneAllIn();
     }
 
     public void updateTableCards() {
-        if (roundState == null) { throw new NullPointerException(); }
-        switch (roundState) {
-            case PRE_FLOP, SHOWDOWN -> {}
-            case FLOP -> addToTableCards(3);
-            case TURN, RIVER -> addToTableCards(1);
-        }
+        deckManager.updateTableCards(roundState);
     }
 
     private int getNumberOfFoldedPlayers() {
-        int numOfFoldedPlayers = 0;
-        for (Player player: players) {
-            if (player.isFolded()) {
-                numOfFoldedPlayers++;
-            }
-        }
-        return numOfFoldedPlayers;
+        return playerManager.getNumberOfFoldedPlayers();
     }
 
     public Player getPlayerWithTurn() {
-        return players.get(playerWithTurnIndex);
+        return playerManager.getPlayerWithTurn();
     }
 
     public void giveNextPlayerTurn() {
-        if (getNumberOfFoldedPlayers() >= players.size() - 1) {
-            throw new RuntimeException("All players folded");
-        }
-        getPlayerWithTurn().setTurn(false);
-        playerWithTurnIndex = (playerWithTurnIndex + 1) % players.size();
-        while (getPlayerWithTurn().isFolded()) {
-            playerWithTurnIndex = (playerWithTurnIndex + 1) % players.size();
-        }
-        getPlayerWithTurn().setTurn(true);
+        playerManager.giveNextPlayerTurn();
     }
 
     public void removePlayer(Player player) {
-        players.remove(player);
+        playerManager.removePlayer(player);
     }
 
-    public HashMap<PokerRole, Player> getPlayersWithRoles() {
-        HashMap<PokerRole, Player> hashMap = new HashMap<>();
-        hashMap.put(PokerRole.DEALER, players.get(dealerIndex));
-        hashMap.put(PokerRole.SMALL_BLIND, players.get(smallBlindIndex));
-        hashMap.put(PokerRole.BIG_BLIND, players.get(bigBlindIndex));
-        return hashMap;
+    public Map<PokerRole, Player> getPlayersWithRoles() {
+        return playerManager.getPlayersWithRoles();
     }
 
-    public void setPlayerRoles(HashMap<PokerRole, Player> hashMap) {
-        Player dealer = hashMap.get(PokerRole.DEALER);
-        Player smallBlind = hashMap.get(PokerRole.SMALL_BLIND);
-        Player bigBlind = hashMap.get(PokerRole.BIG_BLIND);
-
-        getPlayer(dealer).setRole(PokerRole.DEALER);
-        getPlayer(smallBlind).setRole(PokerRole.SMALL_BLIND);
-        getPlayer(bigBlind).setRole(PokerRole.BIG_BLIND);
-
-        dealerIndex = players.indexOf(getPlayer(dealer));
-        smallBlindIndex = players.indexOf(getPlayer(smallBlind));
-        bigBlindIndex = players.indexOf(getPlayer(bigBlind));
+    public void setPlayerRoles(Map<PokerRole, Player> roleMap) {
+        this.playerManager.setPlayerRoles(roleMap);
     }
 
     public List<Card> getPlayerHand(Player player) {
@@ -327,42 +155,19 @@ public class Game implements Serializable {
     }
 
     public void setPlayerWithTurn(Player playerWithTurn) {
-        for (Player player: players) {
-            boolean hasTurn = player.equals(playerWithTurn);
-            player.setTurn(hasTurn);
-        }
+        this.playerManager.setPlayerWithTurn(playerWithTurn);
     }
 
-    public ArrayList<Player> getPlayers() {
-        return players;
+    public List<Player> getPlayers() {
+        return playerManager.getPlayers();
     }
 
-    public synchronized void setPlayers(ArrayList<Player> newPlayers) {
-        Iterator<Player> iterator = players.iterator();
-        while (iterator.hasNext()) {
-            Player player = iterator.next();
-            if (!newPlayers.contains(player)) {
-                iterator.remove();
-            }
-        }
-        for (Player player: newPlayers) {
-            if (this.players.contains(player)) {
-                getPlayer(player).setChips(player.getChips());
-            }
-            else {
-                this.players.add(player);
-            }
-        }
-
+    public synchronized void setPlayers(List<Player> newPlayers) {
+        playerManager.setPlayers(newPlayers);
     }
 
     public synchronized Player getPlayer(Player player) {
-        for (Player currPlayer: players) {
-            if (currPlayer.equals(player)) {
-                return currPlayer;
-            }
-        }
-        throw new RuntimeException("Cannot find player");
+        return this.playerManager.getPlayer(player);
     }
 
     public void applyPlayerAction(Player actingPlayer, PlayerAction playerAction, int betAmount) {
@@ -373,65 +178,41 @@ public class Game implements Serializable {
             case CALL -> performCallByPlayer(player);
             case CHECK, WAIT -> {}
         }
-        turnCounter++;
+        playerManager.incrementTurnCounter();
     }
 
+    //TODO - separate end round state from this method
     public void advanceRoundState() {
         endRoundState();
-        numOfFoldedPlayers = 0;
-        for (Player player: players) {
-            if (player.isFolded()) {
-                numOfFoldedPlayers++;
-            }
-        }
         this.roundState = RoundState.getNextRoundState(roundState);
+        playerManager.unfoldAllFoldedPlayers();
         updateTableCards();
     }
 
     public void endRoundState() {
-        for (Player player: playerBettings.keySet()) {
-            playerBettings.put(player, 0);
-        }
-        lastBetter = null;
-        turnCounter = 0;
-        minimumCallAmount = 0;
-        minimumBetAmount = smallBlind;
+        bettingManager.resetBettings();
+        playerManager.resetTurnCounter();
     }
 
     public void giveChipsToWinners() {
-        ArrayList<Player> winners = getWinningPlayers();
-        int winningShare = this.totalPot / winners.size();
-        for (Player winner: winners) {
-            winner.setChips(winner.getChips() + winningShare);
-        }
+        List<Player> winners = getWinningPlayers();
+        int winningShare = bettingManager.getTotalPot() / winners.size();
+        winners.forEach(winner -> winner.setChips(winner.getChips() + winningShare));
     }
 
     public void giveChipsToLastPlayer() {
-        for (Player player: players) {
-            if (!player.isFolded()) {
-                player.setChips(player.getChips() + this.totalPot);
-            }
-        }
+        playerManager.getUnfoldedPlayers().forEach(player -> player.setChips(player.getChips() + bettingManager.getTotalPot()));
     }
 
-    public ArrayList<Card> getTableCards() {
-        return tableCards;
+    public List<Card> getTableCards() {
+        return deckManager.getTableCards();
     }
-    public void setTableCards(ArrayList<Card> tableCards) {
-        if (tableCards.size() > MAX_TABLE_CARDS) {
-            throw new IllegalArgumentException("Too many table cards");
-        }
-        this.tableCards = new ArrayList<>(tableCards);
+    public void setTableCards(List<Card> tableCards) {
+        deckManager.setTableCards(tableCards);
     }
 
-    public ArrayList<Player> getPlayersWithNoChips() {
-        ArrayList<Player> playersWithNoChips = new ArrayList<>();
-        for (Player player: players) {
-            if (player.getChips() <= 0) {
-                playersWithNoChips.add(player);
-            }
-        }
-        return playersWithNoChips;
+    public List<Player> getPlayersWithNoChips() {
+        return playerManager.getPlayersWithNoChips();
     }
 
     public String getPlayerHandName(Player player) {
@@ -439,80 +220,30 @@ public class Game implements Serializable {
             throw new RuntimeException("Hand not setup for player: " + player.getName());
         }
 
-        HandEvaluation handEvaluation = HandEvaluator.evaluateHand(player.getHand(), this.tableCards);
+        HandEvaluation handEvaluation = HandEvaluator.evaluateHand(player.getHand(), deckManager.getTableCards());
         return handEvaluation.getHandRank().toString();
     }
 
-    public int[] getScore(Player player) {
-        HandEvaluator evaluator = new HandEvaluator();
-        //ArrayList<main.model.player.Card> totalHand = new ArrayList<>(tableCards);
-        //totalHand.addAll(player.getHand());
-//        return evaluator.evaluate(player.getHand(), this.tableCards);
-        return null;
-    }
-
-    public int[] getHighestScore() {
-        int[] highestScore = {0, 0};
-        for (Player player: players) {
-            if (player.isFolded()) {
-                continue;
-            }
-
-            int[] currentScore = getScore(player);
-            if (highestScore[0] < currentScore [0]) {
-                highestScore = currentScore;
-            }
-            else if (highestScore[0] == currentScore[0]) {
-                if (highestScore[1] < currentScore[1]) {
-                    highestScore = currentScore;
-                }
-            }
-        }
-        return highestScore;
-    }
-
-    public ArrayList<Player> getWinningPlayers() {
-
-        List<Player> winners =  RoundWinnerEvaluator.determineWinners(players, new ArrayList<>(tableCards));
-
-//        int[] highestScore = getHighestScore();
-//        for (Player player: players) {
-//            if (player.isFolded()) {
-//                continue;
-//            }
-//
-//            int[] currScore = getScore(player);
-//            if (highestScore[0] <= currScore[0] &&
-//                    highestScore[1] <= currScore[1]) {
-//                winners.add(player);
-//            }
-//        }
-        return (ArrayList<Player>) winners;
+    public List<Player> getWinningPlayers() {
+        List<Player> playersList = playerManager.getPlayers();
+        List<Card> tableCards = deckManager.getTableCards();
+        return RoundWinnerEvaluator.determineWinners(playersList, tableCards);
     }
 
     private boolean canCheck(Player player) {
-        if (playerBettings.get(player) == minimumCallAmount) {
-            return true;
-        }
-
-        for (Player currPlayer : playerBettings.keySet()) {
-            if (playerBettings.get(currPlayer) > 0) {
-                return false;
-            }
-        }
-        return true;
+        return  bettingManager.canCheck(player);
     }
 
     private boolean canBet() {
-        return lastBetter == null;
+        return bettingManager.canBet();
     }
 
     public HashSet<PlayerAction> getValidActions(Player player) {
         Player localPlayer = getPlayer(player);
         HashSet<PlayerAction> validActions = new HashSet<>();
 
-        int playerBetPower = localPlayer.getChips() + playerBettings.get(localPlayer);
-        if (playerBetPower > minimumCallAmount) {
+        int playerBetPower = localPlayer.getChips() + getPlayerBettings().get(localPlayer);
+        if (playerBetPower > getMinimumCallAmount()) {
             if (canBet()) {
                 validActions.add(PlayerAction.BET);
             }
@@ -532,6 +263,7 @@ public class Game implements Serializable {
     }
 
     public int getPlayerSidePot(Player player) {
+        Map<Player, Integer> playerBettings = bettingManager.getPlayerBettings();
         if (playerBettings.containsKey(player)) {
             return playerBettings.get(player);
         }
@@ -540,25 +272,21 @@ public class Game implements Serializable {
 
     public int getPlayerBettingPower(Player player) {
         Player localPlayer = getPlayer(player);
-        return playerBettings.get(localPlayer) + localPlayer.getChips();
+        return getPlayerBettings().get(localPlayer) + localPlayer.getChips();
     }
 
     public boolean allOtherPlayersFolded() {
-        int numOfUnfolded = 0;
-        for (Player player: players) {
-            if (!player.isFolded()) {
-                numOfUnfolded++;
-            }
-        }
-        return numOfUnfolded <= 1;
+        return playerManager.getNumberOfUnfoldedPlayers() <= 1;
     }
 
+
+//    GETTERS AND SETTERS
     public int getMinimumCallAmount() {
-        return minimumCallAmount;
+        return bettingManager.getMinimumCallAmount();
     }
 
     public int getMinimumBetAmount() {
-        return this.minimumBetAmount;
+        return bettingManager.getMinimumBetAmount();
     }
 
     public RoundState getRoundState() {
@@ -586,11 +314,11 @@ public class Game implements Serializable {
     }
 
     public int getTotalPot() {
-        return totalPot;
+        return bettingManager.getTotalPot();
     }
 
-    public HashMap<Player, Integer> getPlayerBettings() {
-        return new HashMap<Player, Integer>(playerBettings);
+    public Map<Player, Integer> getPlayerBettings() {
+        return bettingManager.getPlayerBettings();
     }
 
 }

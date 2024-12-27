@@ -4,6 +4,8 @@ import model.player.Card.Rank;
 import model.player.Card.Suit;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -12,19 +14,17 @@ import java.util.Random;
  * been drawn. The stack pointer starts at 0 and increments by 1 each time a card is drawn. The cards that are stored in
  * the array between the indices 0 and (stackPointer - 1) are cards that have already been drawn. The cards that are stored
  * between the indices stackPointer and the last index (DECK_SIZE - 1) are cards that have not been drawn.
- * and the  (stackPointer - 1)
  */
-public class Deck implements Serializable
-{
-//	Max deck size. Standard is 52.
-	private final int DECK_SIZE = 52;
+public class Deck implements Serializable {
+	// Max deck size. Standard is 52.
+	private static final int DECK_SIZE = 52;
 
-//	Keeps track of which cards have been drawn
+	// Keeps track of which cards have been drawn
 	private int stackPointer;
 	private final Card[] deck;
 
-//	Random is more efficient and less biased than Math.random()
-	private Random randomGenerator;
+	// Random is more efficient and less biased than Math.random()
+	private final Random randomGenerator;
 
 	public Deck() {
 		stackPointer = 0;
@@ -60,59 +60,51 @@ public class Deck implements Serializable
 	/**
 	 * Takes back all the cards and shuffles them
 	 */
-	public void reset() {
+	public synchronized void reset() {
 		stackPointer = 0;
 		shuffleDrawPile();
 	}
+
 	/**
-	 * Draws a specified number of cards and returns them in an array
+	 * Draws a specified number of cards and returns them in a list
 	 * @throws IllegalArgumentException thrown if the requested number of cards to draw is larger than
 	 * the number of cards left in the draw pile.
 	 */
-	public Card[] drawCard(int numOfCardsToDraw)
-	{
-		if (numOfCardsToDraw > numOfCardsLeft())
-		{
-			throw new IllegalArgumentException("The deck does not have enough cards. Game tried to draw too many cards");
+	public synchronized List<Card> drawCard(int numOfCardsToDraw) {
+		int cardsLeft = numOfCardsLeft();
+		if (numOfCardsToDraw > cardsLeft) {
+			throw new IllegalArgumentException("The deck does not have enough cards. Tried to draw "
+					+ numOfCardsToDraw + " cards, but only " + cardsLeft + " are left.");
 		}
 
-		Card[] newCards = new Card[numOfCardsToDraw];
+		List<Card> newCards = new ArrayList<>(numOfCardsToDraw);
 		for (int i = 0; i < numOfCardsToDraw; i++) {
-			newCards[i] = drawCard();
+			newCards.add(drawSingleCard());
 		}
 		return newCards;
 	}
 
-	private synchronized Card drawCard() {
+	private synchronized Card drawSingleCard() {
 		if (isEmpty()) {
 			throw new IllegalStateException("The deck is empty. No cards to draw.");
 		}
 		return deck[stackPointer++];
 	}
 
-
-	/** Generates a random index of a card from the draw pile.
-	 * @implNote (DECK_SIZE - stackPointer) is the number of card left in the deck */
-	private int generateRandomIndexFromDrawPile() {
-		return randomGenerator.nextInt(DECK_SIZE - stackPointer) + stackPointer;
-	}
-
-	/** Calculates the number of cards left in the deck */
 	private int numOfCardsLeft() {
 		return DECK_SIZE - stackPointer;
 	}
 
-	public boolean isEmpty() {
+	public synchronized boolean isEmpty() {
 		return stackPointer >= DECK_SIZE;
 	}
 
 	/**
 	 * Prints the deck for debugging purposes.
 	 */
-	public void printDeck() {
-		for (int i = 0; i < DECK_SIZE; i++) {
-			System.out.println(deck[i]);
+	public synchronized void printDeck() {
+		for (Card card : deck) {
+			System.out.println(card);
 		}
 	}
-
 }

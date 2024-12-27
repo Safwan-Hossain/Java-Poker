@@ -16,7 +16,7 @@ import java.util.*;
 
 import static enumeration.UpdateType.*;
 
-public class ClientController {
+public class ClientControllerOld {
     private Player myPlayer;
     private Client client;
     private final boolean isHost;
@@ -37,7 +37,7 @@ public class ClientController {
     private final int MIN_SMALL_BLIND = 10;
     private final int MAX_SMALL_BLIND = Integer.MAX_VALUE / MAX_BUY_IN_COEFFICIENT ;
 
-    public ClientController(Socket socket, String username, boolean isHost) throws IOException {
+    public ClientControllerOld(Socket socket, String username, boolean isHost) throws IOException {
         this.isHost = isHost;
         this.gameHasStarted = false;
         this.client = new Client(socket, username);

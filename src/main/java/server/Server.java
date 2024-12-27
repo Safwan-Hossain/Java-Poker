@@ -3,7 +3,7 @@ package server;
 import enumeration.RoundState;
 import enumeration.UpdateType;
 import model.player.Card;
-import model.player.GameInfo;
+import model.update.GameInfo;
 import model.player.Player;
 import model.game.ServerGame;
 

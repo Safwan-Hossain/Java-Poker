@@ -1,4 +1,4 @@
-package model.player;
+package model.update;
 
 import enumeration.PlayerAction;
 import enumeration.PokerRole;
@@ -6,6 +6,8 @@ import enumeration.RoundState;
 import enumeration.ConnectionStatus;
 import enumeration.UpdateType;
 import model.game.Game;
+import model.player.Card;
+import model.player.Player;
 
 import java.io.Serializable;
 import java.util.ArrayList;

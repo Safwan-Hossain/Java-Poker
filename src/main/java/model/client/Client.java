@@ -1,4 +1,4 @@
-package model;
+package model.client;
 
 import model.update.GameUpdate;
 import org.junit.platform.commons.util.StringUtils;
@@ -101,7 +101,7 @@ public class Client {
 
     public GameUpdate receiveMessage() throws IOException, ClassNotFoundException {
         try {
-            socket.setSoTimeout(5000);  // Optional: Set timeout
+            socket.setSoTimeout(5000);
             return internalReceiveMessage();
         } catch (SocketTimeoutException e) {
             logger.error("Socket read timeout: ", e);
@@ -111,8 +111,13 @@ public class Client {
         }
     }
 
-    private GameUpdate internalReceiveMessage() throws ClassNotFoundException, IOException {
-        Object message = inputStream.readObject();
+    private GameUpdate internalReceiveMessage() throws IOException, ClassNotFoundException {
+        Object message;
+        try {
+            message = inputStream.readObject();
+        } catch (IOException e) {
+            throw new IOException("an unexpected error occurred while trying to receive data from server", e);
+        }
         if (message instanceof GameUpdate gameUpdate) {
             gameUpdate.setReceivedTime(LocalDateTime.now());
             return gameUpdate;
@@ -150,7 +155,7 @@ public class Client {
             if (socket != null) {
                 socket.close();
             }
-            logger.debug(CLOSED_EVERYTHING_MSG);
+            logger.info(CLOSED_EVERYTHING_MSG);
         } catch (IOException e) {
             logger.error(ERROR_CLOSING_RESOURCES_MSG, e);
         }

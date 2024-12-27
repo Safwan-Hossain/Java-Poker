@@ -2,7 +2,7 @@ package server;
 
 import enumeration.ConnectionStatus;
 import enumeration.UpdateType;
-import model.player.GameInfo;
+import model.update.GameInfo;
 import model.game.ServerGame;
 
 import java.io.*;
