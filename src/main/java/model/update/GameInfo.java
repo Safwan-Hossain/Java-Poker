@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class GameInfo implements Serializable {
 
@@ -23,23 +24,23 @@ public class GameInfo implements Serializable {
 
     private boolean isHost;
 
-    private Player playerWithTurn; // main.model.player.Player with turn
+    private Player playerWithTurn;
     private RoundState roundState;
-    private HashMap<PokerRole, Player> roles;
+    private Map<PokerRole, Player> roles;
     // Note that copying an arraylist of players will not copy the arraylist of cards (their hand) inside each player
-    // Therefore, currently it is stored in hashmap
-    private HashMap<Player, List<Card>> playerHands;
+    // Therefore, currently it is stored in a map
+    private Map<Player, List<Card>> playerHands;
 
     private String nameOfWinningHand;
     // List of all players in the current main.model.game
-    private ArrayList<Player> players;
+    private List<Player> players;
 
     // List of players who won during the showdown of the current round
-    private ArrayList<Player> winningPlayers;
+    private List<Player> winningPlayers;
     // List of players who lost all their chips after the showdown of the current round
-    private ArrayList<Player> losingPlayers;
+    private List<Player> losingPlayers;
 
-    private ArrayList<Card> tableCards;
+    private List<Card> tableCards;
 
     // THE MAIN GAME
     private Game game;
@@ -171,22 +172,22 @@ public class GameInfo implements Serializable {
         this.nameOfWinningHand = nameOfWinningHand;
     }
 
-    public HashMap<PokerRole, Player> getRoles() {
+    public Map<PokerRole, Player> getRoles() {
         return roles;
     }
 
-    public void setRoles(HashMap<PokerRole, Player> roles) {
+    public void setRoles(Map<PokerRole, Player> roles) {
         this.roles = new HashMap<>();
         for (PokerRole pokerRole: roles.keySet()) {
             this.roles.put(pokerRole, roles.get(pokerRole));
         }
     }
 
-    public HashMap<Player, List<Card>> getPlayerHands() {
+    public Map<Player, List<Card>> getPlayerHands() {
         return playerHands;
     }
 
-    public void setPlayerHands(HashMap<Player, List<Card>> map) {
+    public void setPlayerHands(Map<Player, List<Card>> map) {
         this.playerHands = new HashMap<>();
         for (Player player: map.keySet()) {
             List<Card> cards = new ArrayList<>(player.getHand());
@@ -194,11 +195,11 @@ public class GameInfo implements Serializable {
         }
     }
 
-    public ArrayList<Player> getPlayers() {
+    public List<Player> getPlayers() {
         return players;
     }
 
-    public void setPlayers(ArrayList<Player> players) {
+    public void setPlayers(List<Player> players) {
         this.players = new ArrayList<>();
         for (Player player: players) {
             Player newPlayer = new Player(player.getName(), player.getPlayerID());
@@ -207,7 +208,7 @@ public class GameInfo implements Serializable {
         }
     }
 
-    public ArrayList<Player> getWinningPlayers() {
+    public List<Player> getWinningPlayers() {
         return winningPlayers;
     }
 
@@ -221,11 +222,11 @@ public class GameInfo implements Serializable {
     }
 
 
-    public ArrayList<Player> getLosingPlayers() {
+    public List<Player> getLosingPlayers() {
         return losingPlayers;
     }
 
-    public void setLosingPlayers(ArrayList<Player> losingPlayers) {
+    public void setLosingPlayers(List<Player> losingPlayers) {
         this.losingPlayers = new ArrayList<>();
         for (Player player: losingPlayers) {
             Player newPlayer = new Player(player.getName(), player.getPlayerID());
@@ -234,11 +235,11 @@ public class GameInfo implements Serializable {
         }
     }
 
-    public ArrayList<Card> getTableCards(){
+    public List<Card> getTableCards(){
         return tableCards;
     }
 
-    public void setTableCards(ArrayList<Card> tableCards) {
+    public void setTableCards(List<Card> tableCards) {
         this.tableCards = new ArrayList<>();
         this.tableCards.addAll(tableCards);
     }

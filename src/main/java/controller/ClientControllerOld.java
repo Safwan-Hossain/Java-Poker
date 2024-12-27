@@ -5,8 +5,8 @@ import enumeration.PokerRole;
 import enumeration.RoundState;
 import model.game.Game;
 import model.player.Card;
-import model.player.Client;
-import model.player.GameInfo;
+import model.client.Client;
+import model.update.GameInfo;
 import model.player.Player;
 import view.GameView;
 
@@ -24,7 +24,7 @@ public class ClientController {
     private volatile boolean gameHasStarted;
     private volatile boolean gameHasEnded;
     private volatile boolean myPlayerLost;
-    private ArrayList<Thread> runningThreads;
+    private List<Thread> runningThreads;
 
     private final String CANCEL_BET_VALUE = "B";
     private final String START_GAME_COMMAND = "START";
@@ -77,9 +77,9 @@ public class ClientController {
     private void setUpClient() throws IOException {
         GameInfo clientInfo = new GameInfo("", client.getClientName());
         clientInfo.setIsHost(isHost);
-        client.sendMessage(clientInfo);
+        client.sendMessageOld(clientInfo);
         try {
-            clientInfo = (GameInfo) client.receiveMessage();
+            clientInfo = (GameInfo) client.receiveMessageOld();
             client.setClientID(clientInfo.getClientID());
         } catch (ClassNotFoundException ignored) {
         }
@@ -113,7 +113,7 @@ public class ClientController {
                 gameInfo.setGameHasStarted(true);
                 gameInfo.setBuyIn(buyIn);
                 gameInfo.setSmallBlind(smallBlind);
-                client.sendMessage(gameInfo);
+                client.sendMessageOld(gameInfo);
                 return;
             }
         }
@@ -201,7 +201,7 @@ public class ClientController {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
             }
-            client.sendMessage(getPlayerActionInfo(PlayerAction.WAIT, 0));
+            client.sendMessageOld(getPlayerActionInfo(PlayerAction.WAIT, 0));
             return;
         }
         PlayerAction playerAction = null;
@@ -213,7 +213,7 @@ public class ClientController {
             if (!playerAction.isABet()) { break; }
             amount = getValidBet(playerAction, scanner);
         }
-        client.sendMessage(getPlayerActionInfo(playerAction, amount));
+        client.sendMessageOld(getPlayerActionInfo(playerAction, amount));
     }
 
     private void waitForTurn() {
@@ -237,7 +237,7 @@ public class ClientController {
         try {
             // TODO  --
             while (client.isConnectedToServer() && !(myPlayerLost && !isHost)) {
-                GameInfo gameInfo = (GameInfo) client.receiveMessage();
+                GameInfo gameInfo = (GameInfo) client.receiveMessageOld();
                 deconstructGameInfo(gameInfo);
             }
         }
@@ -283,7 +283,7 @@ public class ClientController {
 
     private void startGame(GameInfo gameInfo) {
         myGame = gameInfo.getGame();
-        ArrayList<Player> players = new ArrayList<>(gameInfo.getPlayerHands().keySet());
+        List<Player> players = new ArrayList<>(gameInfo.getPlayerHands().keySet());
         myGame.setPlayers(players);
         gameHasStarted = true;
     }
@@ -297,7 +297,7 @@ public class ClientController {
         quitGameInfo.setUpdateType(PLAYER_QUIT);
 
         try {
-            client.sendMessage(quitGameInfo);
+            client.sendMessageOld(quitGameInfo);
         } catch (IOException ignored) {
         }
     }
@@ -338,7 +338,7 @@ public class ClientController {
     }
 
     private void updatePlayers(GameInfo gameInfo) {
-        ArrayList<Player> players = new ArrayList<>(gameInfo.getPlayers());
+        List<Player> players = new ArrayList<>(gameInfo.getPlayers());
         // TODO - FIND BETTER WAY TO HANDLE THIS -- CURRENTLY TRIES TO AVOID DIFFERENT THREAD CHECKING IF PLAYER HAS TURN
         // IF player is removed then there is null exception
         if (!players.contains(myPlayer)) {
@@ -361,25 +361,25 @@ public class ClientController {
     }
 
     private void displayUnfoldedWinner(GameInfo gameInfo) {
-        ArrayList<Player> winningPlayers = gameInfo.getWinningPlayers();
+        List<Player> winningPlayers = gameInfo.getWinningPlayers();
         GameView.displayLastUnfoldedPlayer(winningPlayers.get(0));
     }
 
     private void displayWinners(GameInfo gameInfo) {
-        ArrayList<Player> winningPlayers = gameInfo.getWinningPlayers();
+        List<Player> winningPlayers = gameInfo.getWinningPlayers();
         String nameOfWinningHand = gameInfo.getNameOfWinningHand();
         GameView.displayCurrentRoundWinners(winningPlayers, nameOfWinningHand);
     }
 
     private void checkIfMyPlayerLost(GameInfo gameInfo) {
-        ArrayList<Player> playersWhoLost = gameInfo.getLosingPlayers();
+        List<Player> playersWhoLost = gameInfo.getLosingPlayers();
         if (playersWhoLost.contains(myPlayer)) {
             myPlayerLost = true;
         }
     }
 
     private void displayLosers(GameInfo gameInfo) {
-        ArrayList<Player> playersWhoLost = gameInfo.getLosingPlayers();
+        List<Player> playersWhoLost = gameInfo.getLosingPlayers();
         for (Player player: playersWhoLost) {
             if (!player.equals(myPlayer)) {
                 GameView.displayPlayerLostMessage(player);
@@ -388,7 +388,7 @@ public class ClientController {
     }
 
     private void updateTableCards(GameInfo gameInfo) {
-        ArrayList<Card> tableCards = gameInfo.getTableCards();
+        List<Card> tableCards = gameInfo.getTableCards();
         myGame.setTableCards(tableCards);
         GameView.displayPlayerHUD(tableCards, myGame.getPlayerHand(myPlayer), myGame.getTotalPot(), myGame.getPlayer(myPlayer).getChips());
     }
@@ -405,13 +405,13 @@ public class ClientController {
     }
 
     private void updateRoles(GameInfo gameInfo) {
-        HashMap<PokerRole, Player> hashMap = gameInfo.getRoles();
-        myGame.setPlayerRoles(hashMap);
-        GameView.displayRoles(hashMap);
+        Map<PokerRole, Player> roleMap = gameInfo.getRoles();
+        myGame.setPlayerRoles(roleMap);
+        GameView.displayRoles(roleMap);
     }
 
     private void updateAllHands(GameInfo gameInfo) {
-        HashMap<Player, List<Card>> playerHands = gameInfo.getPlayerHands();
+        Map<Player, List<Card>> playerHands = gameInfo.getPlayerHands();
         for (Player player: playerHands.keySet()) {
             myGame.setPlayerHand(player, playerHands.get(player));
         }
