@@ -1,15 +1,16 @@
 package util;
 
-import model.player.Card;
-import model.player.Card.Rank;
-import model.player.Card.Suit;
-import model.player.HandEvaluation;
+import com.poker.domain.player.Card;
+import com.poker.domain.player.Card.Rank;
+import com.poker.domain.player.Card.Suit;
+import com.poker.domain.player.HandEvaluation;
+import com.poker.util.HandEvaluator;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static enumeration.HandRank.*;
+import static com.poker.enumeration.HandRank.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class HandEvaluatorTest {

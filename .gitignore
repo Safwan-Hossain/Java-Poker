@@ -1,28 +1,80 @@
-dist
-cabal-dev
-JavaPoker.iml
-out/
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# IDEs
 .idea/
-*.o
-*.hi
-*.chi
-*.chs.h
-.virtualenv
-.hsenv
+*.iml
+*.ipr
+*.iws
+*.classpath
+*.project
+*.settings/
+
+# Build output
+/target/
+/out/
+/bin/
+
+# Maven-specific
+/logs/
+*.log
+*.mvn/
+!**/src/main/**/mvn/
+.mvn/timing.properties
+
+# Compiled files
+*.class
+
+# Package distributions
+*.jar
+*.war
+*.ear
+
+# Java-specific
+*.hprof
+hs_err_pid*
+
+# Test reports
+/surefire-reports/
+/failsafe-reports/
+
+# Environment & config
+.env
+*.env
+*.local
+*.properties.local
+application-*.yml
+application-*.properties
+
+# VSCode
+.vscode/
+
+# Misc
+*.swp
+*.swo
+
+# Other tooling
 .cabal-sandbox/
 cabal.sandbox.config
 cabal.config
+cabal-dev/
+dist/
+virtualenv/
+.venv/
+.hsenv/
+.stack-work/
+
+# LaTeX
 *.aux
 *.log
-*.blg
 *.bbl
-*.DS_Store
-*.synctex.gz
+*.blg
 *.toc
-*.lof
 *.lot
-*.nav
+*.lof
 *.out
 *.snm
+*.nav
+*.synctex.gz
 *-nup.pdf
-*.class

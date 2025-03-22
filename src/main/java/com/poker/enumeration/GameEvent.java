@@ -1,0 +1,16 @@
+package com.poker.enumeration;
+
+public enum GameEvent {
+    HOST_READY,
+    START_NEXT_ROUND,
+    ROUND_INITIALIZED,
+    PLAYER_ACTION,
+    NEXT_PLAYER_TURN_ASSIGNED,
+    ROUND_END,
+    GAME_OVER,
+    ASSIGN_NEXT_PLAYER_TURN,
+    BET_PLACED,
+    ADVANCE_ROUND,
+    BETTING_IS_FINISHED,
+    NEW_BETTING_ROUND;
+}

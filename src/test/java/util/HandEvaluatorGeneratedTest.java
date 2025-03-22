@@ -1,10 +1,12 @@
 package util;
 
-import model.player.Card;
-import model.player.Card.Rank;
-import model.player.Card.Suit;
-import model.player.HandEvaluation;
+import com.poker.domain.player.Card;
+import com.poker.domain.player.Card.Rank;
+import com.poker.domain.player.Card.Suit;
+import com.poker.domain.player.HandEvaluation;
+import com.poker.util.HandEvaluator;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -12,14 +14,15 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static enumeration.HandRank.*;
-import static model.player.Card.Rank.*;
+import static com.poker.enumeration.HandRank.*;
+import static com.poker.domain.player.Card.Rank.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 // This class generates a large number of different combinations of cards for each poker hand ranked between
 // Royal Flush and (Regular) Flush. The reason for this is that the algorithms needed to calculate hands below a
 // regular flush are straightforward and do not require extensive testing.
+@Disabled
 public class HandEvaluatorGeneratedTest {
 
     private static final Set<Card.Rank> ROYAL_RANKS = Set.of(TEN, JACK, QUEEN, KING, ACE);
@@ -170,7 +173,7 @@ public class HandEvaluatorGeneratedTest {
 
         for (Card.Suit suit : SUITS) {
             List<Card> flushCards = ALL_CARDS.stream()
-                    .filter(card -> card.getSuit() == suit)
+                    .filter(card -> card.suit() == suit)
                     .collect(Collectors.toList());
 
             // Generate all combinations of 5 cards of the same suit

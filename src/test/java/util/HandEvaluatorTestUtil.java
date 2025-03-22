@@ -1,11 +1,11 @@
 package util;
 
-import model.player.Card;
+import com.poker.domain.player.Card;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static model.player.Card.Rank.*;
+import static com.poker.domain.player.Card.Rank.*;
 
 public class HandEvaluatorTestUtil {
 
@@ -78,12 +78,12 @@ public class HandEvaluatorTestUtil {
 
     public static boolean isStraightFlush(List<Card> cards) {
         Map<Card.Suit, List<Card>> suitToCardsMap = cards.stream()
-                .collect(Collectors.groupingBy(Card::getSuit));
+                .collect(Collectors.groupingBy(Card::suit));
 
         for (List<Card> suitedCards : suitToCardsMap.values()) {
             if (suitedCards.size() >= 5) {
                 List<Integer> ranks = suitedCards.stream()
-                        .map(card -> card.getRank().getValue())
+                        .map(card -> card.rank().getValue())
                         .distinct()
                         .sorted()
                         .toList();
