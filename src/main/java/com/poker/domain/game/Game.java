@@ -47,12 +47,12 @@ public class Game implements Serializable {
     public void initializeRound() {
         roundState = RoundState.PRE_FLOP;
         playerManager.resetTurnCounter();
+        playerManager.unfoldAllFoldedPlayers();;
         playerManager.resetPlayerHands();
         bettingManager.resetBettings();
 
         playerManager.assignRoles();
         deckManager.assignCardsToPlayers(playerManager.getPlayers());
-        playerManager.assignFirstTurn();
         takeChipsFromBlinds();
     }
 
@@ -155,7 +155,6 @@ public class Game implements Serializable {
 
     public void advanceRoundState() {
         this.roundState = this.roundState.getNextRoundState();
-        playerManager.unfoldAllFoldedPlayers();
         playerManager.resetTurnCounter();
         updateTableCards();
     }
@@ -216,8 +215,8 @@ public class Game implements Serializable {
         return getPlayerBettings().get(localPlayer) + localPlayer.getChips();
     }
 
-    public boolean allOtherPlayersFolded() {
-        return playerManager.getNumberOfUnfoldedPlayers() <= 1;
+    public boolean isOnlyOnePlayerUnfolded() {
+        return playerManager.getNumberOfUnfoldedPlayers() == 1;
     }
 
 

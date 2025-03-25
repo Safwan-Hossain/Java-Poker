@@ -1,10 +1,10 @@
 package com.poker.application.orchestrator;
 
-import com.poker.enumeration.GameEvent;
-import com.poker.enumeration.PlayerAction;
 import com.poker.domain.game.ServerGame;
 import com.poker.domain.player.Player;
 import com.poker.domain.player.RoundResult;
+import com.poker.enumeration.GameEvent;
+import com.poker.enumeration.PlayerAction;
 import com.poker.infrastructure.communication.GameMessenger;
 import com.poker.infrastructure.communication.update.GameUpdate;
 import com.poker.infrastructure.communication.update.impl.GameStateSnapshotUpdate;
@@ -13,21 +13,19 @@ import com.poker.services.GameTableRegistry;
 import com.poker.services.GameUpdateService;
 import com.poker.util.RoundResultEvaluator;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 import java.util.List;
 
-@Component
+@Service
 @RequiredArgsConstructor
 public class GameLogicHandler {
 
     private final GameTableRegistry registry;
     private final GameUpdateService updateService;
-    private final PlayerActionManager actionHandler;
     private final RoundFlowManager roundFlowManager;
-
 
     public Mono<GameEvent> startNextRound(String tableId) {
         ServerGame game = getGame(tableId);
@@ -49,7 +47,7 @@ public class GameLogicHandler {
 
 
         // 4. Signal that round has been initialized
-        return Mono.just(GameEvent.ROUND_INITIALIZED);
+        return Mono.just(GameEvent.ROUND_STARTED);
     }
 
     public void assignFirstPlayerTurn(String tableId) {
@@ -80,22 +78,22 @@ public class GameLogicHandler {
         ServerGame game = getGame(tableId);
 
         // 1. Apply the player's action
-        GameEvent outcome = actionHandler.handle(game, playerId, action, betAmount);
+        game.applyPlayerAction(playerId, action, betAmount);
 
         // 2. Broadcast the player's action and resulting state
         GameUpdate update = updateService.generatePlayerActionUpdate(playerId, game.getPlayerBetting(playerId), action);
         getMessenger(tableId).sendUpdateToAllPlayers(update);
 
         // 3. Return the resulting game event
-        return Mono.just(outcome);
+        return Mono.just(GameEvent.PLAYER_ACTION_APPLIED);
     }
 
 
 
-    public Mono<GameEvent> advanceRound(String tableId) {
+    public Mono<GameEvent> advanceRoundState(String tableId) {
         ServerGame game = getGame(tableId);
         // Use the round flow manager to advance the round and broadcast changes
-        return roundFlowManager.advanceRound(game, getMessenger(tableId)::sendUpdateToAllPlayers);
+        return roundFlowManager.advanceRoundState(game, getMessenger(tableId)::sendUpdateToAllPlayers);
     }
 
     public Mono<GameEvent> handleRoundEnd(String tableId, Duration delayBeforeNextRound) {

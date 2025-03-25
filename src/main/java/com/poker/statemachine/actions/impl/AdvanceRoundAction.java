@@ -23,7 +23,7 @@ public class AdvanceRoundAction extends BaseAction {
         String tableId = getTableId(context);
         log.info("[Table {}] Entered ADVANCE ROUND phase.", tableId);
 
-        gameLogicHandler.advanceRound(tableId).subscribe(event -> publishEvent(context, event));
+        gameLogicHandler.advanceRoundState(tableId).subscribe(event -> publishEvent(context, event));
     }
 
 }

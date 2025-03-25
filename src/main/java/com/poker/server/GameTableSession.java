@@ -123,11 +123,11 @@ public class GameTableSession {
     private void handleHostStartAction(PlayerActionUpdate update) {
         initializeServerGame();
         this.startSession();
-        sendEventWithGameUpdate(GameEvent.HOST_READY, update);
+        sendEventWithGameUpdate(GameEvent.HOST_IS_READY, update);
     }
 
     private void handlePlayerMoveAction(PlayerActionUpdate update) {
-        sendEventWithGameUpdate(GameEvent.PLAYER_ACTION, update);
+        sendEventWithGameUpdate(GameEvent.PLAYER_ACTION_RECEIVED, update);
     }
 
     private void handleIgnoredAction(PlayerActionUpdate update) {

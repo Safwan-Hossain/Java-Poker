@@ -87,8 +87,8 @@ public class ServerGame {
         return mainGame.isGameOver();
     }
 
-    public boolean allOtherPlayersFolded() {
-        return mainGame.allOtherPlayersFolded();
+    public boolean isOnlyOnePlayerUnfolded() {
+        return mainGame.isOnlyOnePlayerUnfolded();
     }
 
     public boolean everyoneIsAllIn() {

@@ -3,49 +3,40 @@ package com.poker.statemachine.config;
 import com.poker.enumeration.GameEvent;
 import com.poker.enumeration.GameState;
 import com.poker.statemachine.actions.impl.*;
-import com.poker.statemachine.guards.ApplyPlayerMoveGuard;
+import com.poker.statemachine.guards.impl.*;
+import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.statemachine.action.Action;
 import org.springframework.statemachine.config.EnableStateMachineFactory;
 import org.springframework.statemachine.config.StateMachineConfigurerAdapter;
 import org.springframework.statemachine.config.builders.StateMachineConfigurationConfigurer;
 import org.springframework.statemachine.config.builders.StateMachineStateConfigurer;
 import org.springframework.statemachine.config.builders.StateMachineTransitionConfigurer;
-import org.springframework.statemachine.guard.Guard;
 
 import java.util.EnumSet;
 
 @Configuration
+@AllArgsConstructor
 @EnableStateMachineFactory
 public class PokerStateMachineConfig extends StateMachineConfigurerAdapter<GameState, GameEvent> {
 
-    private final Action<GameState, GameEvent> roundInitializationAction;
-    private final Action<GameState, GameEvent> roundEndAction;
-    private final Action<GameState, GameEvent> gameOverAction;
-    private final Action<GameState, GameEvent> assignFirstPlayerTurnAction;
-    private final Action<GameState, GameEvent> assignNextPlayerTurnAction;
-    private final Action<GameState, GameEvent> applyPlayerMoveAction;
-    private final Action<GameState, GameEvent> advanceRoundAction;
-    private final Guard<GameState, GameEvent> applyPlayerMoveGuard;
+    // ACTIONS
+    private final RoundStartAction roundInitializationAction;
+    private final RoundEndAction roundEndAction;
+    private final GameOverAction gameOverAction;
+    private final AssignFirstPlayerTurnAction assignFirstPlayerTurnAction;
+    private final AssignNextPlayerTurnAction assignNextPlayerTurnAction;
+    private final ApplyPlayerMoveAction applyPlayerMoveAction;
+    private final AdvanceRoundAction advanceRoundAction;
 
-    public PokerStateMachineConfig(
-            RoundStartAction roundInitializationAction,
-            RoundEndAction roundEndAction,
-            GameOverAction gameOverAction,
-            AssignFirstPlayerTurnAction assignFirstPlayerTurnAction,
-            AssignNextPlayerTurnAction assignNextPlayerTurnAction,
-            ApplyPlayerMoveAction applyPlayerMoveAction,
-            AdvanceRoundAction advanceRoundAction,
-            ApplyPlayerMoveGuard applyPlayerMoveGuard) {
-        this.roundInitializationAction = roundInitializationAction;
-        this.roundEndAction = roundEndAction;
-        this.gameOverAction = gameOverAction;
-        this.assignFirstPlayerTurnAction = assignFirstPlayerTurnAction;
-        this.assignNextPlayerTurnAction = assignNextPlayerTurnAction;
-        this.applyPlayerMoveAction = applyPlayerMoveAction;
-        this.advanceRoundAction = advanceRoundAction;
-        this.applyPlayerMoveGuard = applyPlayerMoveGuard;
-    }
+    // GUARDS
+    private final IsPlayerActionValidGuard isPlayerActionValidGuard;
+    private final IsOnlyOnePlayerUnfoldedGuard isOnlyOnePlayerUnfoldedGuard;
+    private final IsBettingFinishedGuard isBettingFinishedGuard;
+    private final IsBettingNotFinishedGuard isBettingNotFinishedGuard;
+    private final IsRoundFinishedGuard isRoundFinishedGuard;
+    private final IsRoundNotFinishedGuard isRoundNotFinishedGuard;
+
+
 
     @Override
     public void configure(StateMachineStateConfigurer<GameState, GameEvent> states) throws Exception {
@@ -64,13 +55,14 @@ public class PokerStateMachineConfig extends StateMachineConfigurerAdapter<GameS
     private void configureBettingSubstates(StateMachineStateConfigurer<GameState, GameEvent> states) throws Exception {
         states.withStates()
                 .parent(GameState.BETTING)
-                .initial(GameState.BETTING_ASSIGN_FIRST_PLAYER_TURN)
-                .state(GameState.BETTING_ASSIGN_FIRST_PLAYER_TURN, assignFirstPlayerTurnAction)
-                .state(GameState.BETTING_ASSIGN_NEXT_PLAYER_TURN, assignNextPlayerTurnAction)
-                .state(GameState.BETTING_APPLY_PLAYER_MOVE, applyPlayerMoveAction)
-                .state(GameState.BETTING_ADVANCE_ROUND, advanceRoundAction);
-    }
+                .initial(GameState.ASSIGNING_FIRST_TURN)
+                .state(GameState.ASSIGNING_FIRST_TURN, assignFirstPlayerTurnAction)
+                .state(GameState.ASSIGNING_NEXT_TURN, assignNextPlayerTurnAction)
+                .state(GameState.APPLYING_PLAYER_ACTION, applyPlayerMoveAction)
+                .state(GameState.ADVANCING_ROUND_STATE, advanceRoundAction)
+                .choice(GameState.EVALUATE_PLAYER_ACTION_RESULT);
 
+    }
 
     @Override
     public void configure(StateMachineTransitionConfigurer<GameState, GameEvent> transitions) throws Exception {
@@ -84,17 +76,12 @@ public class PokerStateMachineConfig extends StateMachineConfigurerAdapter<GameS
                 .withExternal()
                     .source(GameState.WAITING_FOR_HOST)
                     .target(GameState.ROUND_START)
-                    .event(GameEvent.HOST_READY)
+                    .event(GameEvent.HOST_IS_READY)
                 .and()
                 .withExternal()
                     .source(GameState.ROUND_START)
                     .target(GameState.BETTING)
-                    .event(GameEvent.ROUND_INITIALIZED)
-                .and()
-                .withExternal()
-                    .source(GameState.BETTING)
-                    .target(GameState.ROUND_END)
-                    .event(GameEvent.ROUND_END)
+                    .event(GameEvent.ROUND_STARTED)
                 .and()
                 .withExternal()
                     .source(GameState.ROUND_END)
@@ -113,46 +100,52 @@ public class PokerStateMachineConfig extends StateMachineConfigurerAdapter<GameS
 
                 // Assign first turn -> Move to "Apply player move" (after player moves)
                 .withExternal()
-                .source(GameState.BETTING_ASSIGN_FIRST_PLAYER_TURN)
-                .target(GameState.BETTING_APPLY_PLAYER_MOVE)
-                .event(GameEvent.PLAYER_ACTION)
-                .guard(applyPlayerMoveGuard) // Guard applied
+                .source(GameState.ASSIGNING_FIRST_TURN)
+                .target(GameState.APPLYING_PLAYER_ACTION)
+                .event(GameEvent.PLAYER_ACTION_RECEIVED)
+                .guard(isPlayerActionValidGuard)
                 .and()
 
                 // Assign turn to the next player -> Move to "Apply player move" (after player moves)
                 .withExternal()
-                .source(GameState.BETTING_ASSIGN_NEXT_PLAYER_TURN)
-                .target(GameState.BETTING_APPLY_PLAYER_MOVE)
-                .event(GameEvent.PLAYER_ACTION)
-                .guard(applyPlayerMoveGuard) // Guard applied
+                .source(GameState.ASSIGNING_NEXT_TURN)
+                .target(GameState.APPLYING_PLAYER_ACTION)
+                .event(GameEvent.PLAYER_ACTION_RECEIVED)
+                .guard(isPlayerActionValidGuard)
                 .and()
 
-                // Player places a bet -> Move back to "Assign Next Player Turn" (if more players need to bet)
+
+                // 1. Trigger choice based on PLAYER_ACTION_APPLIED
                 .withExternal()
-                .source(GameState.BETTING_APPLY_PLAYER_MOVE)
-                .target(GameState.BETTING_ASSIGN_NEXT_PLAYER_TURN)
-                .event(GameEvent.ASSIGN_NEXT_PLAYER_TURN)
+                .source(GameState.APPLYING_PLAYER_ACTION)
+                .target(GameState.EVALUATE_PLAYER_ACTION_RESULT)
+                .event(GameEvent.PLAYER_ACTION_APPLIED)
                 .and()
 
-                // If all players have bet or folded, move to "Advance Round" e.g. turn, river
-                .withExternal()
-                .source(GameState.BETTING_APPLY_PLAYER_MOVE)
-                .target(GameState.BETTING_ADVANCE_ROUND)
-                .event(GameEvent.BETTING_IS_FINISHED)
+                // 2. Define choice logic
+                .withChoice()
+                .source(GameState.EVALUATE_PLAYER_ACTION_RESULT)
+                .first(GameState.ROUND_END, isOnlyOnePlayerUnfoldedGuard)   // If all player but 1 player has folded then move to SHOWDOWN
+                .then(GameState.ASSIGNING_NEXT_TURN, isBettingNotFinishedGuard)  // Player places a bet -> Move back to "Assign Next Player Turn" (if more players need to bet)
+                .then(GameState.ADVANCING_ROUND_STATE, isBettingFinishedGuard) // If all players have bet or folded, move to "Advance Round" e.g. turn, river
+                .last(GameState.ADVANCING_ROUND_STATE) // Fallback if none match
                 .and()
+
 
                 // Advance round logic -> Either give next player turn or move to ROUND_END e.g. showdown
                 .withExternal()
-                .source(GameState.BETTING_ADVANCE_ROUND)
-                .target(GameState.BETTING_ASSIGN_NEXT_PLAYER_TURN)
-                .event(GameEvent.ASSIGN_NEXT_PLAYER_TURN)
+                .source(GameState.ADVANCING_ROUND_STATE)
+                .target(GameState.ASSIGNING_NEXT_TURN)
+                .event(GameEvent.ROUND_STATE_ADVANCED)
+                .guard(isRoundNotFinishedGuard)
                 .and()
 
                 // If betting is finished, move to ROUND_END
                 .withExternal()
-                .source(GameState.BETTING_ADVANCE_ROUND)
+                .source(GameState.ADVANCING_ROUND_STATE)
                 .target(GameState.ROUND_END)
-                .event(GameEvent.ROUND_END);
+                .event(GameEvent.ROUND_STATE_ADVANCED)
+                .guard(isRoundFinishedGuard);
     }
 
     @Override

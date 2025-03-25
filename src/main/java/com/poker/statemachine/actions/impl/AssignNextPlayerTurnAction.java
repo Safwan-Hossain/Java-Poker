@@ -28,6 +28,6 @@ public class AssignNextPlayerTurnAction extends BaseAction {
     private void onPlayerTimeout(StateContext<GameState, GameEvent> context) {
         String tableId = getTableId(context);
         PlayerActionUpdate playerActionUpdate = gameLogicHandler.onPlayerTurnTimeout(tableId);
-        publishEvent(context,GameEvent.PLAYER_ACTION,  playerActionUpdate);
+        publishEvent(context,GameEvent.PLAYER_ACTION_RECEIVED,  playerActionUpdate);
     }
 }

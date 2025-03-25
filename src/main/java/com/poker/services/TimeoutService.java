@@ -15,7 +15,7 @@ public class TimeoutService {
 
     private static final Duration SESSION_TIMEOUT_DURATION = Duration.ofMinutes(10);
     private static final Duration INACTIVITY_TIMEOUT_DURATION = Duration.ofMinutes(3);
-    private static final Duration PLAYER_MOVE_TIMEOUT_DURATION = Duration.ofSeconds(30);
+    private static final Duration PLAYER_MOVE_TIMEOUT_DURATION = Duration.ofSeconds(60);
 
     private final Map<String, Disposable> sessionTimeouts = new ConcurrentHashMap<>();
     private final Map<String, TimeoutTask> inactivityTimeouts = new ConcurrentHashMap<>();
@@ -42,6 +42,7 @@ public class TimeoutService {
         Disposable disposable = Mono.delay(PLAYER_MOVE_TIMEOUT_DURATION)
                 .doOnError(e -> handleTimeoutError(sessionId, e))
                 .doOnNext(tick -> {
+                    log.warn("TIMEOUT OCCURED");
                     cancelPlayerMoveTimeout(sessionId);
                     onTimeout.run();
                 })

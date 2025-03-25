@@ -19,13 +19,31 @@ public class RoundResultEvaluator {
 
     public static RoundResult calculateRoundResult(Game game) {
         List<Player> players = game.getPlayersCopy();
-        List<Card> tableCards = game.getTableCards();
+        List<Player> activePlayers = players.stream()
+                .filter(player -> !player.isFolded())
+                .toList();
 
+        if (activePlayers.size() == 1) {
+            return handleSingleRemainingPlayer(activePlayers.getFirst(), game.getTotalPot());
+        }
+
+        return evaluateShowdown(players, game.getTableCards(), game.getTotalPot());
+    }
+
+    private static RoundResult handleSingleRemainingPlayer(Player winner, int totalPot) {
+        RoundResult result = new RoundResult();
+        result.setWinners(List.of(winner));
+        result.setPlayerHandEvaluations(Collections.emptyMap());
+        result.setTotalPot(totalPot);
+        result.setSharePerWinner(totalPot);
+        return result;
+    }
+
+    private static RoundResult evaluateShowdown(List<Player> players, List<Card> tableCards, int totalPot) {
         Map<HandEvaluation, List<Player>> handEvaluations = calculatePlayerHandEvaluations(players, tableCards);
         Map<Player, HandEvaluation> playerHandEvaluations = getPlayerHandEvaluations(handEvaluations);
         List<Player> winners = getWinningPlayers(handEvaluations);
 
-        int totalPot = game.getTotalPot();
         int sharePerWinner = calculateSharePerWinner(totalPot, winners);
 
         RoundResult roundResult = new RoundResult();

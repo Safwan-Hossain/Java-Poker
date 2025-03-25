@@ -21,7 +21,6 @@ public class RoundStartAction extends BaseAction {
     @Override
     public void execute(StateContext<GameState, GameEvent> context) {
         String tableId = getTableId(context);
-        resetPlayerIdleTimer(context);
         gameLogicHandler.startNextRound(tableId)
                 .subscribe(event -> publishEvent(context, event));
     }

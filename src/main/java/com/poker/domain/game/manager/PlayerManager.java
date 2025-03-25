@@ -45,13 +45,10 @@ public class PlayerManager {
         players.get(bigBlindIndex).setRole(BIG_BLIND);
     }
 
-    public void assignFirstTurn() {
-        playerWithTurnIndex = getNextIndex(bigBlindIndex);
-        giveTurnToPlayer(playerWithTurnIndex);
-    }
 
     private void giveTurnToPlayer(int index) {
         players.get(index).setTurn(true);
+        incrementTurnCounter();
     }
 
     public boolean hasEveryoneHadATurn() {
@@ -75,19 +72,6 @@ public class PlayerManager {
         return roleMap;
     }
 
-    public void setPlayerRoles(Map<PokerRole, Player> map) {
-        Player dealer = map.get(PokerRole.DEALER);
-        Player smallBlind = map.get(PokerRole.SMALL_BLIND);
-        Player bigBlind = map.get(PokerRole.BIG_BLIND);
-
-        getPlayer(dealer).setRole(PokerRole.DEALER);
-        getPlayer(smallBlind).setRole(PokerRole.SMALL_BLIND);
-        getPlayer(bigBlind).setRole(PokerRole.BIG_BLIND);
-
-        dealerIndex = players.indexOf(getPlayer(dealer));
-        smallBlindIndex = players.indexOf(getPlayer(smallBlind));
-        bigBlindIndex = players.indexOf(getPlayer(bigBlind));
-    }
 
     // NOTE - It would be more efficient to use a hashmap and lookup by player Ids, but
     // we would then need a hashmap for the lookup and still a list for the ordering. So its acceptable for the purposes
@@ -121,9 +105,24 @@ public class PlayerManager {
     }
 
     public void giveFirstPlayerTurn() {
+        validatePlayableState();
+        takeTurnFromCurrentPlayer();
         assignFirstTurn();
     }
 
+    public void assignFirstTurn() {
+        do {
+            playerWithTurnIndex = getNextIndex(bigBlindIndex);
+        } while (getPlayerWithTurn().isBankrupt());
+        giveTurnToPlayer(playerWithTurnIndex);
+    }
+
+    private void giveTurnToNextPlayer() {
+        do {
+            playerWithTurnIndex = getNextIndex(playerWithTurnIndex);
+        } while (getPlayerWithTurn().isFolded() || getPlayerWithTurn().isBankrupt());
+        giveTurnToPlayer(playerWithTurnIndex);
+    }
     private void validatePlayableState() {
         if (getNumberOfFoldedPlayers() >= players.size() - 1) {
             throw new RuntimeException("All players folded");
@@ -132,14 +131,6 @@ public class PlayerManager {
 
     private void takeTurnFromCurrentPlayer() {
         getPlayerWithTurn().setTurn(false);
-    }
-
-    private void giveTurnToNextPlayer() {
-        do {
-            playerWithTurnIndex = getNextIndex(playerWithTurnIndex);
-        } while (getPlayerWithTurn().isFolded() || getPlayerWithTurn().isBankrupt());
-        giveTurnToPlayer(playerWithTurnIndex);
-        incrementTurnCounter();
     }
     public void incrementTurnCounter() {
         turnCounter++;
