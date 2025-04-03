@@ -22,7 +22,7 @@ public class BettingManager {
         this.smallBlind = smallBlind;
         this.bigBlind = bigBlind;
         this.minimumCallAmount = bigBlind;
-        this.minimumBetAmount = bigBlind * 2;
+        this.minimumBetAmount = bigBlind;
         initializeBettings(players);
     }
 
@@ -32,68 +32,97 @@ public class BettingManager {
         }
     }
 
+
     public int getBetPower(Player player) {
         return player.getChips() + playerBettings.get(player);
     }
 
     public void takeChipsFromBlinds(Player smallBlindPlayer, Player bigBlindPlayer) {
-        placeBet(smallBlindPlayer, smallBlind);
-        placeBet(bigBlindPlayer, bigBlind);
+        postBlind(smallBlindPlayer, smallBlind);
+        postBlind(bigBlindPlayer, bigBlind);
     }
 
-    public void placeBet(Player player, int raiseToAmount) {
-        int existingBet = playerBettings.getOrDefault(player, 0);
-        int betAmount = raiseToAmount - existingBet;
-
-        if (betAmount > player.getChips()) {
-            betAmount = player.getChips();
-            raiseToAmount = betAmount + existingBet;
+    private void postBlind(Player player, int blindAmount) {
+        int adjustedBlind = getAdjustedBetAmount(player, blindAmount);
+        if (adjustedBlind <= 0) {
+            throw new IllegalArgumentException("Player does not have enough chips to post the blind.");
         }
+        int totalPlayerBet = playerBettings.getOrDefault(player, 0) + adjustedBlind;
+        updatePlayerBet(player, adjustedBlind, totalPlayerBet);
+    }
 
-        if (raiseToAmount > minimumCallAmount) {
-            minimumCallAmount = raiseToAmount;
-            minimumBetAmount = raiseToAmount * 2;
-        }
-
+    private void updatePlayerBet(Player player, int betAmount, int newTotalBet) {
         player.takeChips(betAmount);
         totalPot += betAmount;
-        playerBettings.put(player, raiseToAmount);
+        playerBettings.put(player, newTotalBet);
+
+        if (newTotalBet > minimumCallAmount) {
+            int lastRaiseAmount = newTotalBet - minimumCallAmount;
+            minimumCallAmount = newTotalBet;
+            minimumBetAmount = minimumCallAmount + lastRaiseAmount;
+
+        }
+
         lastBetter = player;
     }
 
+    private int getAdjustedBetAmount(Player player, int requestedAmount) {
+        return Math.min(requestedAmount, player.getChips());
+    }
+
+    public void placeBet(Player player, int betAmount) {
+        if (betAmount > player.getChips()) {
+            throw new IllegalArgumentException("Bet amount is higher than player chips amount");
+        }
+        if (betAmount < minimumBetAmount) {
+            throw new IllegalArgumentException("Bet amount must be at least the minimum bet amount: " + minimumBetAmount);
+        }
+
+        int totalPlayerBet = playerBettings.getOrDefault(player, 0) + betAmount;
+        updatePlayerBet(player, betAmount, totalPlayerBet);
+    }
+
+
     public void placeCall(Player player) {
-        int actualCallAmount = minimumCallAmount - playerBettings.getOrDefault(player, 0);
+        int currentBet = playerBettings.getOrDefault(player, 0);
+        int actualCallAmount = minimumCallAmount - currentBet;
+
+        if (actualCallAmount <= 0) {
+            return;
+        }
+
         if (actualCallAmount > player.getChips()) {
             actualCallAmount = player.getChips();
         }
+
         player.takeChips(actualCallAmount);
         totalPot += actualCallAmount;
-        int totalCallAmount = playerBettings.get(player) + actualCallAmount;
-        playerBettings.put(player, totalCallAmount);
+
+        playerBettings.put(player, currentBet + actualCallAmount);
     }
 
-    public void resetBettings() {
+
+    public void resetMinimumBetForNewRoundState() {
         playerBettings.replaceAll((player, bet) -> 0);
-        totalPot = 0;
         lastBetter = null;
-        minimumCallAmount = 0;
-        minimumBetAmount = smallBlind;
+        minimumCallAmount = bigBlind;
+        minimumBetAmount = bigBlind;
     }
 
-    public boolean canCheck(Player player) {
-        if (playerBettings.get(player) == minimumCallAmount) {
-            return true;
-        }
-
-        for (Player currPlayer : playerBettings.keySet()) {
-            if (playerBettings.get(currPlayer) > 0) {
-                return false;
-            }
-        }
-        return true;
+    public void resetBettingsForEndOfRound() {
+        playerBettings.replaceAll((player, bet) -> 0);
+        lastBetter = null;
+        minimumCallAmount = bigBlind;
+        minimumBetAmount = bigBlind;
+        totalPot = 0;
     }
 
-    public boolean canBet() {
+    public boolean canCheck() {
+        return canPlaceFirstBet() && playerBettings.values().stream().noneMatch(bet -> bet > 0);
+    }
+
+
+    public boolean canPlaceFirstBet() {
         return lastBetter == null;
     }
 
@@ -111,7 +140,7 @@ public class BettingManager {
     public Map<String, Integer> getPlayerIdsToBettings() {
         return playerBettings.entrySet().stream()
                 .collect(Collectors.toMap(
-                        entry -> entry.getKey().getPlayerId(), // Convert player to player ID
+                        entry -> entry.getKey().getPlayerId(),
                         Map.Entry::getValue
                 ));
     }
@@ -125,4 +154,5 @@ public class BettingManager {
 
         return distinctBets.size() <= 1;
     }
+
 }
