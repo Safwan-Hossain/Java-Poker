@@ -35,13 +35,15 @@ public class RoundFlowManager {
 
     private Mono<GameEvent> autoAdvanceToShowdown(ServerGame game, Consumer<GameUpdate> broadcast) {
         log.info("AUTO ADVANCING with ROUND STATE: {}", game.getRoundState());
-        if (game.getRoundState() == SHOWDOWN) {
-            return Mono.just(ROUND_STATE_ADVANCED);
-        }
-
-        return Mono.delay(Duration.ofMillis(DELAY_BETWEEN_SERVER_EVENTS))
-                .doOnNext(__ -> advanceStateAndBroadcast(game, broadcast))
-                .then(autoAdvanceToShowdown(game, broadcast));
+        return Mono.defer(() -> {
+            if (game.getRoundState() == SHOWDOWN) {
+                return Mono.just(ROUND_STATE_ADVANCED);
+            }
+            return Mono.delay(Duration.ofSeconds(DELAY_BETWEEN_SERVER_EVENTS))
+                    .doOnNext(__ -> advanceStateAndBroadcast(game, broadcast));
+        })
+        .repeatWhen(repeatFlux -> repeatFlux.takeWhile(__ -> game.getRoundState() != SHOWDOWN))
+        .then(Mono.just(ROUND_STATE_ADVANCED));
     }
 
     private void advanceStateAndBroadcast(ServerGame game, Consumer<GameUpdate> broadcast) {
