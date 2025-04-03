@@ -87,13 +87,20 @@ public class GameTableSession {
 
     public void handleDisconnect(String playerId) {
         if (serverGame.getMainGame().hasGameStarted()) {
-            // Currently this only sends this event in the case of 1 player remaining so that state machine can go to GAME_OVER state.
-            // But this can be extendable to allow player to reconnect before their turn ends
             eventPublisher.publish(stateMachine, GameEvent.PLAYER_DISCONNECTED);
         }
         else {
+            gameMessenger.disconnectPlayers(playerId);
             gameLobby.removePlayer(playerId);
+            gameMessenger.sendUpdateToAllPlayers(generateDisconnectUpdate(playerId));
         }
+    }
+
+    public ConnectionStatusUpdate generateDisconnectUpdate(String playerId) {
+        return ConnectionStatusUpdate.builder()
+                .playerId(playerId)
+                .connectionStatus(ConnectionStatus.DISCONNECTED)
+                .build();
     }
 
     public void startStateMachine() {

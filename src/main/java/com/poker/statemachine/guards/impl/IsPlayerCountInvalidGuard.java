@@ -8,7 +8,7 @@ import com.poker.statemachine.guards.BaseGuard;
 import org.springframework.statemachine.StateContext;
 import org.springframework.stereotype.Component;
 
-import static com.poker.constants.Constants.MINIMUM_PLAYER_AMOUNT;
+import static com.poker.constants.Constants.MIN_PLAYERS_BEFORE_GAME_ENDS;
 
 @Component
 public class IsPlayerCountInvalidGuard extends BaseGuard {
@@ -21,6 +21,6 @@ public class IsPlayerCountInvalidGuard extends BaseGuard {
     public boolean evaluate(StateContext<GameState, GameEvent> context) {
         ServerGame game = getServerGame(context);
         int numOfPlayers = game.getPlayersCopy().size();
-        return numOfPlayers < MINIMUM_PLAYER_AMOUNT;
+        return numOfPlayers < MIN_PLAYERS_BEFORE_GAME_ENDS;
     }
 }

@@ -9,7 +9,7 @@ public class Constants {
     public static final String PLAYER_NAME_PARAM = "playerName";
     public static final String DEFAULT_PLAYER_NAME_PARAM = "Guest";
     public static final int MAX_MISSED_CONSECUTIVE_TURNS = 2;
-    public static final int MINIMUM_PLAYER_AMOUNT = 2;
+    public static final int MIN_PLAYERS_BEFORE_GAME_ENDS = 1;
 
     // Game related constants
     public static final String NEW_GAME_PARAM = "newGame";
