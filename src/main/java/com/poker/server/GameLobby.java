@@ -27,6 +27,10 @@ public class GameLobby {
         return player;
     }
 
+    public void removePlayer(String playerId) {
+        playerMap.remove(playerId);
+    }
+
     private String generateUniquePlayerID() {
         String playerId;
         do {
