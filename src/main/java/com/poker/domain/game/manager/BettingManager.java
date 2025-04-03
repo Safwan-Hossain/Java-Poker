@@ -147,12 +147,20 @@ public class BettingManager {
 
 
     public boolean isBettingEqualAmongActivePlayers() {
-        Set<Integer> distinctBets = playerBettings.entrySet().stream()
-                .filter(entry -> !entry.getKey().isFolded() && !entry.getKey().isBankrupt()) // Exclude folded and all-in players
-                .map(Map.Entry::getValue)
-                .collect(Collectors.toSet());
+        int maxBet = playerBettings.entrySet().stream()
+                .filter(entry -> !entry.getKey().isFolded())
+                .mapToInt(Map.Entry::getValue)
+                .max()
+                .orElse(0);
 
-        return distinctBets.size() <= 1;
+        return playerBettings.entrySet().stream()
+                .filter(entry -> !entry.getKey().isFolded())
+                .allMatch(entry -> {
+                    int playerBet = entry.getValue();
+                    boolean isAllIn = entry.getKey().isBankrupt(); // Technically can have bankrupt and all in separately but logically still sound. Consider making this more clear and robust in future
+                    return playerBet == maxBet || isAllIn;
+                });
     }
+
 
 }
