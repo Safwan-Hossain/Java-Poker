@@ -36,7 +36,7 @@ public class Game implements Serializable {
     }
 
     public boolean isGameOver() {
-        return playerManager.getNumberOfTotalPlayers() <= 1;
+        return playerManager.getNonBankruptPlayers().size() <= 1;
     }
 
     public void startGame() {
@@ -49,7 +49,7 @@ public class Game implements Serializable {
         playerManager.resetTurnCounter();
         playerManager.unfoldAllFoldedPlayers();;
         playerManager.resetPlayerHands();
-        bettingManager.resetBettings();
+        bettingManager.resetBettingsForEndOfRound();
 
         playerManager.assignRoles();
         deckManager.assignCardsToPlayers(playerManager.getPlayers());
@@ -65,27 +65,20 @@ public class Game implements Serializable {
     }
 
 
-    public void performBetByPlayer(Player player, int raiseToAmount) {
-        bettingManager.placeBet(player, raiseToAmount);
+    public void performBetByPlayer(Player player, int betAmount) {
+        bettingManager.placeBet(player, betAmount);
     }
 
     public void performCallByPlayer(Player player) {
         bettingManager.placeCall(player);
     }
 
-    public void removeLosers() {
-        playerManager.removeLosers();
+    public void removeBankruptPlayers() {
+        playerManager.removeBankruptPlayers();
     }
 
     public boolean isBettingEqualAmongActivePlayers() {
         return bettingManager.isBettingEqualAmongActivePlayers();
-    }
-
-    public boolean isRoundStateOver() {
-        if (playerManager.getNumberOfUnfoldedPlayers() <= 1) {
-            return true; // End the round if only one player is left
-        }
-        return isBettingEqualAmongActivePlayers() && playerManager.hasEveryoneHadATurn();
     }
 
     public boolean isBettingFinished() {
@@ -116,12 +109,25 @@ public class Game implements Serializable {
         playerManager.giveFirstPlayerTurn();
     }
 
-    public void removePlayer(Player player) {
-        playerManager.removePlayer(player);
+    public void removePlayer(String playerId) {
+        playerManager.getPlayer(playerId).setFolded(true);
+        playerManager.removePlayer(playerId);
     }
 
     public List<Player> getPlayersCopy() {
         return playerManager.getPlayersCopy();
+    }
+
+    public Player getRichestPlayer() {
+        Optional<Player> richestPlayer = playerManager.getPlayers()
+                .stream()
+                .max(Comparator.comparingInt(Player::getChips));
+
+        return richestPlayer.orElse(null);
+    }
+
+    public boolean isOnlyOnePlayerLeft() {
+        return playerManager.getNumberOfTotalPlayers() <= 1;
     }
 
 
@@ -147,6 +153,7 @@ public class Game implements Serializable {
         Player player = getPlayerById(playerId);
         switch (playerAction) {
             case FOLD -> player.setFolded(true);
+            case QUIT -> removePlayer(playerId);
             case BET, RAISE -> performBetByPlayer(player, betAmount);
             case CALL -> performCallByPlayer(player);
             case CHECK, WAIT -> {}
@@ -155,6 +162,7 @@ public class Game implements Serializable {
 
     public void advanceRoundState() {
         this.roundState = this.roundState.getNextRoundState();
+        bettingManager.resetMinimumBetForNewRoundState();
         playerManager.resetTurnCounter();
         updateTableCards();
     }
@@ -165,33 +173,38 @@ public class Game implements Serializable {
     }
 
 
-    public List<Player> getPlayersWithNoChips() {
-        return playerManager.getPlayersWithNoChips();
+    public List<Player> getBankruptPlayers() {
+        return playerManager.getBankruptPlayers();
     }
 
 
-    private boolean canCheck(Player player) {
-        return  bettingManager.canCheck(player);
+
+    private boolean canCheck() {
+        return  bettingManager.canCheck();
     }
 
-    private boolean canBet() {
-        return bettingManager.canBet();
+    public boolean canPlaceFirstBet() {
+        return bettingManager.canPlaceFirstBet();
     }
 
     public HashSet<PlayerAction> getValidActions(Player player) {
         Player localPlayer = getPlayer(player);
         HashSet<PlayerAction> validActions = new HashSet<>();
 
-        int playerBetPower = bettingManager.getBetPower(player);
+        if (localPlayer.isFolded()) {
+            return new HashSet<>();
+        }
+
+        int playerBetPower = localPlayer.getChips();
         if (playerBetPower > getMinimumCallAmount()) {
-            if (canBet()) {
+            if (canPlaceFirstBet()) {
                 validActions.add(PlayerAction.BET);
             }
             else {
                 validActions.add(PlayerAction.RAISE);
             }
         }
-        if (canCheck(localPlayer)) {
+        if (canCheck()) {
             validActions.add(PlayerAction.CHECK);
         }
         else {
@@ -210,9 +223,16 @@ public class Game implements Serializable {
         return playerBettings.get(getPlayer(player));
     }
 
-    public int getPlayerBettingPower(Player player) {
-        Player localPlayer = getPlayer(player);
-        return getPlayerBettings().get(localPlayer) + localPlayer.getChips();
+    public boolean isBetAmountValid(String playerId, int betAmount) {
+        Player player = getPlayerById(playerId);
+        int playerChips = player.getChips();
+        int minimumBet = bettingManager.getMinimumBetAmount();
+
+        boolean isAboveMinimum = betAmount >= minimumBet;
+        boolean isWithinPlayerChips = betAmount <= playerChips;
+
+        boolean isAllIn = betAmount == playerChips;
+        return (isAboveMinimum || isAllIn) && isWithinPlayerChips;
     }
 
     public boolean isOnlyOnePlayerUnfolded() {

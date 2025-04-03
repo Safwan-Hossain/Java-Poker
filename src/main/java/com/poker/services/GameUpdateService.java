@@ -1,11 +1,13 @@
 package com.poker.services;
 
-import com.poker.enumeration.PlayerAction;
-import com.poker.enumeration.RoundState;
 import com.poker.domain.game.ServerGame;
 import com.poker.domain.player.Card;
+import com.poker.domain.player.HandEvaluation;
 import com.poker.domain.player.Player;
 import com.poker.domain.player.RoundResult;
+import com.poker.enumeration.PlayerAction;
+import com.poker.enumeration.RoundState;
+import com.poker.infrastructure.communication.update.GameUpdate;
 import com.poker.infrastructure.communication.update.impl.*;
 import org.springframework.stereotype.Service;
 
@@ -14,9 +16,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static com.poker.constants.Constants.INVALID_BET_AMOUNT;
+
 @Service
 public class GameUpdateService {
 
+    public PlayerActionUpdate generateAutoQuitUpdate(String playerId) {
+        return PlayerActionUpdate.builder()
+                .playerId(playerId)
+                .betAmount(INVALID_BET_AMOUNT)
+                .action(PlayerAction.QUIT)
+                .build();
+    }
     public PlayerActionUpdate generatePlayerActionUpdate(String playerId, int betAmount, PlayerAction playerAction) {
         return PlayerActionUpdate.builder()
                 .playerId(playerId)
@@ -34,10 +45,10 @@ public class GameUpdateService {
 
     public PlayerTurnUpdate generateTurnUpdate(ServerGame serverGame) {
         Player playerWithTurn = serverGame.getPlayerWithTurn();
-        int minimumBetAmount = serverGame.getMainGame().getMinimumBetAmount();
-        int maximumBetAmount = playerWithTurn.getChips(); // Confirm if this is max bet
-        int minimumCallAmount = serverGame.getMainGame().getMinimumCallAmount();
-        HashSet<PlayerAction> playerActions = serverGame.getMainGame().getValidActions(playerWithTurn);
+        int minimumBetAmount = serverGame.getMinimumBetAmount();
+        int maximumBetAmount = playerWithTurn.getChips();
+        int minimumCallAmount = serverGame.getMinimumCallAmount();
+        HashSet<PlayerAction> playerActions = serverGame.getValidActions(playerWithTurn);
 
         return PlayerTurnUpdate.builder()
                 .playerIdWithTurn(playerWithTurn.getPlayerId())
@@ -51,14 +62,24 @@ public class GameUpdateService {
     public ShowdownResultUpdate getShowdownGameUpdate(ServerGame serverGame, RoundResult roundResult) {
         return ShowdownResultUpdate.builder()
                 .players(serverGame.getPlayersCopy())
-                .bankruptPlayers(serverGame.getPlayersWithNoChips())
+                .bankruptPlayers(serverGame.getBankruptPlayers())
                 .tableCards(serverGame.getTableCards())
-                .playerHandEvaluations(roundResult.getPlayerHandEvaluations())
+                .playerHandEvaluations(mapPlayerHandEvaluations(roundResult.getPlayerHandEvaluations())) // Convert to String Map
                 .winnersForThisRound(roundResult.getWinners())
                 .totalPot(roundResult.getTotalPot())
                 .sharePerWinner(roundResult.getSharePerWinner())
                 .build();
     }
+
+    //  converts player objects to player IDs
+    private Map<String, HandEvaluation> mapPlayerHandEvaluations(Map<Player, HandEvaluation> playerHandEvaluations) {
+        return playerHandEvaluations.entrySet().stream()
+                .collect(Collectors.toMap(
+                        entry -> entry.getKey().getPlayerId(),
+                        Map.Entry::getValue
+                ));
+    }
+
 
     public List<GameStateSnapshotUpdate> generateNewRoundUpdates(ServerGame serverGame) {
         List<Player> players = serverGame.getPlayersCopy();
@@ -84,6 +105,14 @@ public class GameUpdateService {
                 .sanitizedPlayers(players)
                 .playerBettings(serverGame.getPlayerIdsToBettings())
                 .playerHand(playerHand)
+                .build();
+    }
+
+    // TODO - In future add more stuff (e.g. leaderboard, total game time)
+    public GameUpdate generateGameOverUpdate(ServerGame serverGame) {
+        Player richestPlayer = serverGame.getRichestPlayer();
+        return GameOverUpdate.builder()
+                .winner(richestPlayer)
                 .build();
     }
 }

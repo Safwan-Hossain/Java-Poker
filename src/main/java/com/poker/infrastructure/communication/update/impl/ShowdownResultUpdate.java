@@ -24,7 +24,7 @@ public class ShowdownResultUpdate extends GameUpdate {
     private final List<Player> players;
     private final List<Player> winnersForThisRound;
     private final List<Player> bankruptPlayers;
-    private final Map<Player, HandEvaluation> playerHandEvaluations;
+    private final Map<String, HandEvaluation> playerHandEvaluations;
     private final List<Card> tableCards;
     private final int totalPot;
     private final int sharePerWinner;

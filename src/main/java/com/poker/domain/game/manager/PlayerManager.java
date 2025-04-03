@@ -61,6 +61,7 @@ public class PlayerManager {
     public int getNumberOfTotalPlayers() {
         return players.size();
     }
+
     public int getNumberOfUnfoldedPlayers() {
         return (int) players.stream().filter(player -> !player.isFolded()).count();
     }
@@ -170,18 +171,27 @@ public class PlayerManager {
                 .toList();
     }
 
-    public void removePlayer(Player player) {
-        this.players.remove(player);
+    public void removePlayer(String playerId) {
+        this.players.removeIf(player -> player.getPlayerId().equals(playerId));
     }
 
-
-    public List<Player> getPlayersWithNoChips() {
+    public List<Player> getBankruptPlayers() {
         return players.stream()
                 .filter(player -> player.getChips() <= 0)
                 .toList();
     }
-    public void removeLosers() {
-        // TODO - add logic for handling role changes and check if current turn is valid
+
+    public List<Player> getNonBankruptPlayers() {
+
+        return players.stream()
+                .filter(player -> player.getChips() > 0)
+                .distinct()
+                .toList();
+    }
+
+
+    public void removeBankruptPlayers() {
+        // TODO - add logic for handling role changes
         players.removeIf(player -> player.getChips() <= 0);
     }
 

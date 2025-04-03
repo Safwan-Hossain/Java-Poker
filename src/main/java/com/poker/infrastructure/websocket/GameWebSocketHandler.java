@@ -37,15 +37,15 @@ public class GameWebSocketHandler implements WebSocketHandler {
     }
 
     @Override
-    public Mono<Void> handle(WebSocketSession session) {
-        log.info("New WebSocket connection: sessionId={}, url={}", session.getId(), session.getHandshakeInfo().getUri());
+    public Mono<Void> handle(WebSocketSession webSocketSession) {
+        log.info("New WebSocket connection: sessionId={}, url={}", webSocketSession.getId(), webSocketSession.getHandshakeInfo().getUri());
         GameTableSession tableSession;
 
-        Map<String, String> queryParams = WebSocketUtil.extractQueryParams(session);
+        Map<String, String> queryParams = WebSocketUtil.extractQueryParams(webSocketSession);
         String playerName  = WebSocketUtil.extractPlayerName(queryParams);
         boolean isHost = WebSocketUtil.isNewGame(queryParams);
 
-        String tableId = WebSocketUtil.extractTableId(session);
+        String tableId = WebSocketUtil.extractTableId(webSocketSession);
         if (isHost) {
             tableSession = tableRegistry.createNewTableSession();
         }
@@ -54,10 +54,10 @@ public class GameWebSocketHandler implements WebSocketHandler {
         }
         else {
             log.warn("Rejecting WebSocket connection: Invalid table ID or session does not exist. Given ID: {}", tableId);
-            return session.close(CloseStatus.NOT_ACCEPTABLE);
+            return webSocketSession.close(CloseStatus.NOT_ACCEPTABLE);
         }
 
-        Player player = tableSession.addPlayer(playerName, isHost, session);
+        Player player = tableSession.addPlayer(playerName, isHost, webSocketSession);
 
         PlayerSetupUpdate updatedInfo = PlayerSetupUpdate
                 .builder()
@@ -69,9 +69,9 @@ public class GameWebSocketHandler implements WebSocketHandler {
                 .build();
 
 
-        Mono<Void> sendPlayerAssignment = sendPlayerAssignment(session, updatedInfo);
-        Mono<Void> outbound = setupOutboundMessages(session, tableSession);
-        Mono<Void> inbound = setupInboundMessages(session, tableSession);
+        Mono<Void> sendPlayerAssignment = sendPlayerAssignment(webSocketSession, updatedInfo);
+        Mono<Void> outbound = setupOutboundMessages(webSocketSession, tableSession);
+        Mono<Void> inbound = setupInboundMessages(webSocketSession, tableSession);
 
         return sendPlayerAssignment
                 .then(onNewPlayerJoined(tableSession, player))
@@ -79,17 +79,20 @@ public class GameWebSocketHandler implements WebSocketHandler {
                 .then(startTableSession(tableSession))
                 .doOnSubscribe(sub -> log.info("WebSocket session handling started"))
                 .doOnSuccess(unused -> log.info("WebSocket session handling completed"))
-                .doOnError(e -> log.error("WebSocket session handling error: {}", e.getMessage(), e));
+                .doOnError(e -> log.error("WebSocket session handling error", e))
+                .doOnTerminate(() -> handleDisconnect(player, tableSession));
     }
 
 
+    private void handleDisconnect(Player player, GameTableSession tableSession) {
+        tableSession.handleDisconnect(player.getPlayerId());
+    }
     private Mono<Void> startTableSession(GameTableSession tableSession) {
         return Mono.fromRunnable(tableSession::startSession);
     }
     private Mono<Void> onNewPlayerJoined(GameTableSession tableSession, Player player) {
         return Mono.fromRunnable(() -> tableSession.onNewPlayerJoined(player));
     }
-
 
     private String convertToJson(GameUpdate update) {
         try {
@@ -137,6 +140,7 @@ public class GameWebSocketHandler implements WebSocketHandler {
                 .doOnSubscribe(sub -> log.info("Outbound WebSocket stream started"))
                 .doOnError(e -> log.error("Error in outbound WebSocket stream: {}", e.getMessage(), e))
                 .then(); // Ensures it returns Mono<Void>
+
     }
 
     private Mono<Void> setupInboundMessages(WebSocketSession session, GameTableSession tableSession) {

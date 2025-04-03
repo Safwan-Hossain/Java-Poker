@@ -1,13 +1,14 @@
 package com.poker.domain.game;
 
-import com.poker.enumeration.PlayerAction;
-import com.poker.enumeration.RoundState;
 import com.poker.domain.player.Card;
 import com.poker.domain.player.Player;
+import com.poker.enumeration.PlayerAction;
+import com.poker.enumeration.RoundState;
 import com.poker.server.GameLobby;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -22,16 +23,30 @@ public class ServerGame {
         mainGame = new Game(allPlayers, gameLobby.getGameSettings());
         mainGame.startGame();
     }
+    public HashSet<PlayerAction> getValidActions(Player player) {
+        return mainGame.getValidActions(player);
+    }
+    public int getMinimumCallAmount() {
+        return mainGame.getMinimumCallAmount();
+    }
+
+    public int getMinimumBetAmount() {
+        return mainGame.getMinimumBetAmount();
+    }
 
     public int getPlayerBetting(String playerId) {
         return mainGame.getPlayerBetting(playerId);
+    }
+
+    public boolean isBetAmountValid(String playerId, int betAmount) {
+       return mainGame.isBetAmountValid(playerId, betAmount);
     }
 
     public void applyPlayerAction(String playerId, PlayerAction playerAction, int betAmount) {
         if (playerId.isBlank()) {
             throw new IllegalArgumentException("Tried to apply action with empty player ID");
         }
-        mainGame.applyPlayerAction(playerId, playerAction,betAmount);
+        mainGame.applyPlayerAction(playerId, playerAction, betAmount);
     }
 
     public void giveNextPlayerTurn() {
@@ -43,6 +58,10 @@ public class ServerGame {
     }
     public List<Player> getPlayersCopy() {
         return mainGame.getPlayersCopy();
+    }
+
+    public boolean isOnlyOnePlayerLeft() {
+        return mainGame.isOnlyOnePlayerLeft();
     }
 
     public Map<String, Integer> getPlayerIdsToBettings() {
@@ -59,8 +78,8 @@ public class ServerGame {
         mainGame.initializeRound();
     }
 
-    public List<Player> getPlayersWithNoChips() {
-        return mainGame.getPlayersWithNoChips();
+    public List<Player> getBankruptPlayers() {
+        return mainGame.getBankruptPlayers();
     }
 
     // ======== Getters and Setters ========= //
@@ -70,6 +89,11 @@ public class ServerGame {
     public boolean isBettingFinished() {
         return mainGame.isBettingFinished();
     }
+
+    public void removePlayer(String playerId){
+        mainGame.removePlayer(playerId);
+    }
+
     
     public RoundState getRoundState() {
         return mainGame.getRoundState();
@@ -93,6 +117,10 @@ public class ServerGame {
 
     public boolean everyoneIsAllIn() {
         return mainGame.isEveryoneAllIn();
+    }
+
+    public Player getRichestPlayer() {
+        return mainGame.getRichestPlayer();
     }
 
 }

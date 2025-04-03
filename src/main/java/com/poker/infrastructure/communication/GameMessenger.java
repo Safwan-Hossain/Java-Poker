@@ -35,6 +35,7 @@ public class GameMessenger {
     public void disconnectPlayers(String playerId) {
         webSocketManager.disconnectPlayers(playerId);
     }
+
     public void disconnectPlayers(List<String> playerIds) {
         webSocketManager.disconnectPlayers(playerIds);
     }

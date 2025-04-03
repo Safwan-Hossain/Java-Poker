@@ -10,4 +10,7 @@ public enum PlayerAction {
     CHECK,
     WAIT; // If client has no chips (all in) then they must wait
 
+    public boolean isABetAction() {
+        return this == BET || this == RAISE;
+    }
 }

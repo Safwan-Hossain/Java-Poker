@@ -12,18 +12,18 @@ import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-public class RoundStartAction extends BaseAction {
+public class PlayerTimeoutAction extends BaseAction {
 
-    protected RoundStartAction(GameLogicHandler gameLogicHandler, TimeoutService timeoutService, GameStateEventPublisher eventPublisher) {
+    protected PlayerTimeoutAction(GameLogicHandler gameLogicHandler, TimeoutService timeoutService, GameStateEventPublisher eventPublisher) {
         super(gameLogicHandler, timeoutService, eventPublisher);
     }
 
     @Override
     public void execute(StateContext<GameState, GameEvent> context) {
         String tableId = getTableId(context);
-        gameLogicHandler.startNextRound(tableId)
-                .doOnNext(event -> log.info("[Table {}] Sending FSM event: {}", tableId, event))
-                .subscribe(event -> publishEvent(context, event));
+        timeoutService.cancelPlayerMoveTimeout(tableId);
+        gameLogicHandler.handlePlayerTimeout(tableId);
+        publishEvent(context, GameEvent.PLAYER_TIMEOUT_PROCESSED);
     }
 
 }

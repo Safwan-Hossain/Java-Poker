@@ -3,6 +3,7 @@ package com.poker.infrastructure.websocket;
 
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.reactive.socket.CloseStatus;
 import org.springframework.web.reactive.socket.WebSocketSession;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -33,11 +34,12 @@ public class WebSocketManager {
     private Mono<Void> internalDisconnectPlayers(String playerId) {
         return Mono.fromRunnable(() -> webSockets.computeIfPresent(playerId, (key, session) -> {
             if (session.isOpen()) {
-                session.close().subscribe();
+                session.close(CloseStatus.NORMAL).subscribe();
             }
             return null;
         }));
     }
+
     public void disconnectPlayers(String playerId) {
         internalDisconnectPlayers(playerId).subscribe();
     }
@@ -54,7 +56,7 @@ public class WebSocketManager {
                 // For each session, if open, attempt to close; otherwise do nothing.
                 .flatMap(session -> {
                     if (session.isOpen()) {
-                        return session.close();
+                        return session.close(CloseStatus.NORMAL);
                     } else {
                         return Mono.empty();
                     }

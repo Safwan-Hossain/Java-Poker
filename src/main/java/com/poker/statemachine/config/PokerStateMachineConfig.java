@@ -27,6 +27,7 @@ public class PokerStateMachineConfig extends StateMachineConfigurerAdapter<GameS
     private final AssignNextPlayerTurnAction assignNextPlayerTurnAction;
     private final ApplyPlayerMoveAction applyPlayerMoveAction;
     private final AdvanceRoundAction advanceRoundAction;
+    private final PlayerTimeoutAction playerTimeoutAction;
 
     // GUARDS
     private final IsPlayerActionValidGuard isPlayerActionValidGuard;
@@ -35,8 +36,7 @@ public class PokerStateMachineConfig extends StateMachineConfigurerAdapter<GameS
     private final IsBettingNotFinishedGuard isBettingNotFinishedGuard;
     private final IsRoundFinishedGuard isRoundFinishedGuard;
     private final IsRoundNotFinishedGuard isRoundNotFinishedGuard;
-
-
+    private final IsPlayerCountInvalidGuard isPlayerCountInvalidGuard;
 
     @Override
     public void configure(StateMachineStateConfigurer<GameState, GameEvent> states) throws Exception {
@@ -60,14 +60,15 @@ public class PokerStateMachineConfig extends StateMachineConfigurerAdapter<GameS
                 .state(GameState.ASSIGNING_NEXT_TURN, assignNextPlayerTurnAction)
                 .state(GameState.APPLYING_PLAYER_ACTION, applyPlayerMoveAction)
                 .state(GameState.ADVANCING_ROUND_STATE, advanceRoundAction)
+                .state(GameState.PROCESSING_PLAYER_TIMEOUT, playerTimeoutAction)
                 .choice(GameState.EVALUATE_PLAYER_ACTION_RESULT);
-
     }
 
     @Override
     public void configure(StateMachineTransitionConfigurer<GameState, GameEvent> transitions) throws Exception {
         configureMainTransitions(transitions);
         configureBettingSubstateTransitions(transitions);
+        configureDisconnectTransitions(transitions);
     }
 
     // Configures main game transitions
@@ -106,6 +107,13 @@ public class PokerStateMachineConfig extends StateMachineConfigurerAdapter<GameS
                 .guard(isPlayerActionValidGuard)
                 .and()
 
+                // Assign first turn -> Move to "Apply player move" (after player moves)
+                .withExternal()
+                .source(GameState.ASSIGNING_FIRST_TURN)
+                .target(GameState.PROCESSING_PLAYER_TIMEOUT)
+                .event(GameEvent.PLAYER_TURN_TIMED_OUT)
+                .and()
+
                 // Assign turn to the next player -> Move to "Apply player move" (after player moves)
                 .withExternal()
                 .source(GameState.ASSIGNING_NEXT_TURN)
@@ -114,6 +122,17 @@ public class PokerStateMachineConfig extends StateMachineConfigurerAdapter<GameS
                 .guard(isPlayerActionValidGuard)
                 .and()
 
+                .withExternal()
+                .source(GameState.ASSIGNING_NEXT_TURN)
+                .target(GameState.PROCESSING_PLAYER_TIMEOUT)
+                .event(GameEvent.PLAYER_TURN_TIMED_OUT)
+                .and()
+
+                .withExternal()
+                .source(GameState.PROCESSING_PLAYER_TIMEOUT)
+                .target(GameState.EVALUATE_PLAYER_ACTION_RESULT)
+                .event(GameEvent.PLAYER_TIMEOUT_PROCESSED)
+                .and()
 
                 // 1. Trigger choice based on PLAYER_ACTION_APPLIED
                 .withExternal()
@@ -122,7 +141,7 @@ public class PokerStateMachineConfig extends StateMachineConfigurerAdapter<GameS
                 .event(GameEvent.PLAYER_ACTION_APPLIED)
                 .and()
 
-                // 2. Define choice logic
+                // 2. Define choice logic for EVALUATE_PLAYER_ACTION_RESULT
                 .withChoice()
                 .source(GameState.EVALUATE_PLAYER_ACTION_RESULT)
                 .first(GameState.ROUND_END, isOnlyOnePlayerUnfoldedGuard)   // If all player but 1 player has folded then move to SHOWDOWN
@@ -130,7 +149,6 @@ public class PokerStateMachineConfig extends StateMachineConfigurerAdapter<GameS
                 .then(GameState.ADVANCING_ROUND_STATE, isBettingFinishedGuard) // If all players have bet or folded, move to "Advance Round" e.g. turn, river
                 .last(GameState.ADVANCING_ROUND_STATE) // Fallback if none match
                 .and()
-
 
                 // Advance round logic -> Either give next player turn or move to ROUND_END e.g. showdown
                 .withExternal()
@@ -146,6 +164,29 @@ public class PokerStateMachineConfig extends StateMachineConfigurerAdapter<GameS
                 .target(GameState.ROUND_END)
                 .event(GameEvent.ROUND_STATE_ADVANCED)
                 .guard(isRoundFinishedGuard);
+    }
+
+    private void configureDisconnectTransitions(StateMachineTransitionConfigurer<GameState, GameEvent> transitions) throws Exception {
+        transitions
+                .withExternal()
+                .source(GameState.ROUND_START)
+                .target(GameState.GAME_OVER)
+                .event(GameEvent.PLAYER_DISCONNECTED)
+                .guard(isPlayerCountInvalidGuard)
+                .and()
+
+                .withExternal()
+                .source(GameState.BETTING)
+                .target(GameState.GAME_OVER)
+                .event(GameEvent.PLAYER_DISCONNECTED)
+                .guard(isPlayerCountInvalidGuard)
+                .and()
+
+                .withExternal()
+                .source(GameState.ROUND_END)
+                .target(GameState.GAME_OVER)
+                .event(GameEvent.PLAYER_DISCONNECTED)
+                .guard(isPlayerCountInvalidGuard);
     }
 
     @Override

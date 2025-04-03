@@ -20,12 +20,6 @@ public class GameOverAction extends BaseAction {
 
     @Override
     public void execute(StateContext<GameState, GameEvent> context) {
-        // TODO
-        // Broadcast the final game state.
-//        GameInfo gameOverInfo = new GameInfo("Server", "Server");
-//        gameOverInfo.setUpdateType(UpdateType.GAME_ENDED);
-//        gameOverInfo.setWinningPlayers(getServerGame(context).getPlayersCopy());
-//        ClientHandler.updateAllClients(gameOverInfo);
-        System.out.println("Game over.");
+        gameLogicHandler.handleGameOver(getTableId(context));
     }
 }

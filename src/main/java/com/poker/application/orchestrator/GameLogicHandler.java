@@ -19,6 +19,8 @@ import reactor.core.publisher.Mono;
 import java.time.Duration;
 import java.util.List;
 
+import static com.poker.constants.Constants.MAX_MISSED_CONSECUTIVE_TURNS;
+
 @Service
 @RequiredArgsConstructor
 public class GameLogicHandler {
@@ -30,10 +32,15 @@ public class GameLogicHandler {
     public Mono<GameEvent> startNextRound(String tableId) {
         ServerGame game = getGame(tableId);
 
-        // 1. Disconnect bankrupt players
-        List<Player> bankruptPlayers = game.getPlayersWithNoChips();
+        // 1. Disconnect and remove bankrupt players
+        List<Player> bankruptPlayers = game.getBankruptPlayers();
         if (!bankruptPlayers.isEmpty()) {
             registry.getTableSession(tableId).disconnectPlayers(bankruptPlayers);
+            game.getMainGame().removeBankruptPlayers();
+        }
+
+        if (game.isOnlyOnePlayerLeft()) {
+            return Mono.just(GameEvent.GAME_OVER);
         }
 
         // 2. Initialize new round
@@ -44,7 +51,6 @@ public class GameLogicHandler {
         for (GameStateSnapshotUpdate update : updates) {
             getMessenger(tableId).sendUpdateToPlayer(update.getTargetPlayerIdToUpdate(), update);
         }
-
 
         // 4. Signal that round has been initialized
         return Mono.just(GameEvent.ROUND_STARTED);
@@ -76,12 +82,13 @@ public class GameLogicHandler {
 
     public Mono<GameEvent> applyPlayerMove(String tableId, String playerId, PlayerAction action, int betAmount) {
         ServerGame game = getGame(tableId);
+        game.getPlayerWithTurn().resetMissedTurns();
 
         // 1. Apply the player's action
         game.applyPlayerAction(playerId, action, betAmount);
 
         // 2. Broadcast the player's action and resulting state
-        GameUpdate update = updateService.generatePlayerActionUpdate(playerId, game.getPlayerBetting(playerId), action);
+        GameUpdate update = updateService.generatePlayerActionUpdate(playerId, betAmount, action);
         getMessenger(tableId).sendUpdateToAllPlayers(update);
 
         // 3. Return the resulting game event
@@ -118,12 +125,31 @@ public class GameLogicHandler {
         }
     }
 
-    public PlayerActionUpdate onPlayerTurnTimeout(String tableId) {
-        String playerId = getGame(tableId).getPlayerWithTurn().getPlayerId();
-        return this.updateService.generatePlayerActionUpdate(playerId, -1, PlayerAction.FOLD);
+    public void handlePlayerTimeout(String tableId) {
+        Player playerWithTurn = getGame(tableId).getPlayerWithTurn();
+        playerWithTurn.incrementMissedTurn();
+        String playerId = playerWithTurn.getPlayerId();
+
+        if (playerWithTurn.getConsecutiveMissedTurns() >= MAX_MISSED_CONSECUTIVE_TURNS){
+            PlayerActionUpdate playerQuitUpdate = this.updateService.generateAutoQuitUpdate(playerId);
+            // Change game state
+            getGame(tableId).applyPlayerAction(playerId, playerQuitUpdate.getAction(), playerQuitUpdate.getBetAmount());
+            // Send quit update to all players then disconnect timed out player
+            getMessenger(tableId).sendUpdateToAllPlayers(playerQuitUpdate);
+            getMessenger(tableId).disconnectPlayers(playerId);
+        }
     }
 
+    public void handleGameOver(String tableId) {
+        ServerGame game = getGame(tableId);
+        GameUpdate gameOverUpdate = this.updateService.generateGameOverUpdate(game);
+        getMessenger(tableId).sendUpdateToAllPlayers(gameOverUpdate);
+        stopTableSession(tableId);
+    }
 
+    private void stopTableSession(String tableId) {
+        registry.removeTableService(tableId);
+    }
     private ServerGame getGame(String tableId) {
         return registry.getTableSession(tableId).getServerGame();
     }
@@ -131,4 +157,5 @@ public class GameLogicHandler {
     private GameMessenger getMessenger(String tableId) {
         return registry.getTableSession(tableId).getGameMessenger();
     }
+
 }

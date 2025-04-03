@@ -2,25 +2,28 @@ package com.poker.domain.player;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.poker.enumeration.PokerRole;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Getter
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@ToString(onlyExplicitlyIncluded = true)
 public class Player implements Serializable {
 
 	@Getter(AccessLevel.NONE)
 	@Serial
 	private static final long serialVersionUID = 1L;
 
+	@ToString.Include
 	private final String name;
+
+	@EqualsAndHashCode.Include
 	private String playerId;
+
 	private int chips;
 	private List<Card> hand;
 	private boolean hasTurn;
@@ -30,6 +33,8 @@ public class Player implements Serializable {
 	@JsonProperty("isHost")
 	private boolean isHost;
 	private PokerRole role;
+
+	private int consecutiveMissedTurns = 0;
 
 	public Player(String name, String playerId) {
 		this.name = name;
@@ -102,22 +107,12 @@ public class Player implements Serializable {
 		this.role = role;
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) return true;
-		if (!(obj instanceof Player)) return false;
-		Player player = (Player) obj;
-		return Objects.equals(playerId, player.playerId);
+	public void incrementMissedTurn() {
+		consecutiveMissedTurns++;
 	}
 
-	@Override
-	public int hashCode() {
-		return Objects.hash(playerId);
-	}
-
-	@Override
-	public String toString() {
-		return name;
+	public void resetMissedTurns() {
+		consecutiveMissedTurns = 0;
 	}
 
 }
