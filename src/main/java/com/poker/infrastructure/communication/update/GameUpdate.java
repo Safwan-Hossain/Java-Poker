@@ -33,7 +33,8 @@ import static com.poker.constants.GameUpdateTypeDescriptions.*;
         @JsonSubTypes.Type(value = ServerMessageUpdate.class, name = SERVER_MESSAGE_UPDATE_DESC),
         @JsonSubTypes.Type(value = ConnectionStatusUpdate.class, name = CONNECTION_STATUS_UPDATE_DESC),
         @JsonSubTypes.Type(value = ShowdownResultUpdate.class, name = SHOWDOWN_RESULT_UPDATE_DESC),
-        @JsonSubTypes.Type(value = GameStateSnapshotUpdate.class, name = GAME_STATE_SNAPSHOT_UPDATE_DESC)
+        @JsonSubTypes.Type(value = GameStateSnapshotUpdate.class, name = GAME_STATE_SNAPSHOT_UPDATE_DESC),
+        @JsonSubTypes.Type(value = GameOverUpdate.class, name = GAME_OVER_UPDATE_DESC)
 })
 
 public abstract class GameUpdate implements Serializable {

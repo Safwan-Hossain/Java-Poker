@@ -14,5 +14,5 @@ public class GameUpdateTypeDescriptions {
     public final static String ROUND_STATE_UPDATE_DESC = "ROUND_STATE_UPDATE";
     public final static String SERVER_MESSAGE_UPDATE_DESC = "SERVER_MESSAGE_UPDATE";
     public final static String SHOWDOWN_RESULT_UPDATE_DESC = "SHOWDOWN_RESULT_UPDATE";
-
+    public final static String GAME_OVER_UPDATE_DESC = "GAME_OVER_UPDATE";
 }
