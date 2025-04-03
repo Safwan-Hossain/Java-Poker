@@ -165,6 +165,12 @@ public class PlayerManager {
     }
 
 
+    public Player getPlayerCopy(String playerId) {
+        return new Player(getPlayer(playerId));
+    }
+
+
+
     public List<Player> getUnfoldedPlayers() {
         return players.stream()
                 .filter(player -> !player.isFolded())

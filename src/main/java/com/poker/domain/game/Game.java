@@ -117,6 +117,10 @@ public class Game implements Serializable {
     public List<Player> getPlayersCopy() {
         return playerManager.getPlayersCopy();
     }
+    public Player getPlayerCopy(String playerId) {
+        return playerManager.getPlayerCopy(playerId);
+    }
+
 
     public Player getRichestPlayer() {
         Optional<Player> richestPlayer = playerManager.getPlayers()

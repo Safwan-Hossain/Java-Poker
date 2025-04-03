@@ -21,18 +21,22 @@ import static com.poker.constants.Constants.INVALID_BET_AMOUNT;
 @Service
 public class GameUpdateService {
 
-    public PlayerActionUpdate generateAutoQuitUpdate(String playerId) {
+    public PlayerActionUpdate generateAutoQuitUpdate(Player player, int updatedTotalPot) {
         return PlayerActionUpdate.builder()
-                .playerId(playerId)
+                .playerId(player.getPlayerId())
                 .betAmount(INVALID_BET_AMOUNT)
                 .action(PlayerAction.QUIT)
+                .updatedPlayerChips(player.getChips())
+                .updatedTotalPot(updatedTotalPot)
                 .build();
     }
-    public PlayerActionUpdate generatePlayerActionUpdate(String playerId, int betAmount, PlayerAction playerAction) {
+    public PlayerActionUpdate generatePlayerActionUpdate(Player player, int betAmount, PlayerAction playerAction, int updatedTotalPot) {
         return PlayerActionUpdate.builder()
-                .playerId(playerId)
+                .playerId(player.getPlayerId())
                 .betAmount(betAmount)
                 .action(playerAction)
+                .updatedPlayerChips(player.getChips())
+                .updatedTotalPot(updatedTotalPot)
                 .build();
     }
 

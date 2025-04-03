@@ -60,6 +60,10 @@ public class ServerGame {
         return mainGame.getPlayersCopy();
     }
 
+    public Player getPlayerCopy(String playerId) {
+        return mainGame.getPlayerCopy(playerId);
+    }
+
     public boolean isOnlyOnePlayerLeft() {
         return mainGame.isOnlyOnePlayerLeft();
     }
@@ -85,6 +89,9 @@ public class ServerGame {
     // ======== Getters and Setters ========= //
 
     public Player getPlayerWithTurn() { return mainGame.getPlayerWithTurn(); }
+
+
+    public int getTotalPot() { return mainGame.getTotalPot(); }
 
     public boolean isBettingFinished() {
         return mainGame.isBettingFinished();

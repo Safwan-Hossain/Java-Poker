@@ -17,17 +17,23 @@ public class PlayerActionUpdate extends GameUpdate {
     private final String playerId;
     private final PlayerAction action;
     private final int betAmount;
+    private final int updatedPlayerChips;
+    private final int updatedTotalPot;
 
     // Allows Jackson to deserialize JSON into this object
     @JsonCreator
     public PlayerActionUpdate(
             @JsonProperty("playerId") String playerId,
             @JsonProperty("action") PlayerAction action,
-            @JsonProperty("betAmount") int betAmount
+            @JsonProperty("betAmount") int betAmount,
+            @JsonProperty("updatedPlayerChips") int updatedPlayerChips,
+            @JsonProperty("updatedTotalPot") int updatedTotalPot
     ) {
         this.playerId = playerId;
         this.action = action;
         this.betAmount = betAmount;
+        this.updatedPlayerChips = updatedPlayerChips;
+        this.updatedTotalPot = updatedTotalPot;
     }
 
     @Override

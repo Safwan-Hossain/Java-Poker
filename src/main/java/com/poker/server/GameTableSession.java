@@ -40,6 +40,7 @@ public class GameTableSession {
 
     @Getter
     private boolean hasSessionStarted = false;
+    private boolean isGameSetupComplete = false;
 
     public GameTableSession(String sessionId, ObjectMapper objectMapper, StateMachine<GameState, GameEvent> stateMachine, GameStateEventPublisher eventPublisher) {
         this.sessionId = sessionId;
@@ -59,6 +60,7 @@ public class GameTableSession {
 
     public void initializeServerGame() {
         this.serverGame.initializeGame(gameLobby);
+        this.isGameSetupComplete = true;
     }
 
     public List<Player> getAllPlayersInLobby() {
@@ -86,7 +88,7 @@ public class GameTableSession {
     }
 
     public void handleDisconnect(String playerId) {
-        if (serverGame.getMainGame().hasGameStarted()) {
+        if (isGameSetupComplete) {
             eventPublisher.publish(stateMachine, GameEvent.PLAYER_DISCONNECTED);
         }
         else {

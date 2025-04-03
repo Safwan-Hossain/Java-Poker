@@ -80,11 +80,12 @@ public class GameWebSocketHandler implements WebSocketHandler {
                 .doOnSubscribe(sub -> log.info("WebSocket session handling started"))
                 .doOnSuccess(unused -> log.info("WebSocket session handling completed"))
                 .doOnError(e -> log.error("WebSocket session handling error", e))
-                .doOnTerminate(() -> handleDisconnect(player, tableSession));
+                .doFinally((signalType) -> handleDisconnect(player, tableSession));
     }
 
 
     private void handleDisconnect(Player player, GameTableSession tableSession) {
+        log.warn("Handling Disconnect");
         tableSession.handleDisconnect(player.getPlayerId());
     }
     private Mono<Void> startTableSession(GameTableSession tableSession) {

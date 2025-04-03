@@ -87,8 +87,11 @@ public class GameLogicHandler {
         // 1. Apply the player's action
         game.applyPlayerAction(playerId, action, betAmount);
 
+        Player player = game.getPlayerCopy(playerId);
+        int totalPot = game.getTotalPot();
+
         // 2. Broadcast the player's action and resulting state
-        GameUpdate update = updateService.generatePlayerActionUpdate(playerId, betAmount, action);
+        GameUpdate update = updateService.generatePlayerActionUpdate(player, betAmount, action, totalPot);
         getMessenger(tableId).sendUpdateToAllPlayers(update);
 
         // 3. Return the resulting game event
@@ -126,19 +129,33 @@ public class GameLogicHandler {
     }
 
     public void handlePlayerTimeout(String tableId) {
-        Player playerWithTurn = getGame(tableId).getPlayerWithTurn();
+        ServerGame game = getGame(tableId);
+        Player playerWithTurn = game.getPlayerWithTurn();
         playerWithTurn.incrementMissedTurn();
-        String playerId = playerWithTurn.getPlayerId();
 
-        if (playerWithTurn.getConsecutiveMissedTurns() >= MAX_MISSED_CONSECUTIVE_TURNS){
-            PlayerActionUpdate playerQuitUpdate = this.updateService.generateAutoQuitUpdate(playerId);
-            // Change game state
-            getGame(tableId).applyPlayerAction(playerId, playerQuitUpdate.getAction(), playerQuitUpdate.getBetAmount());
-            // Send quit update to all players then disconnect timed out player
-            getMessenger(tableId).sendUpdateToAllPlayers(playerQuitUpdate);
-            getMessenger(tableId).disconnectPlayers(playerId);
+        if (playerHasExceededMaxMissedTurns(playerWithTurn)) {
+            handleAutoQuitForPlayer(tableId, playerWithTurn);
         }
     }
+
+    private boolean playerHasExceededMaxMissedTurns(Player player) {
+        return player.getConsecutiveMissedTurns() >= MAX_MISSED_CONSECUTIVE_TURNS;
+    }
+
+    private void handleAutoQuitForPlayer(String tableId, Player playerWithTurn) {
+        ServerGame game = getGame(tableId);
+        String playerId = playerWithTurn.getPlayerId();
+        Player playerCopy = game.getPlayerCopy(playerId);
+        int totalPot = game.getTotalPot();
+
+        PlayerActionUpdate quitUpdate = updateService.generateAutoQuitUpdate(playerCopy, totalPot);
+
+        game.applyPlayerAction(playerId, quitUpdate.getAction(), quitUpdate.getBetAmount());
+        GameMessenger messenger = getMessenger(tableId);
+        messenger.sendUpdateToAllPlayers(quitUpdate);
+        messenger.disconnectPlayers(playerId);
+    }
+
 
     public void handleGameOver(String tableId) {
         ServerGame game = getGame(tableId);
