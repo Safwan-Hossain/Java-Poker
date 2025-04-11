@@ -9,7 +9,6 @@ env:
   IMAGE_NAME: java-poker
   TAG: latest
   ECR_REGISTRY: 235772044469.dkr.ecr.ca-central-1.amazonaws.com
-  REPO_URI: ${{ env.ECR_REGISTRY }}/${{ env.IMAGE_NAME }}
 
 permissions:
   id-token: write
@@ -34,5 +33,6 @@ jobs:
 
       - name: Build, Tag, and Push Docker Image
         run: |
-          docker build -t $REPO_URI:$TAG .
-          docker push $REPO_URI:$TAG
+          IMAGE_URI=${{ env.ECR_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.TAG }}
+          docker build -t $IMAGE_URI .
+          docker push $IMAGE_URI
