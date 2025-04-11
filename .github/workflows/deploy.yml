@@ -21,14 +21,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Debug
-        shell: bash
-        run: |
-          echo "Fetching OIDC token..."
-          curl -s -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=sts.amazonaws.com" \
-          | jq -R 'split(".") | .[1] | @base64d | fromjson' \
-          | jq .sub
-
       - name: Configure AWS OIDC credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
@@ -39,8 +31,12 @@ jobs:
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Build, Tag, and Push Docker Image
+      - name: Build and tag docker image
         run: |
           IMAGE_URI=${{ env.ECR_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.TAG }}
           docker build -t $IMAGE_URI .
+
+      - name: Push Docker image to AWS
+        run: |
+          IMAGE_URI=${{ env.ECR_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.TAG }}
           docker push $IMAGE_URI
