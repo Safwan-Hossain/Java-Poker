@@ -20,6 +20,9 @@ public class GameOverAction extends BaseAction {
 
     @Override
     public void execute(StateContext<GameState, GameEvent> context) {
-        gameLogicHandler.handleGameOver(getTableId(context));
+        String tableId = getTableId(context);
+        log.info("GAME OVER: Ending Session: {}", tableId);
+        timeoutService.cancelAll(tableId);
+        gameLogicHandler.handleGameOver(tableId);
     }
 }

@@ -89,6 +89,8 @@ public class GameTableSession {
 
     public void handleDisconnect(String playerId) {
         if (isGameSetupComplete) {
+            gameMessenger.sendUpdateToAllPlayers(generateDisconnectUpdate(playerId));
+            serverGame.removePlayer(playerId);
             eventPublisher.publish(stateMachine, GameEvent.PLAYER_DISCONNECTED);
         }
         else {
