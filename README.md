@@ -153,7 +153,7 @@ Once the app is running, connect to the WebSocket endpoint to start or join a ga
 > You can use [this UI](https://github.com/Safwan-Hossain/Java-Poker-Frontend)
 > to connect.
 
-## 🏁 GitHub Actions Workflow
+## ☁️ GitHub Actions Workflow
 
 This project includes a CI/CD pipeline in [deploy.yml](.github/workflows/deploy.yml)
 
