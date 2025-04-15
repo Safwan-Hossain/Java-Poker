@@ -7,27 +7,27 @@
 ![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.4.2-brightgreen?style=for-the-badge&logo=spring)
 ![Reactive](https://img.shields.io/badge/Reactive-Project_Reactor-6f42c1?style=for-the-badge&logo=reactivex)
 
-  > Real time multiplayer poker server with reactive WebSocket gameplay and cloud native architecture  
+> Real time multiplayer poker server with reactive WebSocket gameplay and cloud native architecture  
 > 🎮 **[Play the Demo Now!](https://poker.hossainsafwan.com)**
+
 ---
 
 [![demo](docs/images/demo.webp)](https://poker.hossainsafwan.com)
 > 🚧 This is just the first UI version - expect improvements soon!
-## 📚 Table of Contents
 
 ---
+
+## 📚 Table of Contents
 
 - [Overview](#-overview)
 - [Tech Stack](#-tech-stack)
 - [Architecture](#-architecture)
 - [Prerequisites](#-prerequisites)
 - [Getting Started](#-getting-started)
-- [GitHub Actions Workflow](#-github-actions-workflow)
+- [GitHub Actions Workflow](#-gitHub-actions-workflow)
 
 
 ## 💼 Overview
-
----
 
 
 A multiplayer Texas Hold'em engine (backend), built with reactive frameworks and a clean state machine architecture.
@@ -44,8 +44,6 @@ A multiplayer Texas Hold'em engine (backend), built with reactive frameworks and
 
 > 🎮 **[Play the Demo Now!](https://poker.hossainsafwan.com)**
 ## 🧰 Tech Stack
-
----
 
 **Backend**
 - **Java 21**
@@ -67,11 +65,8 @@ A multiplayer Texas Hold'em engine (backend), built with reactive frameworks and
 
 ## 📐 Architecture
 
----
-
 ### 🧱  Design Pattern
 
----
 
 - **Reactive Stack**: Built with Spring WebFlux + Project Reactor
 - **State Machine Core**: Keeps each game table clean and isolated (no cross table bugs!)
@@ -83,7 +78,6 @@ A multiplayer Texas Hold'em engine (backend), built with reactive frameworks and
 
 ### 🏗️ Infrastructure
 
----
 
 #### MVP Setup (Current)
 
@@ -96,8 +90,6 @@ A multiplayer Texas Hold'em engine (backend), built with reactive frameworks and
 > - This setup works for multiplayer, but only with one Fargate instance
 > - ALB routes traffic at random across multiple tasks 
 > - This means that the ALB may split players across different servers if there are multiple Fargate instances running
-
----
 
 #### Future Plan 
 
@@ -121,8 +113,6 @@ The system will transition to a **serverless lobby and dynamic game routing mode
 
 ## 📦 Prerequisites
 
----
-
 To run this project locally, make sure you have the following installed:
 
 
@@ -134,8 +124,6 @@ You can use my [UI here](https://github.com/Safwan-Hossain/Java-Poker-Frontend)
 
 
 ## 🏁 Getting Started
-
----
 
 Follow these steps to run the backend locally:
 
@@ -166,9 +154,6 @@ Once the app is running, connect to the WebSocket endpoint to start or join a ga
 > to connect.
 
 ## ⚙️ GitHub Actions Workflow
-
----
-
 
 This project includes a CI/CD pipeline in [deploy.yml](.github/workflows/deploy.yml)
 
