@@ -10,8 +10,8 @@
 > Real time multiplayer poker server with reactive WebSocket gameplay  
 > 🎮 **[Play the Demo Now!](https://poker.hossainsafwan.com)**
 
-- A Spring Boot project built for hosting concurrent Texas Hold’em games with reactive WebSockets and clean state isolation using Spring Statemachine.
-- Dockerized for easy deployment and runs on EC2 behind Nginx with Cloudflare for secure, low latency access.
+- A Spring Boot project built for hosting concurrent Texas Hold’em games with reactive WebSockets and state isolation using Spring Statemachine.
+- Dockerized for easy deployment and runs on EC2 behind Nginx with Cloudflare.
 - CI/CD is managed through GitHub Actions, automating Docker builds and remote deployment to the live server.
 
 ---
@@ -42,7 +42,7 @@ simultaneously with high reliability and responsiveness.
 - **WebSocket Architecture:** Implemented reactive WebSocket connections using Spring WebFlux and Project Reactor to enable real-time multiplayer gameplay
 - **State Management:** Used Spring Statemachine to isolate game logic and maintain clean session flow across concurrent poker tables
 - **Containerization:** Dockerized the entire backend for consistent local development and streamlined cloud deployment
-- **Cloud Hosting:** Deployed the application on AWS EC2 with Nginx as a reverse proxy and Cloudflare for secure, low-latency global access
+- **Cloud Hosting:** Deployed the application on AWS EC2 with Nginx as a reverse proxy and Cloudflare for secure, low latency global access
 
 ## 🧰 Tech Stack
 
@@ -62,16 +62,17 @@ simultaneously with high reliability and responsiveness.
 
 ## 🏗️ Infrastructure
 
-- **Cloudflare**  
-  - Handles DNS, TLS termination (`wss://`), and protects the EC2 instance by acting as a proxy
-- **Nginx**  
-  - Acts as a reverse proxy, upgrading WebSocket connections and forwarding them to the server
-
-- **EC2 Instance**  
-  - Runs both Nginx and the Java-based poker server (Spring Boot), which manages game state and real-time interactions.
-
   
 ![diagram](docs/images/current-infra.webp)
+
+
+- **Cloudflare**
+  - Handles DNS, TLS termination (`wss://`), and protects the EC2 instance by acting as a proxy
+- **Nginx**
+  - Acts as a reverse proxy, upgrading WebSocket connections and forwarding them to the server
+- **EC2 Instance**
+  - Runs both Nginx and the Java-based poker server (Spring Boot), which manages game state and real-time interactions.
+
 
 > #### ⚠️ This Is Not Enough
 > - This setup supports multiplayer, but only on a single EC2 instance with no horizontal scaling
@@ -85,7 +86,7 @@ To run this project locally, make sure you have the following installed:
 
 
 - **Java 21** 
-- **[WebSocket client ](https://github.com/Safwan-Hossain/Java-Poker-Frontend)** - this app requires a frontend to connect and play.  
+- **[WebSocket client ](https://github.com/Safwan-Hossain/Java-Poker-Frontend)** - this server requires a frontend to connect and play.  
 
 
 > Note: This app uses reactive WebFlux, no servlet container like Tomcat is used
