@@ -7,7 +7,8 @@
 ![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.4.2-brightgreen?logo=spring&style=flat-square)
 ![Reactive](https://img.shields.io/badge/Reactive-Project_Reactor-6f42c1?logo=reactivex&style=flat-square)
 
-> Real time multiplayer poker server with reactive WebSocket gameplay  
+> Real time multiplayer poker server with reactive WebSocket architecture, supporting multiple concurrent games and
+> low latency player interactions.  
 > 🎮 **[Play the Demo Now!](https://poker.hossainsafwan.com)**
 
 - A Spring Boot project built for hosting concurrent Texas Hold’em games with reactive WebSockets and state isolation using Spring Statemachine.
@@ -74,7 +75,7 @@ simultaneously with high reliability and responsiveness.
   - Runs both Nginx and the Java-based poker server (Spring Boot), which manages game state and real-time interactions.
 
 
-> #### ⚠️ This Is Not Enough
+> #### This Is Not Enough
 > - This setup supports multiplayer, but only on a single EC2 instance with no horizontal scaling
 > - All WebSocket traffic is handled locally by Nginx, and failure of the EC2 instance results in full downtime
 > - This setup can be refactored into a cloud native architecture using Fargate, service discovery, and dynamic routing for improved scalability and resilience, but it is **out of scope for this implementation**.
